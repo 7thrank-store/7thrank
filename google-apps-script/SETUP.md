@@ -4,99 +4,153 @@
 
 ---
 
-### Step 1 — Create the Google Sheet
+### ✅ Step 1 — Create the Google Sheet  *(COMPLETE)*
 
-1. Go to [sheets.google.com](https://sheets.google.com) and create a new spreadsheet
-2. Name it **"7th Rank — First Movers"**
-3. Copy the spreadsheet ID from the URL:
-   `https://docs.google.com/spreadsheets/d/` **`THIS_PART`** `/edit`
-4. Paste that ID into `Code.gs` at the top:
-   ```js
-   var SPREADSHEET_ID = 'paste-your-id-here';
-   ```
+- Sheet: **"7th Rank — First Movers"** → tab renamed to **"Wishlist Signups"**
+- Spreadsheet ID configured in `Code.gs`:
+  ```
+  14efRw0OvfBn7er-j1eR1Ifu44RAO_i8M47yUWkJNNZM
+  ```
+- Column headers added to row 1 (A–M): Timestamp, Email, Discount Code, Collection, Line, Garment Type, Variant / Style, Piece, Placement / Colorway, Size, Code Used, Source, Unsubscribed
 
 ---
 
-### Step 2 — Create the Apps Script project
+### ✅ Step 2 — Create the Apps Script project  *(COMPLETE)*
 
-1. In your Google Sheet, go to **Extensions → Apps Script**
-2. Delete the default `myFunction()` code
-3. Copy the entire contents of `Code.gs` and paste it into the editor
-4. Click the **+** next to "Files" and add an HTML file named exactly `email_template`
-5. Copy the entire contents of `email_template.html` and paste it in
-6. Save both files (Ctrl+S)
-
----
-
-### Step 3 — Deploy as a Web App
-
-1. Click **Deploy → New deployment**
-2. Click the gear icon next to "Select type" → choose **Web app**
-3. Set:
-   - Description: `7th Rank Wishlist v1`
-   - Execute as: **Me** (your Google account)
-   - Who has access: **Anyone** *(required so the website can POST to it)*
-4. Click **Deploy**
-5. Copy the **Web app URL** — it looks like:
-   `https://script.google.com/macros/s/XXXXXX/exec`
-6. Paste that URL into `website/js/main.js`:
-   ```js
-   var WISHLIST_ENDPOINT = 'paste-your-url-here';
-   ```
+- `Code.gs` pasted into the Apps Script editor
+- `email_template` HTML file created and pasted with full luxury email design:
+  - Logo watermark background
+  - Founder letter copy
+  - Qf7+ chess puzzle section
+  - FM-XXXX-XXXX discount code block
+  - Social links (Instagram/TikTok @7th.rank)
+  - CAN-SPAM footer (address: 1114 Main Ave, Clifton, NJ 07011; unsubscribe link)
 
 ---
 
-### Step 4 — Authorize Gmail access
+### ✅ Step 3 — Deploy as a Web App  *(COMPLETE)*
 
-On first run, Apps Script will ask you to authorize it to send emails via your Gmail account.
-1. Click **Review permissions**
-2. Sign in with the Google account you want emails sent from
-3. Click **Allow**
-
-> **Work email note:** If your work email runs on Google Workspace, this will work fine —
-> just make sure the account has Gmail enabled. The 1,500/day sending limit applies
-> (vs. 100/day for personal Gmail). For launch volume this is more than sufficient.
+- Deployed as Web App: Execute as **Me**, access **Anyone**
+- Live URL:
+  ```
+  https://script.google.com/macros/s/AKfycbynjkrlxhyLIu_jAaEkpZ25gFmNBpKzQ2egn_1B-eqsARPAyjt266tl8unjdc3OFpdj/exec
+  ```
+- URL wired into `website/js/main.js` as `WISHLIST_ENDPOINT`
 
 ---
 
-### Step 5 — Test it
+### ✅ Step 4 — Authorize Gmail access  *(COMPLETE)*
 
-Run this function manually inside the Apps Script editor to send yourself a test email:
+- Google OAuth authorization completed on first `testFlow()` run
 
-```js
-function testFlow() {
-  var mockEvent = {
-    postData: {
-      contents: JSON.stringify({
-        email: 'your-email@example.com',
-        items: [{
-          collection:  'First Move',
-          line:        'Ice Castle',
-          garmentType: 'Chessboards (Turtleneck)',
-          variant:     'Ice Castle',
-          piece:       'Knight',
-          placement:   'Left Chest',
-          size:        'M'
-        }]
-      })
-    }
-  };
-  var result = doPost(mockEvent);
-  Logger.log(result.getContent());
-}
-```
+---
+
+### ✅ Step 5 — Test it  *(COMPLETE)*
+
+- `testFlow()` run successfully — confirmation email received, row written to sheet
+
+> **To re-test at any time**, run `testFlow()` in the Apps Script editor.
+> Note: duplicate emails reuse their existing code (by design).
 
 ---
 
 ### Step 6 — Re-deploy after any code changes
 
 If you ever edit `Code.gs` or `email_template.html`:
-1. **Deploy → Manage deployments**
-2. Click the pencil (edit) on your deployment
-3. Change version to **"New version"**
-4. Click **Deploy**
+1. Re-paste the updated file contents into the Apps Script editor
+2. Save (Ctrl+S)
+3. **Deploy → Manage deployments**
+4. Click the pencil (edit) on your deployment
+5. Change version to **"New version"**
+6. Click **Deploy**
 
 > The URL stays the same — no need to update `main.js`.
+
+---
+
+### ✅ Step 7 — Make GitHub repo public (images in email)  *(COMPLETE)*
+
+The logo watermark and chess position image in the email are hosted on GitHub Pages.
+GitHub Pages requires the repo to be **public**.
+
+1. Go to your repo on GitHub
+2. **Settings → General** → scroll to "Danger Zone"
+3. **Change visibility → Make public**
+4. GitHub Pages will activate at: `https://7thrank-store.github.io/7th-rank-website/`
+
+> GitHub Pages live at: `https://7thrank-store.github.io/7th-rank-website/`
+
+---
+
+### Step 8 — Login / View Wishlist Flow
+
+This feature lets signed-up users view their saved items and discount code via a magic link.
+
+**How it works:**
+1. User clicks **"My Wishlist"** in the header nav (or **"View My Wishlist"** after signup)
+2. Login modal appears — user enters their email
+3. Apps Script checks if email is registered; if yes, generates a 32-char one-time token (24h TTL)
+4. Token stored in sheet cols N + O; magic link email sent to user
+5. User clicks the link → `doGet` validates token, clears it, renders their wishlist page
+6. If link is expired or already used → friendly error page
+
+**New sheet columns (add manually to row 1 if sheet already exists):**
+| Col | Field        | Notes                                       |
+|-----|--------------|---------------------------------------------|
+| N   | Login Token  | Temporary hex token; cleared after one use  |
+| O   | Token Expiry | ISO date string; 24h from when link was sent |
+
+**Deploy after code update:**
+After pasting the updated `Code.gs` into Apps Script:
+1. **Deploy → Manage deployments** → pencil → New version → Deploy
+
+**Testing the login flow:**
+
+Run this in the Apps Script editor (replace with a real registered email):
+```js
+function testLogin() {
+  var mockEvent = {
+    postData: {
+      contents: JSON.stringify({
+        action: 'login',
+        email:  'your-registered-email@example.com'
+      })
+    }
+  };
+  var result = doPost(mockEvent);
+  Logger.log(result.getContent());
+  // Expected: {"success":true}
+  // Check inbox for "Your 7th Rank Wishlist Link" email
+  // Click the link — should open luxury wishlist page with discount code
+}
+```
+
+**Testing with an unregistered email:**
+```js
+function testLoginNotFound() {
+  var mockEvent = {
+    postData: {
+      contents: JSON.stringify({
+        action: 'login',
+        email:  'notregistered@example.com'
+      })
+    }
+  };
+  var result = doPost(mockEvent);
+  Logger.log(result.getContent());
+  // Expected: {"success":false,"error":"No wishlist found for that email address."}
+}
+```
+
+**Checklist:**
+- [ ] Paste updated `Code.gs` into Apps Script editor
+- [ ] Save (Ctrl+S) and redeploy as New version
+- [ ] Add cols N and O headers to Google Sheet row 1
+- [ ] Run `testLogin()` with a registered email — confirm email received
+- [ ] Click magic link — confirm wishlist page renders with correct code and items
+- [ ] Click link a second time — confirm "Link Expired" page appears
+- [ ] On site: click "My Wishlist" in header → login modal opens
+- [ ] On site: after wishlist signup, "View My Wishlist" button opens login modal
 
 ---
 
@@ -116,6 +170,9 @@ If you ever edit `Code.gs` or `email_template.html`:
 | J   | Size                | XS–XXL                                   |
 | K   | Code Used           | FALSE on signup; manually set TRUE when redeemed |
 | L   | Source              | Always "wishlist" for now                |
+| M   | Unsubscribed        | TRUE if user clicked unsubscribe link    |
+| N   | Login Token         | Temporary; cleared after one use         |
+| O   | Token Expiry        | ISO date string; 24h TTL                 |
 
 ---
 

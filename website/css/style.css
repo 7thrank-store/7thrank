@@ -1715,6 +1715,15 @@ ul, ol {
 
 .nav-link:hover { opacity: 1; color: var(--gold); }
 
+/* Button-style nav link (no underline, no background — matches <a> nav links) */
+.nav-link--ghost {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
 .cart-trigger {
   position: relative;
   color: #FFFFFF;

@@ -162,6 +162,7 @@
     <nav class="header-nav" aria-label="Primary navigation">
       <a href="#rank-3" class="nav-link" data-target="rank-3">Collections</a>
       <a href="#rank-7" class="nav-link" data-target="rank-7">Contact</a>
+      <button class="nav-link nav-link--ghost" id="view-wishlist-trigger" aria-label="View my wishlist">My Wishlist</button>
       <button class="cart-trigger" aria-label="View cart" id="cart-trigger">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         <span class="cart-count" id="cart-count" aria-live="polite">0</span>
@@ -764,6 +765,9 @@
         <p class="wishlist-success-body" id="wishlist-success-body">
           Check your inbox — your exclusive discount code is on its way.
         </p>
+        <button class="btn btn-secondary wishlist-view-btn" id="wishlist-view-btn" style="margin-top:20px;">
+          View My Wishlist
+        </button>
       </div>
 
       <!-- Fine print + CAN-SPAM opt-in consent -->
@@ -772,6 +776,40 @@
         You can unsubscribe at any time. No spam. Code is single-use and unique to you.
         See our <a href="#" class="legal-inline-link" data-open="privacy">Privacy Policy</a>.
       </p>
+    </div>
+  </div>
+
+  <!-- ═══ LOGIN / VIEW WISHLIST MODAL ═══ -->
+  <div class="wishlist-overlay" id="login-overlay" aria-hidden="true" role="dialog"
+       aria-modal="true" aria-labelledby="login-title">
+    <div class="wishlist-modal">
+      <button class="wishlist-close" id="login-close" aria-label="Close">&times;</button>
+
+      <p class="wishlist-eyebrow">First Movers</p>
+      <h2 class="wishlist-title" id="login-title">View My Wishlist</h2>
+      <p class="wishlist-subtitle">
+        Enter your email and we'll send you a secure link to view your saved items and discount code.
+      </p>
+
+      <form class="wishlist-form" id="login-form" novalidate>
+        <div class="wishlist-field">
+          <label for="login-email" class="wishlist-label">Email Address</label>
+          <input type="email" id="login-email" class="wishlist-input"
+                 placeholder="you@example.com" autocomplete="email" required>
+          <span class="wishlist-field-error" id="login-email-error" aria-live="polite"></span>
+        </div>
+        <button type="submit" class="btn btn-primary wishlist-submit" id="login-submit">
+          Send Me My Link
+        </button>
+      </form>
+
+      <div class="wishlist-success" id="login-success" hidden>
+        <div class="wishlist-success-icon">&#10003;</div>
+        <h3 class="wishlist-success-heading">Check your inbox.</h3>
+        <p class="wishlist-success-body">
+          We sent a secure link to your email. It expires in 24 hours.
+        </p>
+      </div>
     </div>
   </div>
 

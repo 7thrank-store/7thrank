@@ -2132,6 +2132,7 @@
     initTouch();
     initLandingImageCycler();
     initWishlist();
+    initLoginModal();
     initContactLogoWatermark();
     initLegalModals();
     initCookieConsent();
@@ -2250,6 +2251,102 @@
 
   function closeWishlist() {
     var overlay = document.getElementById('wishlist-overlay');
+    if (!overlay) return;
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  /* ══════════════════════════════════════════════════
+     LOGIN / VIEW WISHLIST MODAL
+  ══════════════════════════════════════════════════ */
+
+  function initLoginModal() {
+    var overlay    = document.getElementById('login-overlay');
+    var closeBtn   = document.getElementById('login-close');
+    var form       = document.getElementById('login-form');
+    var emailInput = document.getElementById('login-email');
+    var emailError = document.getElementById('login-email-error');
+    var submitBtn  = document.getElementById('login-submit');
+    var successEl  = document.getElementById('login-success');
+    if (!overlay) return;
+
+    // Triggers: header "My Wishlist" button + "View My Wishlist" in wishlist success
+    document.addEventListener('click', function(e) {
+      if (e.target && (
+        e.target.id === 'view-wishlist-trigger' ||
+        e.target.id === 'wishlist-view-btn'
+      )) {
+        closeWishlist();
+        openLoginModal();
+      }
+    });
+
+    closeBtn.addEventListener('click', closeLoginModal);
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeLoginModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLoginModal();
+    });
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var email = (emailInput.value || '').trim();
+
+      emailError.textContent = '';
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        emailError.textContent = 'Please enter a valid email address.';
+        emailInput.focus();
+        return;
+      }
+
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Sending\u2026';
+
+      fetch(WISHLIST_ENDPOINT, {
+        method: 'POST',
+        body:   JSON.stringify({ action: 'login', email: email })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success) {
+          form.hidden      = true;
+          successEl.hidden = false;
+        } else {
+          emailError.textContent = data.error || 'Something went wrong. Please try again.';
+          submitBtn.disabled    = false;
+          submitBtn.textContent = 'Send Me My Link';
+        }
+      })
+      .catch(function() {
+        emailError.textContent = 'Network error. Please check your connection and try again.';
+        submitBtn.disabled    = false;
+        submitBtn.textContent = 'Send Me My Link';
+      });
+    });
+  }
+
+  function openLoginModal() {
+    var overlay = document.getElementById('login-overlay');
+    var form    = document.getElementById('login-form');
+    var success = document.getElementById('login-success');
+    var submitBtn = document.getElementById('login-submit');
+    if (!overlay) return;
+    form.hidden      = false;
+    success.hidden   = true;
+    submitBtn.disabled    = false;
+    submitBtn.textContent = 'Send Me My Link';
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-email-error').textContent = '';
+    overlay.removeAttribute('aria-hidden');
+    overlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function() { document.getElementById('login-email').focus(); }, 100);
+  }
+
+  function closeLoginModal() {
+    var overlay = document.getElementById('login-overlay');
     if (!overlay) return;
     overlay.setAttribute('aria-hidden', 'true');
     overlay.classList.remove('is-open');

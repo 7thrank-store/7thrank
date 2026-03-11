@@ -2,7 +2,7 @@
 
 > *One Square From Promotion*
 
-Premium chess-inspired streetwear and apparel. The website **is** the chess board.
+Luxury Chess apparel. The website **is** the chess board.
 
 ---
 

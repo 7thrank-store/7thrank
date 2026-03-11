@@ -2152,7 +2152,7 @@
   ══════════════════════════════════════════════════ */
 
   // !! Replace with your deployed Apps Script URL after publishing !!
-  var WISHLIST_ENDPOINT = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+  var WISHLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbynjkrlxhyLIu_jAaEkpZ25gFmNBpKzQ2egn_1B-eqsARPAyjt266tl8unjdc3OFpdj/exec';
 
   function initWishlist() {
     var overlay   = document.getElementById('wishlist-overlay');

@@ -72,27 +72,21 @@
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td style="padding:32px 40px 24px;">
-                    <h2 style="margin:0 0 16px;font-size:18px;letter-spacing:0.08em;font-weight:700;
+                    <h2 style="margin:0 0 20px;font-size:18px;letter-spacing:0.08em;font-weight:700;
                                 color:#B8CDD8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
                                 text-transform:uppercase;">
-                      Welcome, First Mover.
+                      Hello First Mover!
                     </h2>
-                    <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#8BAFC4;
+                    <p style="margin:0 0 16px;font-size:15px;line-height:1.75;color:#8BAFC4;
                                font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      Thank you for joining the movement. 7th Rank was built for people like you —
-                      those who see chess not just as a game, but as a way of thinking, competing,
-                      and expressing themselves to the world.
+                      What an honor it is to write to you. My partner and I are thrilled to launch 7th Rank Designs,
+                      the world's premier destination for Chess apparel and fandom expression.
                     </p>
-                    <p style="margin:0 0 14px;font-size:15px;line-height:1.75;color:#8BAFC4;
+                    <p style="margin:0 0 16px;font-size:15px;line-height:1.75;color:#8BAFC4;
                                font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      We're Ethan Nouhan and DeAngelo Descorbeth — founders of 7th Rank Designs.
-                      Our mission is simple: promote chess through apparel and give every player
-                      a way to carry the game with them, off the board.
-                    </p>
-                    <p style="margin:0;font-size:15px;line-height:1.75;color:#8BAFC4;
-                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      As a founding First Mover, you're getting in before the world catches on.
-                      Here's your exclusive discount — use it when orders open.
+                      DeAngelo and I cannot thank you enough for joining our movement. Please see below
+                      for your exclusive First Mover discount code! Together, we'll raise Chess to an even
+                      higher prominence through our shared love and outward expression!
                     </p>
                   </td>
                 </tr>
@@ -109,7 +103,7 @@
                           <p style="margin:0 0 6px;font-size:10px;letter-spacing:0.3em;
                                      text-transform:uppercase;color:#5BB8D4;
                                      font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                            Your First Mover Discount
+                            Your <?= discountPct ?>% First Mover Discount Code
                           </p>
                           <p style="margin:0 0 14px;font-size:40px;font-weight:900;
                                      letter-spacing:0.2em;color:#B8CDD8;
@@ -118,8 +112,7 @@
                           </p>
                           <p style="margin:0;font-size:13px;color:#5BB8D4;
                                      font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                            <?= discountPct ?>% off your first order
-                            &nbsp;&#xB7;&nbsp; Single use &nbsp;&#xB7;&nbsp; No expiry
+                            Single use &nbsp;&#xB7;&nbsp; No expiry
                           </p>
                         </td>
                       </tr>
@@ -128,34 +121,19 @@
                 </tr>
               </table>
 
-              <!-- What you get as a subscriber -->
+              <!-- Subscriber perks -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td style="padding:0 40px 32px;">
-                    <p style="margin:0 0 14px;font-size:10px;letter-spacing:0.3em;
-                               text-transform:uppercase;color:#5BB8D4;
+                    <p style="margin:0 0 16px;font-size:15px;line-height:1.75;color:#8BAFC4;
                                font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      What You'll Get as a First Mover
+                      Subscribing to our newsletter grants you exclusive access to early drops,
+                      discount opportunities, company updates, and of course, the best Chess puzzles!
                     </p>
-                    <!-- Bullet list via table for email client compatibility -->
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                      <? var perks = [
-                           'Early access to product drops before the public',
-                           'Exclusive member discounts on new collections',
-                           'Company updates straight from the founders',
-                           'Chess puzzles curated by the 7th Rank team'
-                         ];
-                         perks.forEach(function(perk) { ?>
-                      <tr>
-                        <td width="18" style="padding:5px 0;vertical-align:top;
-                                               color:#5BB8D4;font-size:14px;">&#9654;</td>
-                        <td style="padding:5px 0;font-size:14px;line-height:1.6;color:#8BAFC4;
-                                    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                          <?= perk ?>
-                        </td>
-                      </tr>
-                      <? }); ?>
-                    </table>
+                    <p style="margin:0;font-size:15px;line-height:1.75;color:#8BAFC4;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      Position answers will always be under our signatures to best avoid spoilers.
+                    </p>
                   </td>
                 </tr>
               </table>
@@ -202,27 +180,11 @@
               </table>
               <? } ?>
 
-              <!-- The puzzle moment -->
+              <!-- Divider before sign-off -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="padding:0 40px 36px;">
-                    <hr style="border:none;border-top:1px solid #162840;margin:0 0 20px;">
-                    <p style="margin:0 0 14px;font-size:10px;letter-spacing:0.3em;
-                               text-transform:uppercase;color:#5BB8D4;
-                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      A Move That Started It All
-                    </p>
-                    <p style="margin:0 0 12px;font-size:14px;line-height:1.75;color:#8BAFC4;
-                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      On December 31st, 2025 — the last day of the year — a game was played.
-                      The decisive move: <strong style="color:#B8CDD8;letter-spacing:0.06em;">Qf7+!!</strong>
-                      A queen sacrifice on the 7th rank. Brilliant. Unexpected. Unstoppable.
-                    </p>
-                    <p style="margin:0;font-size:14px;line-height:1.75;color:#8BAFC4;
-                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      That moment felt like a sign — the 7th rank is where pawns become queens,
-                      where the game is decided. It's where we're building from.
-                    </p>
+                  <td style="padding:0 40px;">
+                    <hr style="border:none;border-top:1px solid #162840;margin:0;">
                   </td>
                 </tr>
               </table>
@@ -230,19 +192,77 @@
               <!-- Founders sign-off -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="padding:0 40px 40px;">
-                    <p style="margin:0 0 8px;font-size:14px;line-height:1.75;color:#8BAFC4;
+                  <td style="padding:28px 40px 8px;">
+                    <p style="margin:0 0 16px;font-size:15px;line-height:1.75;color:#8BAFC4;
                                font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      Welcome to the movement.
+                      Looking forward many moves ahead!
                     </p>
-                    <p style="margin:0;font-size:14px;color:#B8CDD8;font-weight:700;
+                    <p style="margin:0 0 6px;font-size:14px;line-height:1.5;color:#8BAFC4;
+                               font-style:italic;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      With humility,
+                    </p>
+                    <p style="margin:0 0 4px;font-size:14px;color:#B8CDD8;font-weight:700;
                                letter-spacing:0.06em;
                                font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      Ethan Nouhan &amp; DeAngelo Descorbeth<br>
-                      <span style="font-weight:400;font-size:11px;color:#4A7A94;letter-spacing:0.1em;
-                                   text-transform:uppercase;">
-                        Founders, 7th Rank Designs
+                      Ethan Nouhan
+                      <span style="font-weight:400;font-size:12px;color:#4A7A94;letter-spacing:0.08em;">
+                        — Founder / CEO / CDO
                       </span>
+                    </p>
+                    <p style="margin:0 0 20px;font-size:15px;color:#5BB8D4;font-weight:700;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      &amp;
+                    </p>
+                    <p style="margin:0 0 24px;font-size:14px;color:#B8CDD8;font-weight:700;
+                               letter-spacing:0.06em;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      DeAngelo Descorbeth
+                      <span style="font-weight:400;font-size:12px;color:#4A7A94;letter-spacing:0.08em;">
+                        — Founder / CFO / Treasurer
+                      </span>
+                    </p>
+                    <!-- Socials placeholder -->
+                    <p style="margin:0;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+                               color:#4A7A94;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      [SOCIALS]
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Puzzle answer (below signatures to avoid spoilers) -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:24px 40px 36px;">
+                    <hr style="border:none;border-top:1px solid #162840;margin:0 0 20px;">
+                    <p style="margin:0 0 10px;font-size:10px;letter-spacing:0.3em;
+                               text-transform:uppercase;color:#5BB8D4;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      Puzzle Answer
+                    </p>
+                    <p style="margin:0 0 14px;font-size:14px;line-height:1.75;color:#8BAFC4;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      This game comes directly from one of my own games (Ethan) and was played a few
+                      minutes before midnight on December 31st, 2025 in a 3+2 blitz game. DeAngelo and I
+                      were starting to build the website, finalize the First Move Line, and started shooting
+                      content for our socials. Overwhelmed with feelings of synchronicity and intuition,
+                      I found the winning idea:
+                    </p>
+                    <p style="margin:0 0 14px;font-size:32px;font-weight:900;letter-spacing:0.15em;
+                               color:#B8CDD8;text-align:center;
+                               font-family:'Courier New',Courier,monospace;">
+                      Qf7+!!
+                    </p>
+                    <p style="margin:0 0 14px;font-size:14px;line-height:1.75;color:#8BAFC4;
+                               font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      A sure sign to know we were moving in the right direction, and what better way
+                      to conclude 2025 than sacking the Queen on. the. 7th. Rank.
+                    </p>
+                    <p style="margin:0;font-size:13px;line-height:1.7;color:#4A7A94;
+                               font-family:'Courier New',Courier,monospace;letter-spacing:0.04em;">
+                      Winning Line: 23. Qf7+ Rxf7 24. Rxf7+ Ke8 25. Rc8+ Qd8 26. Rxd8+ Kxd8 27. Rxh7 Nxe3 28. Bxe4
                     </p>
                   </td>
                 </tr>

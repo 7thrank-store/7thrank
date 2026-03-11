@@ -21,7 +21,7 @@
  */
 
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-var SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE'; // paste after creating sheet
+var SPREADSHEET_ID = '14efRw0OvfBn7er-j1eR1Ifu44RAO_i8M47yUWkJNNZM';
 var SHEET_NAME     = 'Wishlist Signups';
 var SENDER_NAME    = '7th Rank';
 var DISCOUNT_PCT   = 15;
@@ -185,7 +185,7 @@ function sendConfirmationEmail(email, code, items) {
 
   var htmlBody = template.evaluate().getContent();
 
-  GmailApp.sendEmail(email, 'You\'re a First Mover — here\'s your 15% off', '', {
+  GmailApp.sendEmail(email, 'FIRST MOVERS DISCOUNT!! Wishlist Confirmation', '', {
     name:     SENDER_NAME,
     htmlBody: htmlBody
   });

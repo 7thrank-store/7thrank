@@ -2558,27 +2558,26 @@ ul, ol {
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem;
-  border: 1px solid currentColor;
+  border: 1px solid rgba(160,160,160,0.5);
   background: rgba(128,128,128,0.08);
   cursor: pointer;
   font-family: var(--font-display);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   color: inherit;
-  opacity: 0.85;
-  transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+  opacity: 1;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .cb-piece-btn:hover {
-  border-color: var(--rank-accent, var(--gold));
-  background: var(--rank-accent-15, rgba(91,184,212,0.15));
-  opacity: 1;
+  border-color: #5BB8D4;
+  background: rgba(91,184,212,0.18);
 }
 .cb-piece-btn.selected {
-  background: var(--rank-accent-shadow, rgba(91,184,212,0.35));
-  border-color: var(--rank-accent, var(--gold));
+  background: #5BB8D4;
+  border-color: #5BB8D4;
   border-width: 2px;
-  color: inherit;
+  color: #0D1B2A;
   opacity: 1;
 }
 
@@ -2594,28 +2593,27 @@ ul, ol {
 
 .cb-location-btn {
   padding: 0.4rem 0.6rem;
-  border: 1px solid currentColor;
+  border: 1px solid rgba(160,160,160,0.5);
   background: rgba(128,128,128,0.08);
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 0.65rem;
   letter-spacing: 0.08em;
   color: inherit;
-  opacity: 0.85;
+  opacity: 1;
   text-transform: uppercase;
   transition: border-color 0.2s, background 0.2s;
 }
 
 .cb-location-btn:hover {
-  border-color: var(--rank-accent, var(--gold));
-  background: var(--rank-accent-15, rgba(91,184,212,0.15));
-  opacity: 1;
+  border-color: #5BB8D4;
+  background: rgba(91,184,212,0.18);
 }
 .cb-location-btn.selected {
-  background: var(--rank-accent-shadow, rgba(91,184,212,0.35));
-  border-color: var(--rank-accent, var(--gold));
+  background: #5BB8D4;
+  border-color: #5BB8D4;
   border-width: 2px;
-  color: inherit;
+  color: #0D1B2A;
   opacity: 1;
 }
 
@@ -2855,9 +2853,9 @@ ul, ol {
 }
 .btn-wishlist:hover {
   opacity: 1;
-  background: rgba(201, 168, 76, 0.18);
-  border-color: var(--gold);
-  color: var(--gold);
+  background: rgba(91,184,212,0.18);
+  border-color: #5BB8D4;
+  color: #5BB8D4;
 }
 
 /* ════════════════════════════════════════════════════════

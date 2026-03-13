@@ -296,8 +296,6 @@ function renderWishlistPage(email, data) {
          'padding:10px 14px;border-bottom:1px solid #1C2B38;}' +
       'td{padding:13px 14px;color:#B8CDD8;font-size:14px;border-bottom:1px solid #0D1D2A;}' +
       'td.empty{color:#3a4a54;text-align:center;padding:28px;}' +
-      '.back{margin-top:44px;text-align:center;}' +
-      '.back a{color:#C9A84C;text-decoration:none;font-size:13px;letter-spacing:0.1em;}' +
     '</style></head><body>' +
     '<div class="wrap">' +
       '<div class="brand">7th Rank</div>' +
@@ -311,7 +309,6 @@ function renderWishlistPage(email, data) {
       '<table><thead><tr>' +
         '<th>Garment</th><th>Variant</th><th>Piece</th><th>Placement</th><th>Size</th>' +
       '</tr></thead><tbody>' + itemRows + '</tbody></table>' +
-      '<div class="back"><a href="' + SITE_URL + '">&larr; Back to 7th Rank</a></div>' +
     '</div></body></html>';
 
   return HtmlService.createHtmlOutput(html)

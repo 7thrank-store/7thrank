@@ -303,6 +303,13 @@
   function startElementCycler(bgEl, pool, intervalMs, initialPool) {
     if (!bgEl || !pool || !pool.length) return null;
 
+    // Clear any existing cycler on this element — prevents interval stacking
+    // when renderGarmentLines() is called multiple times on the same el.
+    if (bgEl._cyclerInterval) {
+      clearInterval(bgEl._cyclerInterval);
+      bgEl._cyclerInterval = null;
+    }
+
     var firstCycle = true;
 
     function shuffled(arr) {
@@ -340,7 +347,8 @@
     }
 
     loadAndShow();
-    return setInterval(loadAndShow, intervalMs || 6000);
+    bgEl._cyclerInterval = setInterval(loadAndShow, intervalMs || 6000);
+    return bgEl._cyclerInterval;
   }
 
   // ── Garment preview zoom (wheel / pinch / buttons / drag) ──────────────
@@ -658,11 +666,17 @@
     var el = document.getElementById(id);
     if (!el) return;
     // Use board.scrollTop directly — scrollIntoView is unreliable on iOS Safari
-    // inside scroll-snap containers
+    // inside scroll-snap containers. Suspend scroll-snap during animation so
+    // the snap engine doesn't fight the rAF loop (causes jank on iOS).
     if (behavior === 'instant') {
+      board.style.scrollSnapType = 'none';
       board.scrollTop = el.offsetTop;
+      board.style.scrollSnapType = 'y mandatory';
     } else {
-      smoothScrollTo(el.offsetTop, 600);
+      board.style.scrollSnapType = 'none';
+      smoothScrollTo(el.offsetTop, 600, function() {
+        board.style.scrollSnapType = 'y mandatory';
+      });
     }
   }
 

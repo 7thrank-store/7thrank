@@ -870,17 +870,19 @@ ul, ol {
   font-size: clamp(1.2rem, 2.2vw, 2rem);
   letter-spacing: 0.08em;
   text-align: center;
-  color: var(--sq-light-text);
+  /* Use contrast-safe ui-text vars so names stay legible when variant palette
+     overrides make a "dark" square actually light (e.g. Ice Castle, Princess Pink) */
+  color: var(--ui-text-light, var(--sq-light-text));
 }
 /* Dark cards — explicit classes (rank-5 row) and nth-child patterns (rank-6 grid) */
 .product-card.sq-dark .product-card-name,
 .product-card:nth-child(even) .product-card-name,
 .product-card:nth-child(n+5):nth-child(odd) .product-card-name {
-  color: var(--sq-dark-text);
+  color: var(--ui-text-dark, var(--sq-dark-text));
 }
 /* rank-5 uses explicit sq-light/sq-dark classes — these beat the nth-child rules above */
-.rank-5 .product-card.sq-light .product-card-name { color: var(--sq-light-text); }
-.rank-5 .product-card.sq-dark  .product-card-name { color: var(--sq-dark-text); }
+.rank-5 .product-card.sq-light .product-card-name { color: var(--ui-text-light, var(--sq-light-text)); }
+.rank-5 .product-card.sq-dark  .product-card-name { color: var(--ui-text-dark,  var(--sq-dark-text)); }
 
 .product-card-piece-label {
   font-family: var(--font-body);
@@ -3245,15 +3247,20 @@ ul, ol {
   }
 
   /* ── Garment customization (rank-6): stacked single column ── */
+  /* Restore rank-6 to a fixed snap-height so .chess-board sees it as one viewport.
+     Without this, height:auto from the tablet breakpoint makes the section 2-3vh
+     tall and the snap container scrolls through it, bypassing the inner scroller. */
+  #rank-6 {
+    height: calc(100vh - var(--header-h));
+    overflow: hidden;
+  }
   .cb-customization {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 52vw 1fr;
-    height: auto;
-    min-height: calc(100vh - var(--header-h));
+    grid-template-rows: 44vw 1fr;
+    height: calc(100vh - var(--header-h));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    /* Prevent inner scroll momentum bleeding into .chess-board snap container */
     overscroll-behavior-y: contain;
   }
   .cb-image-col {

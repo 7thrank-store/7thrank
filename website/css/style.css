@@ -2242,7 +2242,14 @@ ul, ol {
 
   /* ── HEADER ──────────────────────────────────────── */
   .header-nav .nav-link { display: none; }
-  .menu-toggle { display: flex; }
+  .menu-toggle {
+    display: flex;
+    background: rgba(13, 10, 8, 0.45);
+    border-radius: 5px;
+    padding: 6px 5px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
 
   /* ── MOBILE OVERLAY CLOSE BUTTON ─────────────────── */
   .mobile-overlay-close {

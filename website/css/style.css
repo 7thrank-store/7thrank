@@ -1923,7 +1923,16 @@ ul, ol {
   margin-top: 2rem;
 }
 
-.cart-empty a { color: var(--gold); }
+.cart-empty-cta {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gold);
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
 
 .cart-item {
   display: flex;
@@ -2216,39 +2225,67 @@ ul, ol {
    ════════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
   :root {
-    --sq-letter-size: clamp(2.5rem, 11vw, 4.5rem);
-    --sq-piece-size: clamp(2rem, 8vw, 3.5rem);
+    --sq-letter-size: clamp(4.5rem, 20vw, 7rem);
+    --sq-piece-size:  clamp(2.8rem, 13vw, 5rem);
     --header-h: 56px;
   }
 
-  /* On mobile: show hamburger, hide nav links */
+  /* ── HEADER ──────────────────────────────────────── */
   .header-nav .nav-link { display: none; }
   .menu-toggle { display: flex; }
 
-  /* Landing: ranks 1+2 stack differently */
+  /* ── MOBILE OVERLAY CLOSE BUTTON ─────────────────── */
+  .mobile-overlay-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: none;
+    border: none;
+    color: var(--sq-dark-text);
+    font-size: 2.2rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity var(--t-fast);
+    padding: 0.25rem 0.5rem;
+    z-index: 1;
+  }
+  .mobile-overlay-close:hover { opacity: 1; }
+
+  /* Button-style mobile nav items (cart, my wishlist) */
+  .mobile-nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ── LANDING: 3-square layout ────────────────────── */
   .rank-1, .rank-2 {
     flex: 0 0 50%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
   }
 
-  /* Squares in ranks 1+2 wrap to 4 cols on mobile */
-  .rank-1,
-  .rank-2 {
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, auto);
-  }
+  /* Rank-2: show only cycling bg square (a), Collections (d), Contact (e) */
+  .rank-2 .square { display: none; }
+  .rank-2 [data-file="a"],
+  .rank-2 [data-file="d"],
+  .rank-2 [data-file="e"] { display: flex; }
 
-  /* Re-layout rank 2 on mobile: pieces stack */
-  .rank-2 .sq-interactive {
-    padding: 0.75rem 0.5rem;
-  }
+  /* Rank-1: show only "7" (a), logo (d), "R" (e) */
+  .rank-1 .square { display: none; }
+  .rank-1 [data-file="a"],
+  .rank-1 [data-file="d"],
+  .rank-1 [data-file="e"] { display: flex; }
 
-  /* Collections: single column on mobile */
-  .collections-track {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 50vw;
-  }
+  /* Larger interactive pieces in wider squares */
+  .rank-2 .sq-action-label { font-size: clamp(1.2rem, 5.5vw, 2rem); }
+  .rank-2 [data-file="a"] .sq-piece-deco { font-size: clamp(3.5rem, 16vw, 7rem); opacity: 0.14; }
+  .rank-1 .sq-logo-img { width: 58%; }
+  .rank-1 .sq-tagline { font-size: clamp(0.42rem, 1.8vw, 0.58rem); }
 
-  /* Rank full sections: auto-height on mobile */
+  /* ── RANK-FULL SECTIONS ──────────────────────────── */
   .rank-full {
     height: auto;
     min-height: calc(100vh - var(--header-h));
@@ -2256,47 +2293,117 @@ ul, ol {
     grid-template-rows: auto 1fr;
   }
 
-  .sq-file-label {
-    display: none; /* hide file labels on mobile */
+  .sq-file-label { display: none; }
+
+  /* ── COLLECTIONS: horizontal swipe carousel ───────── */
+  .collections-track {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+    padding-bottom: 2px;
+  }
+  .collections-track .collection-card {
+    flex: 0 0 85vw;
+    scroll-snap-align: start;
+    min-height: calc(100vh - var(--header-h) - 56px);
   }
 
-  /* Dynamic content: 2 cols on mobile */
-  .rank-dynamic-content,
+  /* ── SUB-LINE + VARIANT GRIDS: horizontal swipe ───── */
+  .rank-dynamic-content {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+    padding-bottom: 2px;
+    /* Reset grid */
+    grid-template-columns: unset;
+    grid-auto-rows: unset;
+  }
+  .rank-dynamic-content .product-card,
+  .rank-dynamic-content .colorway-slot:not(.customization-panel) {
+    flex: 0 0 85vw;
+    scroll-snap-align: start;
+    min-height: 60vh;
+  }
+
+  /* ── COLORWAY GRID (Pieces customization) ────────── */
   .colorway-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-auto-rows: auto;
   }
+  .colorway-slot { min-height: 40vw; }
 
-  .product-card,
-  .colorway-slot {
-    min-height: 50vw;
+  /* ── GARMENT CUSTOMIZATION (rank-6 chessboards) ──── */
+  .cb-customization {
+    grid-template-columns: 1fr;
+    grid-template-rows: 52vw auto;
+    height: auto;
+    min-height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Rank 7 contact: stacked */
+  .cb-image-col { height: 52vw; }
+
+  .cb-controls-col {
+    height: auto;
+    overflow: visible;
+    border-left: none;
+    border-top: 3px solid var(--sq-light-override, var(--gold));
+  }
+
+  .cb-control-groups-wrap {
+    height: auto;
+    overflow: visible;
+    padding: 1rem 1rem 0.5rem;
+  }
+
+  .cb-piece-btn { padding: 0.7rem 0.4rem; }
+  .cb-piece-btn-icon { font-size: 1.8rem; }
+
+  .cb-location-btn {
+    padding: 0.65rem 0.5rem;
+    font-size: 0.72rem;
+  }
+
+  /* ── CONTACT PAGE: allow full content scroll ──────── */
+  #rank-7 {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .rank-7-panel { height: auto; }
+
   .rank-7-contact,
   .rank-7-checkout {
     grid-template-columns: 1fr;
     height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .rank-7-contact .contact-info-panel {
-    min-height: 60vw;
-  }
+  .rank-7-contact .contact-info-panel { min-height: 50vw; }
 
   .rank-7-contact .sq-contact-form-wrap {
     grid-column: 1;
     grid-row: auto;
     padding: 2rem 1.25rem;
+    overflow-y: visible;
+    height: auto;
   }
 
-  .form-row-2col {
-    grid-template-columns: 1fr;
-  }
+  .form-row-2col { grid-template-columns: 1fr; }
 
-  /* Rank 8 confirmation */
-  .rank-8-panel {
-    grid-template-columns: 1fr;
-  }
+  /* ── RANK 8 ───────────────────────────────────────── */
+  .rank-8-panel { grid-template-columns: 1fr; }
 
   .sq-confirmation-content {
     grid-column: 1;
@@ -2304,10 +2411,10 @@ ul, ol {
     padding: 2rem 1.5rem;
   }
 
-  /* Side navigator: hide on mobile */
+  /* ── NAVIGATION ──────────────────────────────────── */
   .rank-navigator { display: none; }
 
-  /* Footer */
+  /* ── FOOTER ──────────────────────────────────────── */
   .footer-inner {
     flex-direction: column;
     align-items: flex-start;
@@ -2462,10 +2569,16 @@ ul, ol {
   transition: border-color 0.2s, background 0.2s, opacity 0.2s;
 }
 
-.cb-piece-btn:hover,
-.cb-piece-btn.selected {
+.cb-piece-btn:hover {
   border-color: var(--rank-accent, var(--gold));
   background: var(--rank-accent-15, rgba(91,184,212,0.15));
+  opacity: 1;
+}
+/* Solid fill on selected — ensures visibility regardless of square bg color (e.g. Stone white) */
+.cb-piece-btn.selected {
+  background: var(--rank-accent, var(--gold));
+  border-color: var(--rank-accent, var(--gold));
+  color: #060D14;
   opacity: 1;
 }
 
@@ -2493,10 +2606,15 @@ ul, ol {
   transition: border-color 0.2s, background 0.2s;
 }
 
-.cb-location-btn:hover,
-.cb-location-btn.selected {
+.cb-location-btn:hover {
   border-color: var(--rank-accent, var(--gold));
   background: var(--rank-accent-15, rgba(91,184,212,0.15));
+  opacity: 1;
+}
+.cb-location-btn.selected {
+  background: var(--rank-accent, var(--gold));
+  border-color: var(--rank-accent, var(--gold));
+  color: #060D14;
   opacity: 1;
 }
 
@@ -2736,9 +2854,9 @@ ul, ol {
 }
 .btn-wishlist:hover {
   opacity: 1;
-  background: var(--rank-accent-15, rgba(91,184,212,0.10));
-  border-color: var(--rank-accent, var(--gold));
-  color: var(--rank-accent, var(--gold));
+  background: rgba(201, 168, 76, 0.18);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 /* ════════════════════════════════════════════════════════

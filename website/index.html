@@ -177,10 +177,13 @@
 
   <!-- Mobile Nav Overlay -->
   <div class="mobile-overlay" id="mobile-overlay" aria-hidden="true">
+    <button class="mobile-overlay-close" id="mobile-close" aria-label="Close menu">&times;</button>
     <nav class="mobile-nav" aria-label="Mobile navigation">
       <a href="#landing" class="mobile-nav-link">Home</a>
       <a href="#rank-3" class="mobile-nav-link">Collections</a>
       <a href="#rank-7" class="mobile-nav-link">Contact</a>
+      <button class="mobile-nav-link mobile-nav-btn" id="mobile-cart-btn">Cart</button>
+      <button class="mobile-nav-link mobile-nav-btn" id="mobile-wishlist-btn">My Wishlist</button>
     </nav>
   </div>
 
@@ -206,7 +209,7 @@
       <button class="cart-close" id="cart-close" aria-label="Close cart">✕</button>
     </div>
     <div class="cart-items" id="cart-items">
-      <p class="cart-empty">Your board is clear. <a href="#rank-3">Start your opening.</a></p>
+      <p class="cart-empty">Your board is clear. <button class="cart-empty-cta" id="cart-start-opening">Start your opening.</button></p>
     </div>
     <div class="cart-footer" id="cart-footer" hidden>
       <div class="cart-subtotal">

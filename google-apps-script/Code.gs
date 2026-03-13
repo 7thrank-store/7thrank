@@ -28,7 +28,7 @@ var SPREADSHEET_ID = '14efRw0OvfBn7er-j1eR1Ifu44RAO_i8M47yUWkJNNZM';
 var SHEET_NAME     = 'Wishlist Signups';
 var SENDER_NAME    = '7th Rank';
 var DISCOUNT_PCT   = 15;
-var SITE_URL       = 'https://7thrank-store.github.io/7th-rank-website/';
+var SITE_URL       = 'https://7thrank-store.github.io/7thrank/';
 // ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -231,22 +231,28 @@ function sendMagicLinkEmail(email, token, scriptUrl) {
     '&token=' + token;
 
   var htmlBody =
-    '<div style="background:#060D14;padding:48px 32px;font-family:sans-serif;color:#B8CDD8;max-width:600px;margin:0 auto;">' +
-      '<p style="font-size:11px;letter-spacing:0.2em;color:#C9A84C;text-transform:uppercase;margin-bottom:4px;">7th Rank</p>' +
-      '<h2 style="font-size:22px;letter-spacing:0.12em;color:#F0D9B5;margin:0 0 24px;">View Your Wishlist</h2>' +
-      '<p style="line-height:1.7;color:#B8CDD8;margin-bottom:32px;">' +
-        'Click the button below to view your saved items and exclusive discount code. ' +
-        'This link expires in 24 hours and can only be used once.' +
-      '</p>' +
-      '<p style="margin:0 0 40px;">' +
-        '<a href="' + loginUrl + '" style="background:#C9A84C;color:#060D14;padding:14px 32px;' +
-        'text-decoration:none;font-weight:bold;letter-spacing:0.1em;font-size:13px;' +
-        'text-transform:uppercase;display:inline-block;">VIEW MY WISHLIST &rarr;</a>' +
-      '</p>' +
-      '<p style="font-size:12px;color:#3a4a54;border-top:1px solid #1C2B38;padding-top:20px;">' +
-        'If you didn\'t request this link, you can safely ignore this email.' +
-      '</p>' +
-    '</div>';
+    '<div style="margin:0;padding:0;background:#060D14;">' +
+    '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#060D14;">' +
+    '<tr><td align="center" style="padding:40px 16px;">' +
+    '<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#0D1B2A;border:1px solid #1C2B38;">' +
+      '<tr><td style="padding:40px 40px 32px;">' +
+        '<p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.25em;color:#C9A84C;text-transform:uppercase;">7th Rank</p>' +
+        '<h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;letter-spacing:0.08em;color:#F0D9B5;font-weight:normal;">View Your Wishlist</h1>' +
+        '<p style="margin:0 0 32px;font-family:Arial,sans-serif;font-size:15px;line-height:1.7;color:#B8CDD8;">' +
+          'Click the button below to view your saved items and exclusive First Mover discount code. ' +
+          'This link expires in 24 hours and can only be used once.' +
+        '</p>' +
+        '<table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:36px;">' +
+          '<tr><td style="background:#C9A84C;">' +
+            '<a href="' + loginUrl + '" style="display:inline-block;padding:15px 36px;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:0.14em;text-transform:uppercase;color:#060D14;text-decoration:none;">VIEW MY WISHLIST &rarr;</a>' +
+          '</td></tr>' +
+        '</table>' +
+        '<p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#3d5060;border-top:1px solid #1C2B38;padding-top:20px;">' +
+          'If you didn\'t request this, you can safely ignore this email.' +
+        '</p>' +
+      '</td></tr>' +
+    '</table>' +
+    '</td></tr></table></div>';
 
   GmailApp.sendEmail(email, 'Your 7th Rank Wishlist Link', '', {
     name:     SENDER_NAME,

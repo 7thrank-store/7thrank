@@ -657,7 +657,13 @@
   function scrollToSection(id, behavior) {
     var el = document.getElementById(id);
     if (!el) return;
-    el.scrollIntoView({ behavior: behavior || 'smooth', block: 'start' });
+    // Use board.scrollTop directly — scrollIntoView is unreliable on iOS Safari
+    // inside scroll-snap containers
+    if (behavior === 'instant') {
+      board.scrollTop = el.offsetTop;
+    } else {
+      smoothScrollTo(el.offsetTop, 600);
+    }
   }
 
   /**
@@ -1761,6 +1767,15 @@
     if (cartClose)   cartClose.addEventListener('click', closeCart);
     if (cartBackdrop) cartBackdrop.addEventListener('click', closeCart);
 
+    // "Start your opening" in empty cart — use JS scroll for iOS compatibility
+    var startOpeningBtn = document.getElementById('cart-start-opening');
+    if (startOpeningBtn) {
+      startOpeningBtn.addEventListener('click', function() {
+        closeCart();
+        scrollToSection('rank-3', 'smooth');
+      });
+    }
+
     // Checkout from cart goes to rank 7 checkout mode
     if (checkoutBtn) {
       checkoutBtn.addEventListener('click', function() {
@@ -1777,6 +1792,14 @@
   function initMobileMenu() {
     if (!menuToggle || !mobileOverlay) return;
 
+    function closeMobileMenu() {
+      mobileOverlay.classList.remove('open');
+      menuToggle.classList.remove('active');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      mobileOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
     menuToggle.addEventListener('click', function() {
       var isOpen = mobileOverlay.classList.toggle('open');
       menuToggle.classList.toggle('active', isOpen);
@@ -1785,14 +1808,31 @@
       document.body.style.overflow = isOpen ? 'hidden' : '';
     });
 
-    $$('.mobile-nav-link', mobileOverlay).forEach(function(link) {
-      link.addEventListener('click', function() {
-        mobileOverlay.classList.remove('open');
-        menuToggle.classList.remove('active');
-        menuToggle.setAttribute('aria-expanded', 'false');
-        mobileOverlay.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
+    // Close (×) button inside the overlay
+    var mobileCloseBtn = document.getElementById('mobile-close');
+    if (mobileCloseBtn) mobileCloseBtn.addEventListener('click', closeMobileMenu);
+
+    // Cart button in mobile nav
+    var mobileCartBtn = document.getElementById('mobile-cart-btn');
+    if (mobileCartBtn) {
+      mobileCartBtn.addEventListener('click', function() {
+        closeMobileMenu();
+        openCart();
       });
+    }
+
+    // My Wishlist button in mobile nav
+    var mobileWishlistBtn = document.getElementById('mobile-wishlist-btn');
+    if (mobileWishlistBtn) {
+      mobileWishlistBtn.addEventListener('click', function() {
+        closeMobileMenu();
+        openLoginModal();
+      });
+    }
+
+    // All nav links close the menu on click
+    $$('.mobile-nav-link', mobileOverlay).forEach(function(link) {
+      link.addEventListener('click', function() { closeMobileMenu(); });
     });
   }
 

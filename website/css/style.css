@@ -2574,11 +2574,11 @@ ul, ol {
   background: var(--rank-accent-15, rgba(91,184,212,0.15));
   opacity: 1;
 }
-/* Solid fill on selected — ensures visibility regardless of square bg color (e.g. Stone white) */
 .cb-piece-btn.selected {
-  background: var(--rank-accent, var(--gold));
+  background: var(--rank-accent-shadow, rgba(91,184,212,0.35));
   border-color: var(--rank-accent, var(--gold));
-  color: #060D14;
+  border-width: 2px;
+  color: inherit;
   opacity: 1;
 }
 
@@ -2612,9 +2612,10 @@ ul, ol {
   opacity: 1;
 }
 .cb-location-btn.selected {
-  background: var(--rank-accent, var(--gold));
+  background: var(--rank-accent-shadow, rgba(91,184,212,0.35));
   border-color: var(--rank-accent, var(--gold));
-  color: #060D14;
+  border-width: 2px;
+  color: inherit;
   opacity: 1;
 }
 

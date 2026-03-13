@@ -124,6 +124,8 @@ ul, ol {
   /* Smooth hardware-accelerated scroll */
   -webkit-overflow-scrolling: touch;
   will-change: scroll-position;
+  /* Prevent body/page from catching momentum at snap boundaries */
+  overscroll-behavior-y: contain;
 }
 
 /* Hide scrollbar while preserving scroll function */
@@ -147,6 +149,10 @@ ul, ol {
 /* Full-height individual rank sections */
 .rank-full {
   scroll-snap-align: start;
+  /* scroll-margin-top is the per-element equivalent of scroll-padding-top on the
+     container. iOS Safari handles this more reliably than scroll-padding-top on
+     a non-root scroll container, preventing sections from snapping under the header. */
+  scroll-margin-top: var(--header-h);
   min-height: calc(100vh - var(--header-h));
   height: calc(100vh - var(--header-h));
   position: relative;

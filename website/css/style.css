@@ -2328,6 +2328,26 @@ ul, ol {
     grid-template-columns: unset;
     grid-auto-rows: unset;
   }
+  /* ── RANK-4 sub-line selector: keep side-by-side split, no carousel ── */
+  .rank-4 .rank-dynamic-content {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    scroll-snap-type: none;
+    touch-action: auto;
+    padding-bottom: 0;
+    height: 100%;
+  }
+  .rank-4 .subline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+    min-height: calc(100vh - var(--header-h));
+  }
+  .rank-4 .subline-card {
+    min-height: unset;
+    height: 100%;
+  }
   .rank-dynamic-content .product-card,
   .rank-dynamic-content .colorway-slot:not(.customization-panel) {
     flex: 0 0 85vw;

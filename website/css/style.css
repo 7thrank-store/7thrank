@@ -2367,6 +2367,7 @@ ul, ol {
     min-height: 100vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
   }
 
   .rank-7-contact .contact-info-panel { min-height: 50vw; }
@@ -3219,6 +3220,17 @@ ul, ol {
    win over same-specificity base styles.
    ════════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
+
+  /* ── Chess board scroll container: less aggressive snap on mobile ──
+     "mandatory" forces every scroll gesture to end at a snap point,
+     causing jumps/fighting on iOS when sections are taller than 100vh.
+     "proximity" only snaps when you're already close to a snap point,
+     allowing free scroll through tall sections (contact, garment page). */
+  .chess-board {
+    scroll-snap-type: y proximity;
+    scroll-behavior: auto; /* Let native momentum scroll handle itself;
+                              smoothScrollTo rAF handles programmatic scrolls */
+  }
 
   /* ── Sub-line selector (rank-4): full-height split screen ── */
   .rank-4 .rank-dynamic-content {

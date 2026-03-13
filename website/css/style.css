@@ -117,7 +117,9 @@ ul, ol {
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
-  scroll-padding-top: var(--header-h); /* offset snap targets below fixed header */
+  /* scroll-padding-top removed — scroll-margin-top on .rank-full elements is used
+     instead, which iOS Safari handles more reliably. Using both would double the
+     offset (2×header-h) causing sections to snap 56px below the header. */
   position: relative;
   z-index: var(--z-board);
 
@@ -3251,6 +3253,8 @@ ul, ol {
     min-height: calc(100vh - var(--header-h));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* Prevent inner scroll momentum bleeding into .chess-board snap container */
+    overscroll-behavior-y: contain;
   }
   .cb-image-col {
     height: 52vw;

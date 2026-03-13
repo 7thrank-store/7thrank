@@ -2328,26 +2328,6 @@ ul, ol {
     grid-template-columns: unset;
     grid-auto-rows: unset;
   }
-  /* ── RANK-4 sub-line selector: keep side-by-side split, no carousel ── */
-  .rank-4 .rank-dynamic-content {
-    display: block;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    scroll-snap-type: none;
-    touch-action: auto;
-    padding-bottom: 0;
-    height: 100%;
-  }
-  .rank-4 .subline-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    height: 100%;
-    min-height: calc(100vh - var(--header-h));
-  }
-  .rank-4 .subline-card {
-    min-height: unset;
-    height: 100%;
-  }
   .rank-dynamic-content .product-card,
   .rank-dynamic-content .colorway-slot:not(.customization-panel) {
     flex: 0 0 85vw;
@@ -2361,39 +2341,6 @@ ul, ol {
     grid-auto-rows: auto;
   }
   .colorway-slot { min-height: 40vw; }
-
-  /* ── GARMENT CUSTOMIZATION (rank-6 chessboards) ──── */
-  .cb-customization {
-    grid-template-columns: 1fr;
-    grid-template-rows: 52vw auto;
-    height: auto;
-    min-height: calc(100vh - var(--header-h));
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .cb-image-col { height: 52vw; }
-
-  .cb-controls-col {
-    height: auto;
-    overflow: visible;
-    border-left: none;
-    border-top: 3px solid var(--sq-light-override, var(--gold));
-  }
-
-  .cb-control-groups-wrap {
-    height: auto;
-    overflow: visible;
-    padding: 1rem 1rem 0.5rem;
-  }
-
-  .cb-piece-btn { padding: 0.7rem 0.4rem; }
-  .cb-piece-btn-icon { font-size: 1.8rem; }
-
-  .cb-location-btn {
-    padding: 0.65rem 0.5rem;
-    font-size: 0.72rem;
-  }
 
   /* ── CONTACT PAGE: allow full content scroll ──────── */
   #rank-7 {
@@ -3254,4 +3201,71 @@ ul, ol {
   .cookie-banner { flex-direction: column; align-items: flex-start; }
   .cookie-actions { width: 100%; }
   .btn-cookie-accept, .btn-cookie-decline { flex: 1; text-align: center; }
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE OVERRIDES — late cascade block
+   Must come AFTER base element definitions so these rules
+   win over same-specificity base styles.
+   ════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── Sub-line selector (rank-4): full-height split screen ── */
+  .rank-4 .rank-dynamic-content {
+    display: block;
+    overflow: hidden;
+    height: calc(100vh - var(--header-h));
+    scroll-snap-type: none;
+    touch-action: auto;
+    padding-bottom: 0;
+  }
+  .subline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - var(--header-h));
+  }
+  .subline-card {
+    height: 100%;
+    min-height: unset;
+  }
+
+  /* ── Variant / line cards: fill full rank height ── */
+  .rank-dynamic-content .product-card {
+    flex: 0 0 85vw;
+    scroll-snap-align: start;
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* ── Garment customization (rank-6): stacked single column ── */
+  .cb-customization {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 52vw 1fr;
+    height: auto;
+    min-height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cb-image-col {
+    height: 52vw;
+  }
+  .cb-controls-col {
+    height: auto;
+    overflow: visible;
+    border-left: none;
+    border-top: 3px solid var(--sq-light-override, var(--gold));
+  }
+  .cb-control-groups-wrap {
+    flex: unset;
+    height: auto;
+    overflow: visible;
+    min-height: unset;
+    padding: 1rem 1rem 0.5rem;
+  }
+  .cb-piece-btn { padding: 0.7rem 0.4rem; }
+  .cb-piece-btn-icon { font-size: 1.8rem; }
+  .cb-location-btn {
+    padding: 0.65rem 0.5rem;
+    font-size: 0.72rem;
+  }
 }

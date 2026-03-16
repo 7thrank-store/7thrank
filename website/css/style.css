@@ -1461,13 +1461,23 @@ ul, ol {
   gap: 1.25rem;
   padding: 3rem 2rem;
   text-align: center;
+  background: var(--sq-dark);
+  color: var(--sq-dark-text);
+}
+
+/* Contact confirmation: light square paradigm */
+#rank-8-contact-confirm .sq-confirmation-content {
   background: var(--sq-light);
   color: var(--sq-light-text);
 }
-
-/* Contact confirmation: piece uses dark shadow on light bg */
 #rank-8-contact-confirm .confirm-piece {
   filter: drop-shadow(0 0 20px rgba(26,48,73,0.25));
+}
+#rank-8-contact-confirm .confirm-title,
+#rank-8-contact-confirm .confirm-desc,
+#rank-8-contact-confirm .confirm-sub,
+#rank-8-contact-confirm .social-link {
+  color: var(--sq-light-text);
 }
 
 .confirm-piece {

@@ -33,6 +33,7 @@
     carouselOffset:      0,
     isScrolling:         false,
     isBypassing:         false,
+    isAnimating:         false,  // true during any programmatic smoothScrollTo
     selectedSubLine:     null,  // 'chessboards' | 'pieces'
     selectedCBVariant:   null,  // 'ww' | 'ic' | 's' | 'pp'
     selectedCBPiece:     null,  // 'pawn' | 'rook' | etc.
@@ -680,11 +681,15 @@
     if (behavior === 'instant') {
       board.style.scrollSnapType = 'none';
       board.scrollTop = targetY;
-      board.style.scrollSnapType = ''; // let CSS re-apply (mandatory/proximity per device)
+      if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
     } else {
+      STATE.isAnimating = true;
       board.style.scrollSnapType = 'none';
       smoothScrollTo(targetY, 600, function() {
-        board.style.scrollSnapType = ''; // let CSS re-apply (mandatory/proximity per device)
+        STATE.isAnimating = false;
+        // On mobile: position-based logic decides correct snap type for landing spot.
+        // On desktop: restore CSS snap directly.
+        if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
       });
     }
   }
@@ -847,13 +852,18 @@
     var rank7El = document.getElementById('rank-7');
     if (!rank7El) return;
 
-    function apply() {
-      if (STATE.isBypassing) return;
+    // rAF token — batches snap checks to one per animation frame so we never
+    // trigger a layout recalculation more than once per frame during fast scrolls.
+    var _rafPending = false;
+
+    function applyNow() {
+      _rafPending = false;
+      // Never interfere while a programmatic animation is running — the animation
+      // manages snap type itself and calls applyMobileSnap() when it finishes.
+      if (STATE.isBypassing || STATE.isAnimating) return;
       var margin    = parseInt(getComputedStyle(rank7El).scrollMarginTop, 10) || 0;
       var rank7Top  = rank7El.offsetTop - margin;
-      // Disable snap only when actually at/past rank-7 (30px rounding buffer).
-      // rank7Top - vh equals rank3Top when ranks 4-6 are hidden (zero height),
-      // so a viewport-based threshold caused snap to toggle on every rank-3 scroll.
+      // Disable snap only when at/past rank-7 (30px buffer for sub-pixel rounding).
       var shouldDisable = board.scrollTop >= rank7Top - 30;
       var current = board.style.scrollSnapType;
       if (shouldDisable && current !== 'none') {
@@ -863,8 +873,16 @@
       }
     }
 
+    function apply() {
+      if (_rafPending) return;
+      _rafPending = true;
+      requestAnimationFrame(applyNow);
+    }
+
     board.addEventListener('scroll', apply, { passive: true });
-    applyMobileSnap = apply;
+    // Expose the immediate version so callers (bypassMiddleRanks, scrollToSection)
+    // can force an instant snap-type check without waiting for a scroll event.
+    applyMobileSnap = applyNow;
   }
 
   function updateNavDots(sectionId) {

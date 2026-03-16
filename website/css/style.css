@@ -523,11 +523,10 @@ ul, ol {
   background-repeat: no-repeat;
 }
 
-/* Chessboard variant cards — pull image down so garment shows instead of gray top,
-   and keep it inset so the chess-square card color is still visible at edges */
+/* Chessboard variant cards — fill the card like Pieces cards do */
 .rank-5 .product-card[data-variant-id] .product-card-cycling-bg {
-  background-size: 82%;
-  background-position: center 60%;
+  background-size: cover;
+  background-position: center top;
 }
 
 /* Gradient overlay for label legibility on tall cards */
@@ -676,7 +675,7 @@ ul, ol {
   position: relative;
   z-index: 1;
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
   letter-spacing: 0.15em;
   text-align: center;
   text-shadow: 0 1px 8px rgba(0,0,0,0.3);
@@ -866,7 +865,7 @@ ul, ol {
 
 .product-card-name {
   font-family: var(--font-display);
-  font-size: clamp(1.2rem, 2.2vw, 2rem);
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
   letter-spacing: 0.08em;
   text-align: center;
   /* Use contrast-safe ui-text vars so names stay legible when variant palette
@@ -2744,7 +2743,7 @@ ul, ol {
   position: relative;
   z-index: 1;
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   text-align: center;
@@ -3247,12 +3246,14 @@ ul, ol {
   /* ── Chess board scroll container: less aggressive snap on mobile ──
      "mandatory" forces every scroll gesture to end at a snap point,
      causing jumps/fighting on iOS when sections are taller than 100vh.
-     "proximity" only snaps when you're already close to a snap point,
-     allowing free scroll through tall sections (contact, garment page).
+     "mandatory" gives clean jumps between sections in default mode (hidden
+     ranks 4-6 take no layout space so snap skips directly rank-3 → rank-7).
+     JS (sectionObserver) disables snap temporarily when on rank-7/rank-8
+     so tall sections remain freely scrollable.
      scroll-padding-top is zeroed here because iOS Safari is more reliable
      with scroll-margin-top on the element itself (set below on .rank-full). */
   .chess-board {
-    scroll-snap-type: y proximity;
+    scroll-snap-type: y mandatory;
     scroll-behavior: auto; /* Let native momentum scroll handle itself;
                               smoothScrollTo rAF handles programmatic scrolls */
     scroll-padding-top: 0;

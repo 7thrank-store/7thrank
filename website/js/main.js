@@ -743,9 +743,9 @@
     // Glide to destination in ~900 ms — fast enough to feel like an advance,
     // slow enough that the passing ranks are perceptible
     smoothScrollTo(targetY, 900, function() {
-      board.style.scrollSnapType = ''; // let CSS re-apply
-
-      // Re-hide middle ranks in default mode after arriving
+      // Re-hide middle ranks BEFORE restoring snap — otherwise y:mandatory
+      // can grab a temporarily-visible bypass rank during the brief window
+      // between snap restore and rank hide.
       if (STATE.mode === 'default') {
         bypassRanks.forEach(function(id) {
           var el = document.getElementById(id);
@@ -754,6 +754,13 @@
       }
 
       STATE.isBypassing = false;
+      // On mobile: use position-based logic so rank-7 gets snap disabled immediately.
+      // On desktop: restore CSS snap (y mandatory from stylesheet).
+      if (window.innerWidth <= 767) {
+        applyMobileSnap();
+      } else {
+        board.style.scrollSnapType = '';
+      }
       if (callback) callback();
     });
   }
@@ -813,12 +820,50 @@
     threshold: 0.5
   });
 
+  // Separate snap-toggle observer for rank-7/rank-8 on mobile.
   /* Observe all navigable sections */
   function initObservers() {
     SECTIONS.forEach(function(id) {
       var el = id === 'landing' ? document.getElementById('landing') : document.getElementById(id);
       if (el) sectionObserver.observe(el);
     });
+  }
+
+  // Scroll-position-based snap toggle for mobile.
+  // IntersectionObserver cannot reliably handle this because:
+  //   (a) rank-7 is height:auto (can be taller than 2× viewport), so threshold:0.5
+  //       would never trigger, and
+  //   (b) when isBypassing guards the observer callback, the "enter" event is
+  //       consumed and never re-fires after the animation completes.
+  // Instead, on every scroll frame we check whether scrollTop is within one
+  // viewport of rank-7's snap-top — if so, disable snap; otherwise restore it.
+  // This also creates natural hysteresis: snap only re-enables after the user
+  // has scrolled a full viewport away from rank-7, preventing the "snap re-locks
+  // immediately" problem when exiting rank-7 upward.
+  var applyMobileSnap = function() {};  // reassigned by initMobileSnapToggle
+
+  function initMobileSnapToggle() {
+    if (window.innerWidth > 767) return;
+    var rank7El = document.getElementById('rank-7');
+    if (!rank7El) return;
+
+    function apply() {
+      if (STATE.isBypassing) return;
+      var margin    = parseInt(getComputedStyle(rank7El).scrollMarginTop, 10) || 0;
+      var rank7Top  = rank7El.offsetTop - margin;
+      var vh        = board.clientHeight;
+      // Disable when within 1 viewport of rank-7; restore when further away.
+      var shouldDisable = board.scrollTop >= rank7Top - vh;
+      var current = board.style.scrollSnapType;
+      if (shouldDisable && current !== 'none') {
+        board.style.scrollSnapType = 'none';
+      } else if (!shouldDisable && current === 'none') {
+        board.style.scrollSnapType = '';
+      }
+    }
+
+    board.addEventListener('scroll', apply, { passive: true });
+    applyMobileSnap = apply;
   }
 
   function updateNavDots(sectionId) {
@@ -2078,7 +2123,16 @@
         if (STATE.currentSection === 'rank-3' && direction === 'down') {
           bypassMiddleRanks('down');
         } else if (STATE.currentSection === 'rank-7' && direction === 'up') {
-          bypassMiddleRanks('up');
+          // Only bypass when at the very top of rank-7 — if the user is scrolled
+          // down within the contact form, let native scroll handle it first.
+          var rank7El = document.getElementById('rank-7');
+          if (rank7El) {
+            var r7margin = parseInt(getComputedStyle(rank7El).scrollMarginTop, 10) || 0;
+            var rank7Top = rank7El.offsetTop - r7margin;
+            if (Math.abs(board.scrollTop - rank7Top) < 80) {
+              bypassMiddleRanks('up');
+            }
+          }
         }
       }
     }, { passive: true });
@@ -2196,6 +2250,7 @@
     initPromoCode();
     initKeyboard();
     initTouch();
+    initMobileSnapToggle();
     initLandingImageCycler();
     initWishlist();
     initLoginModal();

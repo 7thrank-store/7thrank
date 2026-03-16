@@ -1446,6 +1446,7 @@ ul, ol {
 }
 
 .rank-8-panel {
+  grid-column: 1 / -1; /* span full width of parent rank-full grid */
   display: grid;
   grid-template-columns: 12.5% 1fr;
   height: 100%;

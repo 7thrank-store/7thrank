@@ -512,6 +512,12 @@ ul, ol {
   gap: 0.5rem;
 }
 
+/* Chessboard cards: extra padding so swatches aren't clipped by the bottom
+   of the viewport / iOS home indicator. */
+.rank-5 .product-card[data-variant-id] {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
 /* Pieces cards use background-size:contain, which leaves blank space between
    the garment bottom and the 10rem strip. Push the label up with extra
    padding-bottom so it sits in the visual center of that total empty area. */

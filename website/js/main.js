@@ -2119,7 +2119,21 @@
       if (deltaTime < 300 && Math.abs(deltaY) > 50) {
         var direction = deltaY > 0 ? 'down' : 'up';
 
-        if (STATE.mode !== 'default') return; // shopping mode: native scroll
+        if (STATE.mode !== 'default') {
+          // Shopping mode: upward swipe back-navigates through the section stack.
+          // For rank-6 (inner scroll), only trigger when the inner container is
+          // already scrolled to the top so in-content scrolling isn't interrupted.
+          if (direction === 'up') {
+            var backMap = { 'rank-6': 'rank-5', 'rank-5': 'rank-4' };
+            var backTarget = backMap[STATE.currentSection];
+            if (backTarget) {
+              var innerEl = document.querySelector('.cb-customization, .pieces-customization');
+              var innerAtTop = !innerEl || innerEl.scrollTop <= 0;
+              if (innerAtTop) scrollToSection(backTarget, 'smooth');
+            }
+          }
+          return;
+        }
 
         if (STATE.currentSection === 'rank-3' && direction === 'down') {
           bypassMiddleRanks('down');

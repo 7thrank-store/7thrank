@@ -3281,6 +3281,18 @@ ul, ol {
     line-height: 1.4;
   }
 
+  /* Rank-1 squares: shift content upward to compensate for iOS Safari's
+     bottom nav bar (~85px) which shrinks the visible area of the bottom row.
+     Content is geometrically centered in 50vh but visually appears bottom-heavy
+     because the nav bar hides ~10vh of the row's lower edge. Padding-bottom
+     re-biases the center toward the visible mid-point.
+     env(safe-area-inset-bottom) handles the home indicator on notch devices. */
+  .rank-1 [data-file="a"],
+  .rank-1 [data-file="d"],
+  .rank-1 [data-file="e"] {
+    padding-bottom: calc(8vh + env(safe-area-inset-bottom, 0px));
+  }
+
   /* Sub-line selector (rank-4): full-height split screen ── */
   .rank-4 .rank-dynamic-content {
     display: block;

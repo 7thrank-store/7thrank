@@ -117,9 +117,7 @@ ul, ol {
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
-  /* scroll-padding-top removed — scroll-margin-top on .rank-full elements is used
-     instead, which iOS Safari handles more reliably. Using both would double the
-     offset (2×header-h) causing sections to snap 56px below the header. */
+  scroll-padding-top: var(--header-h); /* offset snap targets below fixed header (desktop) */
   position: relative;
   z-index: var(--z-board);
 
@@ -151,10 +149,9 @@ ul, ol {
 /* Full-height individual rank sections */
 .rank-full {
   scroll-snap-align: start;
-  /* scroll-margin-top is the per-element equivalent of scroll-padding-top on the
-     container. iOS Safari handles this more reliably than scroll-padding-top on
-     a non-root scroll container, preventing sections from snapping under the header. */
-  scroll-margin-top: var(--header-h);
+  /* scroll-margin-top is set on mobile only (see late cascade block) where iOS Safari
+     needs element-level margin instead of container scroll-padding-top.
+     On desktop, scroll-padding-top on .chess-board handles the header offset. */
   min-height: calc(100vh - var(--header-h));
   height: calc(100vh - var(--header-h));
   position: relative;
@@ -3232,11 +3229,20 @@ ul, ol {
      "mandatory" forces every scroll gesture to end at a snap point,
      causing jumps/fighting on iOS when sections are taller than 100vh.
      "proximity" only snaps when you're already close to a snap point,
-     allowing free scroll through tall sections (contact, garment page). */
+     allowing free scroll through tall sections (contact, garment page).
+     scroll-padding-top is zeroed here because iOS Safari is more reliable
+     with scroll-margin-top on the element itself (set below on .rank-full). */
   .chess-board {
     scroll-snap-type: y proximity;
     scroll-behavior: auto; /* Let native momentum scroll handle itself;
                               smoothScrollTo rAF handles programmatic scrolls */
+    scroll-padding-top: 0;
+  }
+
+  /* iOS Safari snap offset: element-level margin is more reliable than
+     container scroll-padding-top in a non-root scroll container on iOS. */
+  .rank-full {
+    scroll-margin-top: var(--header-h);
   }
 
   /* ── Sub-line selector (rank-4): full-height split screen ── */

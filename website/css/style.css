@@ -152,8 +152,10 @@ ul, ol {
   /* scroll-margin-top is set on mobile only (see late cascade block) where iOS Safari
      needs element-level margin instead of container scroll-padding-top.
      On desktop, scroll-padding-top on .chess-board handles the header offset. */
-  min-height: calc(100vh - var(--header-h));
-  height: calc(100vh - var(--header-h));
+  /* +1px prevents sub-pixel rounding from exposing 1px of the next section
+     at the viewport bottom when scroll-padding-top aligns the snap exactly. */
+  min-height: calc(100vh - var(--header-h) + 1px);
+  height: calc(100vh - var(--header-h) + 1px);
   position: relative;
   display: grid;
   grid-template-columns: 12.5% 1fr; /* file label + content area */
@@ -3245,7 +3247,41 @@ ul, ol {
     scroll-margin-top: var(--header-h);
   }
 
-  /* ── Sub-line selector (rank-4): full-height split screen ── */
+  /* ── Landing: larger, more prominent content in 33vw × 50vh squares ──
+     Previous values were desktop-ratio (vw-based), totally undersized on
+     mobile (e.g. sq-tagline at 1.8vw = ~7px). All sizes below are
+     viewport-width relative to a 1/3-width square. */
+
+  /* Letter "7" and "R": base size up, "7" gets its own 1.25× boost from base CSS */
+  :root {
+    --sq-letter-size: clamp(5rem, 24vw, 8rem);
+    --sq-piece-size:  clamp(4.5rem, 21vw, 7.5rem);
+  }
+
+  /* Queen / King icons — bigger and centered in their wider squares */
+  .rank-2 [data-file="d"] .sq-piece,
+  .rank-2 [data-file="e"] .sq-piece {
+    font-size: clamp(4.5rem, 21vw, 7.5rem);
+  }
+
+  /* "Collections" / "Contact" button labels */
+  .rank-2 .sq-action-label { font-size: clamp(1.6rem, 7.5vw, 2.8rem); }
+
+  /* Cycling-bg decorative rook in the left square */
+  .rank-2 [data-file="a"] .sq-piece-deco { font-size: clamp(4rem, 18vw, 8rem); opacity: 0.14; }
+
+  /* Logo square: nearly fill the square */
+  .rank-1 .sq-logo-img { width: 80%; }
+
+  /* Taglines: readable on mobile, allow two lines (per user request) */
+  .rank-1 .sq-tagline {
+    font-size: clamp(0.62rem, 3.2vw, 0.95rem);
+    white-space: normal;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* Sub-line selector (rank-4): full-height split screen ── */
   .rank-4 .rank-dynamic-content {
     display: block;
     overflow: hidden;

@@ -2387,9 +2387,10 @@ ul, ol {
     grid-template-columns: 1fr;
     height: auto;
     min-height: 100vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
+    /* No overflow-y: auto here — iOS treats any overflow:auto element as an inner
+       scroll container and intercepts touch gestures, preventing the outer
+       .chess-board from scrolling the user through the full contact form.
+       The outer board handles all vertical scrolling on mobile. */
   }
 
   .rank-7-contact .contact-info-panel { min-height: 50vw; }

@@ -665,17 +665,26 @@
   function scrollToSection(id, behavior) {
     var el = document.getElementById(id);
     if (!el) return;
+    // Calculate the true snap target position.
+    // Desktop uses scroll-padding-top on the container; mobile uses scroll-margin-top
+    // on the element. Both shift the effective snap point up by header-h. Reading
+    // both and taking whichever is non-zero gives us the correct offset on any device.
+    var padTop    = parseInt(getComputedStyle(board).scrollPaddingTop, 10) || 0;
+    var marginTop = parseInt(getComputedStyle(el).scrollMarginTop,  10) || 0;
+    var snapOffset = padTop || marginTop;
+    var targetY = el.offsetTop - snapOffset;
+
     // Use board.scrollTop directly — scrollIntoView is unreliable on iOS Safari
     // inside scroll-snap containers. Suspend scroll-snap during animation so
     // the snap engine doesn't fight the rAF loop (causes jank on iOS).
     if (behavior === 'instant') {
       board.style.scrollSnapType = 'none';
-      board.scrollTop = el.offsetTop;
-      board.style.scrollSnapType = 'y mandatory';
+      board.scrollTop = targetY;
+      board.style.scrollSnapType = ''; // let CSS re-apply (mandatory/proximity per device)
     } else {
       board.style.scrollSnapType = 'none';
-      smoothScrollTo(el.offsetTop, 600, function() {
-        board.style.scrollSnapType = 'y mandatory';
+      smoothScrollTo(targetY, 600, function() {
+        board.style.scrollSnapType = ''; // let CSS re-apply (mandatory/proximity per device)
       });
     }
   }
@@ -725,13 +734,16 @@
     // Suspend scroll-snap so the programmatic scroll moves freely
     board.style.scrollSnapType = 'none';
 
-    var targetEl = document.getElementById(targetSection);
-    var targetY  = targetEl ? targetEl.offsetTop : 0;
+    var targetEl  = document.getElementById(targetSection);
+    var padTop    = parseInt(getComputedStyle(board).scrollPaddingTop, 10) || 0;
+    var marginTop = targetEl ? (parseInt(getComputedStyle(targetEl).scrollMarginTop, 10) || 0) : 0;
+    var snapOffset = padTop || marginTop;
+    var targetY  = targetEl ? targetEl.offsetTop - snapOffset : 0;
 
     // Glide to destination in ~900 ms — fast enough to feel like an advance,
     // slow enough that the passing ranks are perceptible
     smoothScrollTo(targetY, 900, function() {
-      board.style.scrollSnapType = 'y mandatory';
+      board.style.scrollSnapType = ''; // let CSS re-apply
 
       // Re-hide middle ranks in default mode after arriving
       if (STATE.mode === 'default') {

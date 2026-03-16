@@ -508,10 +508,15 @@ ul, ol {
   flex: 0 0 50%;
   height: 100%;
   justify-content: flex-end;
-  /* padding-bottom of 3rem centers the label content in the 10rem strip:
-     strip=10rem, content≈4rem → (10-4)/2 = 3rem margin top and bottom */
   padding: 1.5rem 1.5rem 3rem;
   gap: 0.5rem;
+}
+
+/* Pieces cards use background-size:contain, which leaves blank space between
+   the garment bottom and the 10rem strip. Push the label up with extra
+   padding-bottom so it sits in the visual center of that total empty area. */
+.rank-5 .product-card[data-line-id] {
+  padding-bottom: 6rem;
 }
 
 /* Image occupies the top portion of the card; the bottom 10rem strip

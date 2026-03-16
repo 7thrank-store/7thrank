@@ -1160,11 +1160,11 @@
                'role="button" tabindex="0" ' +
                'aria-label="' + sanitize(v.name) + '">' +
                '<div class="product-card-cycling-bg"></div>' +
+               '<span class="product-card-name">' + sanitize(v.name) + '</span>' +
                '<div class="product-card-palette">' +
                '<span class="palette-swatch" style="background:' + v.lightColor + '"></span>' +
                '<span class="palette-swatch" style="background:' + v.darkColor + '"></span>' +
                '</div>' +
-               '<span class="product-card-name">' + sanitize(v.name) + '</span>' +
                '</div>';
       }).join('');
 

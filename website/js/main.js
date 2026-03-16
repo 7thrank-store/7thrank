@@ -851,9 +851,10 @@
       if (STATE.isBypassing) return;
       var margin    = parseInt(getComputedStyle(rank7El).scrollMarginTop, 10) || 0;
       var rank7Top  = rank7El.offsetTop - margin;
-      var vh        = board.clientHeight;
-      // Disable when within 1 viewport of rank-7; restore when further away.
-      var shouldDisable = board.scrollTop >= rank7Top - vh;
+      // Disable snap only when actually at/past rank-7 (30px rounding buffer).
+      // rank7Top - vh equals rank3Top when ranks 4-6 are hidden (zero height),
+      // so a viewport-based threshold caused snap to toggle on every rank-3 scroll.
+      var shouldDisable = board.scrollTop >= rank7Top - 30;
       var current = board.style.scrollSnapType;
       if (shouldDisable && current !== 'none') {
         board.style.scrollSnapType = 'none';

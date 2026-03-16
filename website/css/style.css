@@ -523,10 +523,18 @@ ul, ol {
   background-repeat: no-repeat;
 }
 
-/* Chessboard variant cards — fill the card like Pieces cards do */
+/* Chessboard variant cards — image fills the top of the card;
+   the bottom strip (where name/swatches live) shows the chess-square card color. */
 .rank-5 .product-card[data-variant-id] .product-card-cycling-bg {
   background-size: cover;
   background-position: center top;
+  /* Override inset:0 so the bg stops before the label area */
+  top: 0; left: 0; right: 0; bottom: auto;
+  height: calc(100% - 6rem);
+}
+/* No gradient needed on chessboard cards — solid card color shows in the strip */
+.rank-5 .product-card[data-variant-id]::after {
+  display: none;
 }
 
 /* Gradient overlay for label legibility on tall cards */
@@ -544,6 +552,8 @@ ul, ol {
 .rank-5 .product-card-palette {
   position: relative;
   z-index: 1;
+  width: 100%;
+  text-align: center;
 }
 
 .sq-file-label {
@@ -2800,6 +2810,7 @@ ul, ol {
 /* Palette swatches on chessboard cards */
 .product-card-palette {
   display: flex;
+  justify-content: center;
   gap: 4px;
   margin: 0.25rem 0;
 }

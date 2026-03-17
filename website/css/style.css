@@ -3337,15 +3337,19 @@ ul, ol {
   /* ── Garment customization (rank-6): stacked single column ── */
   /* Restore rank-6 to a fixed snap-height so .chess-board sees it as one viewport.
      Without this, height:auto from the tablet breakpoint makes the section 2-3vh
-     tall and the snap container scrolls through it, bypassing the inner scroller. */
+     tall and the snap container scrolls through it, bypassing the inner scroller.
+     Full-width: hide the 12.5% file-label column so the customization panel
+     spans the entire viewport width for a more immersive vertical layout. */
   #rank-6 {
+    grid-template-columns: 1fr;
     height: calc(100vh - var(--header-h));
     overflow: hidden;
   }
+  #rank-6 .sq-file-label { display: none; }
   .cb-customization {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 44vw 1fr;
+    grid-template-rows: 58vw 1fr;
     height: calc(100vh - var(--header-h));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -3354,13 +3358,18 @@ ul, ol {
        return to rank-5. With proximity snap on the board, bottom bleed is benign. */
   }
   .cb-image-col {
-    height: 52vw;
+    height: 62vw;
   }
   .cb-controls-col {
     height: auto;
     overflow: visible;
     border-left: none;
     border-top: 3px solid var(--sq-light-override, var(--gold));
+    /* Explicit contrast-safe color so labels are always legible regardless of
+       palette — overrides the desktop 'color: inherit' chain that relies solely
+       on --ui-text-dark being set correctly by JS.  On mobile the JS value is
+       still the primary source; this rgba is the ultimate fallback. */
+    color: var(--ui-text-dark, rgba(184,205,216,1));
   }
   .cb-control-groups-wrap {
     flex: unset;
@@ -3368,6 +3377,12 @@ ul, ol {
     overflow: visible;
     min-height: unset;
     padding: 1rem 1rem 0.5rem;
+  }
+  /* Section labels (PIECE / PLACEMENT / COLORWAY): remove opacity so they
+     are always fully readable on dark palette backgrounds (e.g. Stoic black). */
+  .cb-control-label {
+    opacity: 1;
+    color: var(--ui-text-dark, rgba(184,205,216,0.9));
   }
   .cb-piece-btn { padding: 0.7rem 0.4rem; }
   .cb-piece-btn-icon { font-size: 1.8rem; }

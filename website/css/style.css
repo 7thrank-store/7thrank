@@ -508,45 +508,39 @@ ul, ol {
   flex: 0 0 50%;
   height: 100%;
   justify-content: flex-end;
-  padding: 1.5rem 1.5rem 3rem;
+  padding: 1.5rem 1.5rem 5rem;
   gap: 0.5rem;
 }
 
-/* Chessboard cards: extra padding so swatches aren't clipped by the bottom
-   of the viewport / iOS home indicator. */
-.rank-5 .product-card[data-variant-id] {
-  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
-}
-
-/* Pieces cards use background-size:contain, which leaves blank space between
-   the garment bottom and the 10rem strip. Push the label up with extra
-   padding-bottom so it sits in the visual center of that total empty area. */
-.rank-5 .product-card[data-line-id] {
-  padding-bottom: 6rem;
-}
-
-/* Image occupies the top portion of the card; the bottom 10rem strip
-   shows the chess-square card background color where the label lives.
-   Works for both Pieces (contain) and Chessboards (cover). */
 .rank-5 .product-card-cycling-bg {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: auto;
+  inset: 0;
   flex: none;
   width: 100%;
-  height: calc(100% - 10rem);
+  height: 100%;
   background-size: contain;
   background-position: center top;
   background-repeat: no-repeat;
 }
 
-/* Chessboard variant cards — fill the image area edge-to-edge */
+/* Chessboard variant cards — fill edge-to-edge on desktop */
 .rank-5 .product-card[data-variant-id] .product-card-cycling-bg {
   background-size: cover;
   background-position: center top;
 }
 
-/* No gradient overlay — the bottom strip shows the solid card color */
+/* Gradient overlay so name stays legible over the image on desktop */
 .rank-5 .product-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+/* Chessboard cards use cover — no gradient needed, name sits on solid bg */
+.rank-5 .product-card[data-variant-id]::after {
   display: none;
 }
 
@@ -3391,4 +3385,15 @@ ul, ol {
     padding: 0.65rem 0.5rem;
     font-size: 0.72rem;
   }
+
+  /* ── Rank-5 garment cards: mobile bottom-strip layout ──────────────────
+     Image fills the top of the card; the bottom strip exposes the card's
+     chess-square background so name/swatches sit on a solid color.
+     Desktop uses the gradient + full-height cycling-bg approach above. */
+  .rank-5 .product-card              { padding: 1.5rem 1.5rem 3rem; }
+  .rank-5 .product-card[data-variant-id] { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
+  .rank-5 .product-card[data-line-id]    { padding-bottom: 6rem; }
+  .rank-5 .product-card-cycling-bg   { top: 0; left: 0; right: 0; bottom: auto; height: calc(100% - 10rem); }
+  .rank-5 .product-card::after                   { display: none; }
+  .rank-5 .product-card[data-variant-id]::after  { display: none; }
 }

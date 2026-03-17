@@ -523,13 +523,7 @@ ul, ol {
   background-repeat: no-repeat;
 }
 
-/* Chessboard variant cards — fill edge-to-edge on desktop */
-.rank-5 .product-card[data-variant-id] .product-card-cycling-bg {
-  background-size: cover;
-  background-position: center top;
-}
-
-/* Gradient overlay so name stays legible over the image on desktop */
+/* Gradient overlay so name stays legible below the contained image on desktop */
 .rank-5 .product-card::after {
   content: '';
   position: absolute;
@@ -538,10 +532,6 @@ ul, ol {
   background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
   pointer-events: none;
   z-index: 0;
-}
-/* Chessboard cards use cover — no gradient needed, name sits on solid bg */
-.rank-5 .product-card[data-variant-id]::after {
-  display: none;
 }
 
 .rank-5 .product-card-name,
@@ -3394,6 +3384,8 @@ ul, ol {
   .rank-5 .product-card[data-variant-id] { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
   .rank-5 .product-card[data-line-id]    { padding-bottom: 6rem; }
   .rank-5 .product-card-cycling-bg   { top: 0; left: 0; right: 0; bottom: auto; height: calc(100% - 10rem); }
+  /* Chessboards: cover so the garment fills the image area edge-to-edge */
+  .rank-5 .product-card[data-variant-id] .product-card-cycling-bg { background-size: cover; background-position: center top; }
   .rank-5 .product-card::after                   { display: none; }
   .rank-5 .product-card[data-variant-id]::after  { display: none; }
 }

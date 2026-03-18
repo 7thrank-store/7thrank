@@ -1,141 +1,160 @@
-# Wishlist Apps Script — Required Updates
+# Wishlist Apps Script — Required Updates for Checkout
 
-Two new actions need to be added to the existing **Wishlist Apps Script** to
-support (1) promo code validation at checkout and (2) First Mover newsletter
-signup from the order flow.
+Two new action handlers need to be added to the existing `Code.gs` to support:
+1. **Promo code validation** — checks a code against column C of the sheet
+2. **Newsletter signup at order** — enrolls a customer who checked "Join First Movers" at checkout
 
 ---
 
-## Which script to edit
+## Which file to edit
 
-This is the **same script** that handles the wishlist/magic-link flow — NOT
-the Contact Form script. Open it at:
+Open the **existing** Apps Script project (the one with `Code.gs` and
+`email_template.html` already in it — the wishlist / First Mover flow).
 
 > [script.google.com](https://script.google.com) → sign in as
-> **7thrankhelp@gmail.com** → open the project named for the wishlist/First
-> Mover flow.
+> **7thrankhelp@gmail.com** → open the **"7th Rank — First Mover / Wishlist"**
+> project.
+
+You are editing `Code.gs` only. `email_template.html` does not need to change.
 
 ---
 
-## Action 1 — `validateCode` (promo code validation)
+## Where to paste the new code
 
-The checkout promo field now POSTs:
-```json
-{ "action": "validateCode", "code": "FM-XXXX" }
-```
-The script must look up `code` in the **Codes** column of the spreadsheet and
-return whether it exists.
+Both blocks go **inside `doPost`**, immediately after the opening
+`try {` block — **before** the email validation check — because `validateCode`
+doesn't carry an email field.
 
-Add this block inside your `doPost` function, alongside the existing action
-handlers:
+Find this line in `doPost`:
 
 ```javascript
-if (data.action === 'validateCode') {
-  var code = (data.code || '').toString().trim().toUpperCase();
+var payload = JSON.parse(e.postData.contents);
+var email   = (payload.email || '').trim().toLowerCase();
+```
+
+Paste the `validateCode` block right after `JSON.parse`, before the
+`isValidEmail` check:
+
+```javascript
+// ── VALIDATE PROMO CODE (checkout) ────────────────────────────────────────
+if (payload.action === 'validateCode') {
+  var code = (payload.code || '').toString().trim().toUpperCase();
   if (!code) return jsonResponse({ ok: true, valid: false });
 
-  var sheet = SpreadsheetApp.openById('14efRw0OvfBn7er-j1eR1Ifu44RAO_i8M47yUWkJNNZM')
-                            .getActiveSheet();
-  var values = sheet.getDataRange().getValues();
+  var sheet  = getOrCreateSheet();
+  var data   = sheet.getDataRange().getValues();
+  var valid  = false;
 
-  // Find the column index that contains discount codes
-  // Adjust the header name below to match your sheet exactly
-  var headers = values[0].map(function(h) { return h.toString().trim().toLowerCase(); });
-  var codeCol = headers.indexOf('code');   // e.g. "Code" column
-  if (codeCol === -1) codeCol = headers.indexOf('discount code');
-
-  var valid = false;
-  for (var r = 1; r < values.length; r++) {
-    var cell = (values[r][codeCol] || '').toString().trim().toUpperCase();
-    if (cell === code) { valid = true; break; }
+  for (var r = 1; r < data.length; r++) {
+    var sheetCode = (data[r][2] || '').toString().trim().toUpperCase(); // Col C = Discount Code
+    var codeUsed  = data[r][10];                                         // Col K = Code Used
+    if (sheetCode === code && codeUsed !== true && codeUsed !== 'TRUE') {
+      valid = true;
+      break;
+    }
   }
 
   return jsonResponse({ ok: true, valid: valid });
 }
 ```
 
-**Important**: Check your spreadsheet's column header name and update
-`'code'` / `'discount code'` in the `indexOf` call above to match exactly.
-
----
-
-## Action 2 — `newsletter` (First Mover signup at order placement)
-
-When a customer checks "Join First Movers" at checkout and places their order,
-the site POSTs:
-```json
-{ "action": "newsletter", "email": "customer@example.com", "name": "Jane" }
-```
-This should enroll them as a First Mover (same spreadsheet, same discount code
-email), but without requiring wishlist items.
-
-Add this block inside `doPost`:
+Then, **after** the `isValidEmail` check (but before the `login` action block),
+paste the `newsletter` block:
 
 ```javascript
-if (data.action === 'newsletter') {
-  var email = (data.email || '').toString().trim().toLowerCase();
-  var name  = (data.name  || '').toString().trim();
-  if (!email) return jsonResponse({ ok: false, error: 'No email.' });
+// ── NEWSLETTER SIGNUP AT ORDER ────────────────────────────────────────────
+if (payload.action === 'newsletter') {
+  var name  = (payload.name || '').toString().trim();
+  var sheet = getOrCreateSheet();
+  var existingCode = findExistingCode(sheet, email);
 
-  var ss    = SpreadsheetApp.openById('14efRw0OvfBn7er-j1eR1Ifu44RAO_i8M47yUWkJNNZM');
-  var sheet = ss.getActiveSheet();
-  var values = sheet.getDataRange().getValues();
-
-  var headers = values[0].map(function(h) { return h.toString().trim().toLowerCase(); });
-  var emailCol = headers.indexOf('email');
-  var codeCol  = headers.indexOf('code');
-  if (emailCol === -1 || codeCol === -1) {
-    return jsonResponse({ ok: false, error: 'Sheet columns not found.' });
+  if (existingCode) {
+    // Already a First Mover — re-send their existing code, no new row
+    sendConfirmationEmail(email, existingCode, []);
+    return jsonResponse({ success: true, isNew: false });
   }
 
-  // Check if already a First Mover
-  for (var r = 1; r < values.length; r++) {
-    var existing = (values[r][emailCol] || '').toString().trim().toLowerCase();
-    if (existing === email) {
-      // Already enrolled — send their existing code again
-      var existingCode = (values[r][codeCol] || '').toString().trim();
-      sendFirstMoverEmail(email, name, existingCode, false);
-      return jsonResponse({ ok: true, isNew: false });
-    }
-  }
+  var code = generateCode();
+  var now  = new Date();
+  sheet.appendRow([
+    now,              // A  Timestamp
+    email,            // B  Email
+    code,             // C  Discount Code
+    '',               // D  Collection
+    '',               // E  Line
+    '',               // F  Garment Type
+    '',               // G  Variant / Style
+    '',               // H  Piece
+    '',               // I  Placement / Colorway
+    '',               // J  Size
+    false,            // K  Code Used
+    'order_checkout'  // L  Source
+  ]);
 
-  // New First Mover — generate code and add row
-  var newCode = generateCode();
-  // Add a new row — adjust column order to match your sheet
-  // This appends: Email | Name | Code | Signup Source | Date
-  sheet.appendRow([email, name, newCode, 'Order Checkout', new Date()]);
-
-  sendFirstMoverEmail(email, name, newCode, true);
-  return jsonResponse({ ok: true, isNew: true });
+  sendConfirmationEmail(email, code, []);
+  return jsonResponse({ success: true, isNew: true });
 }
 ```
 
-This reuses the existing `generateCode()` and `sendFirstMoverEmail()` helpers
-already in your script. If your helper function names differ, adjust accordingly.
+---
+
+## Notes on the existing helpers used
+
+- `getOrCreateSheet()` — already defined, returns the "Wishlist Signups" sheet
+- `findExistingCode(sheet, email)` — already defined, returns the code string or `null`
+- `generateCode()` — already defined, returns `FM-XXXX-XXXX` format
+- `sendConfirmationEmail(email, code, items)` — already defined, uses `email_template.html`.
+  Passing `items = []` means `hasItems` will be `false` in the template, so the
+  "Your Saved Wishlist" section will be hidden automatically — no template changes needed.
 
 ---
 
-## Redeploy after changes
+## Redeploy after saving
 
-After saving both new blocks:
+1. Save `Code.gs` (`Ctrl+S` / `Cmd+S`)
+2. **Deploy → Manage deployments**
+3. Click the pencil on your existing deployment
+4. Set version to **New version**
+5. Click **Deploy**
 
-1. **Deploy → Manage deployments → Edit** the existing deployment
-2. Set version to **New version**
-3. Click **Deploy**
-
-The URL does not change — no update needed in `main.js`.
+The URL stays the same — no changes needed in `main.js`.
 
 ---
 
 ## Testing
 
-**validateCode:**
-Use your browser's DevTools console on the live site — open checkout, enter a
-real code from the spreadsheet, click Apply. Should show "Applied ✓" and the
-total breakdown should show a 15% discount line.
+**validateCode** — run this test function in the Apps Script editor:
+```javascript
+function testValidateCode() {
+  // Replace with a real code from column C of the sheet
+  var mockEvent = {
+    postData: { contents: JSON.stringify({ action: 'validateCode', code: 'FM-XXXX-XXXX' }) }
+  };
+  var result = doPost(mockEvent);
+  Logger.log(result.getContent());
+  // Expected (valid code, not yet used): {"ok":true,"valid":true}
+  // Expected (invalid / already used):  {"ok":true,"valid":false}
+}
+```
 
-**newsletter:**
-Check "Join First Movers" at checkout, enter a real email, place an order. The
-email should receive a First Mover welcome + discount code within seconds.
-Check the spreadsheet to confirm a new row was added with `Order Checkout` as
-the source.
+**newsletter** — run this test function:
+```javascript
+function testNewsletterSignup() {
+  var mockEvent = {
+    postData: { contents: JSON.stringify({
+      action: 'newsletter',
+      email:  'your-test-email@example.com',  // ← use a real address
+      name:   'Test User'
+    })}
+  };
+  var result = doPost(mockEvent);
+  Logger.log(result.getContent());
+  // Expected: {"success":true,"isNew":true}
+  // Check inbox — should receive the standard First Mover email with discount code
+  // Check spreadsheet — new row should appear with Source = "order_checkout"
+}
+```
+
+On the live site: go through checkout, check "Join First Movers", enter a real
+email, place an order — the email should arrive within seconds and a new row
+should appear in the sheet.

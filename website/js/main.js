@@ -37,7 +37,8 @@
     selectedSubLine:     null,  // 'chessboards' | 'pieces'
     selectedCBVariant:   null,  // 'ww' | 'ic' | 's' | 'pp'
     selectedCBPiece:     null,  // 'pawn' | 'rook' | etc.
-    selectedCBLocation:  null   // 'l' | 'r' | 'hl' | 'hr' | 'sl' | 'sr'
+    selectedCBLocation:  null,  // 'l' | 'r' | 'hl' | 'hr' | 'sl' | 'sr'
+    appliedPromo:        null   // { code, discountPct } or null
   };
 
   /* ══════════════════════════════════════════════════
@@ -1678,14 +1679,44 @@
   }
 
   function populateCheckoutSummary() {
-    var summaryEl  = document.getElementById('checkout-cart-summary');
-    var totalEl    = document.getElementById('checkout-total');
-    var detailsEl  = document.getElementById('checkout-order-details');
+    var productDisplayEl = document.getElementById('checkout-product-display');
+    var detailsEl        = document.getElementById('checkout-order-details');
+    var breakdownEl      = document.getElementById('checkout-total-breakdown');
 
     var subtotal = STATE.cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+    var discount = STATE.appliedPromo
+      ? Math.round(subtotal * STATE.appliedPromo.discountPct) / 100
+      : 0;
+    var total = subtotal - discount;
 
-    if (summaryEl) {
-      summaryEl.innerHTML = STATE.cart.map(function(item) {
+    // ── Square b: product image + brief description ──
+    if (productDisplayEl) {
+      if (STATE.cart.length === 0) {
+        productDisplayEl.innerHTML = '<p class="checkout-product-empty">Your cart is empty.</p>';
+      } else {
+        var first = STATE.cart[0];
+        var desc;
+        if (first.type === 'chessboard') {
+          desc = sanitize(first.variantName || first.variant) + '<br>' +
+                 sanitize((first.pieceName || first.piece) + ' · ' + (first.locationName || first.location));
+        } else {
+          desc = sanitize(first.lineName || first.line || '') + '<br>' +
+                 sanitize((first.pieceName || first.piece) + ' · ' + (first.colorway && first.colorway.name ? first.colorway.name : ''));
+        }
+        var moreCount = STATE.cart.length - 1;
+        productDisplayEl.innerHTML =
+          '<img class="checkout-product-img" src="' + (first.image || '') + '" alt="" onerror="this.style.display=\'none\'">' +
+          '<div class="checkout-product-meta">' +
+            '<span class="checkout-product-name">' + desc + '</span>' +
+            '<span class="checkout-product-size">Size: ' + sanitize(first.size || '') + '</span>' +
+            (moreCount > 0 ? '<span class="checkout-product-more">+' + moreCount + ' more item' + (moreCount > 1 ? 's' : '') + '</span>' : '') +
+          '</div>';
+      }
+    }
+
+    // ── Square f: item list ──
+    if (detailsEl) {
+      detailsEl.innerHTML = STATE.cart.map(function(item) {
         var desc;
         if (item.type === 'chessboard') {
           desc = (item.variantName || item.variant) + ' · ' + (item.pieceName || item.piece) +
@@ -1701,8 +1732,25 @@
       }).join('');
     }
 
-    if (totalEl)   totalEl.textContent   = formatDollar(subtotal);
-    if (detailsEl) detailsEl.innerHTML   = summaryEl ? summaryEl.innerHTML : '';
+    // ── Square f: total breakdown ──
+    if (breakdownEl) {
+      var html = '';
+      if (discount > 0) {
+        html += '<div class="checkout-breakdown-row">' +
+                  '<span>Subtotal</span>' +
+                  '<span>' + formatDollar(subtotal) + '</span>' +
+                '</div>' +
+                '<div class="checkout-breakdown-row checkout-discount-row">' +
+                  '<span>Discount (' + STATE.appliedPromo.discountPct + '% · ' + sanitize(STATE.appliedPromo.code) + ')</span>' +
+                  '<span>−' + formatDollar(discount) + '</span>' +
+                '</div>';
+      }
+      html += '<div class="checkout-breakdown-row checkout-breakdown-total">' +
+                '<span>Total</span>' +
+                '<strong>' + formatDollar(total) + '</strong>' +
+              '</div>';
+      breakdownEl.innerHTML = html;
+    }
 
     updateWishlistUI();
   }
@@ -1827,28 +1875,50 @@
       return;
     }
 
-    // Validate shipping + payment (simplified)
-    var name = document.getElementById('ship-name');
-    var addr = document.getElementById('ship-address');
-    var email = document.getElementById('checkout-email');
+    // Validate required fields
+    var nameEl  = document.getElementById('ship-name');
+    var addrEl  = document.getElementById('ship-address');
+    var emailEl = document.getElementById('checkout-email');
 
-    if (name && !name.value.trim()) { name.focus(); return; }
-    if (addr && !addr.value.trim()) { addr.focus(); return; }
-    if (email && !email.value.trim()) { email.focus(); return; }
+    if (nameEl  && !nameEl.value.trim())  { nameEl.focus();  return; }
+    if (addrEl  && !addrEl.value.trim())  { addrEl.focus();  return; }
+    if (emailEl && !emailEl.value.trim()) { emailEl.focus(); return; }
+
+    // Compute final total (with any applied discount)
+    var subtotal = STATE.cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+    var discount = STATE.appliedPromo
+      ? Math.round(subtotal * STATE.appliedPromo.discountPct) / 100
+      : 0;
+    var grandTotal = subtotal - discount;
+
+    // Newsletter / First Mover signup if checkbox checked
+    var newsletterEl = document.getElementById('checkout-newsletter');
+    var customerEmail = emailEl ? emailEl.value.trim() : '';
+    var customerName  = nameEl  ? nameEl.value.trim()  : '';
+    if (newsletterEl && newsletterEl.checked && customerEmail) {
+      // Fire-and-forget — does not block order completion
+      fetch(WISHLIST_ENDPOINT, {
+        method: 'POST',
+        body:   JSON.stringify({ action: 'newsletter', email: customerEmail, name: customerName })
+      }).catch(function() {});
+    }
 
     // Show order confirmation
-    var orderNum = 'ORD-7R-' + Math.floor(Math.random() * 90000 + 10000);
+    var orderNum  = 'ORD-7R-' + Math.floor(Math.random() * 90000 + 10000);
     var detailsEl = document.getElementById('order-confirm-details');
     if (detailsEl) {
-      detailsEl.innerHTML = '<p style="font-size:0.8rem; opacity:0.7;">Order <strong>' + orderNum + '</strong></p>';
+      detailsEl.innerHTML =
+        '<p style="font-size:0.8rem; opacity:0.7;">Order <strong>' + orderNum + '</strong></p>' +
+        '<p style="font-size:0.8rem; opacity:0.7;">Total charged: <strong>' + formatDollar(grandTotal) + '</strong></p>';
     }
 
     if (rank8Page)           rank8Page.removeAttribute('hidden');
     if (rank8ContactConfirm) rank8ContactConfirm.setAttribute('hidden', '');
     if (rank8OrderConfirm)   rank8OrderConfirm.removeAttribute('hidden');
 
-    // Clear cart
-    STATE.cart = [];
+    // Reset cart + promo state
+    STATE.cart          = [];
+    STATE.appliedPromo  = null;
     updateCartUI();
 
     scrollToSection('rank-8', 'smooth');
@@ -1866,6 +1936,7 @@
     STATE.selectedCBVariant  = null;
     STATE.selectedCBPiece    = null;
     STATE.selectedCBLocation = null;
+    STATE.appliedPromo       = null;
 
     // Hide middle ranks
     ['rank-4','rank-5','rank-6'].forEach(function(id) {
@@ -2077,20 +2148,43 @@
      PROMO CODE
   ══════════════════════════════════════════════════ */
   function initPromoCode() {
-    var promoBtn = document.getElementById('promo-apply-btn');
+    var promoBtn   = document.getElementById('promo-apply-btn');
     var promoInput = document.getElementById('promo-input');
     if (!promoBtn || !promoInput) return;
 
     promoBtn.addEventListener('click', function() {
       var code = promoInput.value.trim().toUpperCase();
-      if (code === '7THRANK' || code === 'FIRSTMOVE') {
-        promoBtn.textContent = 'Applied ✓';
-        promoBtn.style.color = '#2d5a3d';
-        promoInput.disabled = true;
-      } else {
+      if (!code) return;
+
+      promoBtn.disabled     = true;
+      promoBtn.textContent  = '…';
+      promoInput.style.borderColor = '';
+
+      fetch(WISHLIST_ENDPOINT, {
+        method: 'POST',
+        body:   JSON.stringify({ action: 'validateCode', code: code })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        promoBtn.disabled = false;
+        if (data.ok && data.valid) {
+          STATE.appliedPromo   = { code: code, discountPct: 15 };
+          promoInput.disabled  = true;
+          promoBtn.textContent = 'Applied ✓';
+          promoBtn.style.color = '#2d9c5a';
+          populateCheckoutSummary();
+        } else {
+          promoInput.style.borderColor = '#c0392b';
+          promoBtn.textContent = 'Apply';
+          setTimeout(function() { promoInput.style.borderColor = ''; }, 2500);
+        }
+      })
+      .catch(function() {
+        promoBtn.disabled    = false;
+        promoBtn.textContent = 'Apply';
         promoInput.style.borderColor = '#c0392b';
-        setTimeout(function() { promoInput.style.borderColor = ''; }, 2000);
-      }
+        setTimeout(function() { promoInput.style.borderColor = ''; }, 2500);
+      });
     });
   }
 

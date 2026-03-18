@@ -558,15 +558,10 @@
           <span class="file-label-text">Checkout</span>
         </div>
 
-        <!-- Cart summary square -->
-        <div class="square sq-dark sq-checkout-section" data-file="b">
-          <h3 class="checkout-sq-title">Your Cart</h3>
-          <div id="checkout-cart-summary" class="checkout-cart-list">
-            <!-- JS populates -->
-          </div>
-          <div class="checkout-subtotal">
-            <span>Total</span>
-            <strong id="checkout-total">$0.00</strong>
+        <!-- Product image square -->
+        <div class="square sq-dark sq-checkout-product" data-file="b">
+          <div id="checkout-product-display" class="checkout-product-display">
+            <!-- JS populates: product image + brief description -->
           </div>
         </div>
 
@@ -597,7 +592,7 @@
             <input type="tel" class="form-input form-input-sm" placeholder="Phone (optional)" id="checkout-phone" autocomplete="tel">
             <label class="checkout-checkbox">
               <input type="checkbox" id="checkout-newsletter">
-              <span>Join our community for exclusive drops</span>
+              <span>Join First Movers — get early access &amp; a discount code</span>
             </label>
           </div>
         </div>
@@ -618,11 +613,18 @@
           </div>
         </div>
 
-        <!-- Order summary / CTA squares -->
+        <!-- Order total / promo / CTA square -->
         <div class="square sq-dark sq-checkout-cta" data-file="f">
-          <h3 class="checkout-sq-title">Order Summary</h3>
+          <h3 class="checkout-sq-title">Order Total</h3>
           <div id="checkout-order-details" class="checkout-order-details">
-            <!-- JS populates -->
+            <!-- JS populates item list -->
+          </div>
+          <div class="promo-code-wrap">
+            <input type="text" class="form-input form-input-sm" placeholder="Promo code" id="promo-input">
+            <button class="btn btn-outline btn-sm" id="promo-apply-btn">Apply</button>
+          </div>
+          <div id="checkout-total-breakdown" class="checkout-total-breakdown">
+            <!-- JS populates: subtotal, discount, grand total -->
           </div>
           <button class="btn btn-primary btn-full" id="place-order-btn">Place Order</button>
           <button class="btn btn-outline btn-full btn-sm" id="continue-shopping-btn">Continue Shopping</button>
@@ -636,7 +638,7 @@
           </div>
         </div>
 
-        <!-- Promo / Trust square -->
+        <!-- Trust square -->
         <div class="square sq-dark sq-checkout-trust" data-file="h">
           <div class="trust-badges">
             <div class="trust-badge">
@@ -644,17 +646,9 @@
               <span>Secure Checkout</span>
             </div>
             <div class="trust-badge">
-              <span class="trust-icon">↩</span>
-              <span>30-Day Returns</span>
-            </div>
-            <div class="trust-badge">
               <span class="trust-icon">✈</span>
               <span>Global Shipping</span>
             </div>
-          </div>
-          <div class="promo-code-wrap">
-            <input type="text" class="form-input form-input-sm" placeholder="Promo code" id="promo-input">
-            <button class="btn btn-outline btn-sm" id="promo-apply-btn">Apply</button>
           </div>
         </div>
 

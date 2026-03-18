@@ -2,7 +2,7 @@
 
 This document walks you through deploying a Google Apps Script web app that receives
 contact form submissions from the 7th Rank website and forwards them to
-**7thranksupport@gmail.com**.
+**7thrankhelp@gmail.com**.
 
 ---
 
@@ -17,7 +17,7 @@ third-party services, no monthly fees, no rate limits for reasonable volume.
 ## Step 1 — Open Google Apps Script
 
 1. Go to [script.google.com](https://script.google.com) and sign in with the
-   **7thranksupport@gmail.com** Google account (important — this is the account
+   **7thrankhelp@gmail.com** Google account (important — this is the account
    whose `MailApp` quota will be used, and where the email will arrive).
 2. Click **New project** (top-left).
 3. Rename the project to something like `7th Rank — Contact Form`.
@@ -30,7 +30,7 @@ Delete the default `function myFunction() {}` and replace the entire editor
 contents with the code below:
 
 ```javascript
-var RECIPIENT = '7thranksupport@gmail.com';
+var RECIPIENT = '7thrankhelp@gmail.com';
 
 function doPost(e) {
   try {
@@ -87,7 +87,7 @@ Click the **Save** icon (or `Ctrl+S` / `Cmd+S`).
 2. Click the gear icon next to **Select type** and choose **Web app**.
 3. Fill in the fields:
    - **Description**: `Contact form v1`
-   - **Execute as**: `Me (7thranksupport@gmail.com)`
+   - **Execute as**: `Me (7thrankhelp@gmail.com)`
    - **Who has access**: `Anyone`  ← this is required for the website fetch to work
 4. Click **Deploy**.
 5. Google will ask you to **Authorize** the script — click through the
@@ -127,7 +127,7 @@ Save the file, commit, and push.
 2. Fill in Name, Email, and Message — use a real email for the sender.
 3. Click **Make Your Move →**.
 4. The site should scroll to the confirmation screen.
-5. Check **7thranksupport@gmail.com** — you should receive the email within
+5. Check **7thrankhelp@gmail.com** — you should receive the email within
    seconds. The `Reply-To` header is set to the sender's email, so hitting
    reply in Gmail will go straight back to them.
 

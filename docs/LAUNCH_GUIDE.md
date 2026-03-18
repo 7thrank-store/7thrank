@@ -25,7 +25,7 @@
 - [ ] Purchase `7thrank.com` (if not already owned) — recommended registrars: Cloudflare, Namecheap
 - [ ] Set up DNS: A record → host IP, CNAME `www` → root
 - [ ] Enable HTTPS/SSL (free via Cloudflare or Let's Encrypt)
-- [x] Set up `7thranksupport@gmail.com` as a forwarding alias if using a custom domain email
+- [x] Set up `7thrankhelp@gmail.com` as a forwarding alias if using a custom domain email
 
 ### Assets
 - [ ] Create `/images/og-image.jpg` (1200×630px) — used for social share previews (OG/Twitter card)
@@ -175,7 +175,7 @@ Test on the following browser/OS combinations:
 |---|------|----------------|-----------|
 | CT1 | Info panel renders | Tagline, email link, social cards visible | |
 | CT2 | Knight watermark visible | Animated SVG in top-right of panel, semi-transparent | |
-| CT3 | Email link click | Opens mailto:7thranksupport@gmail.com | |
+| CT3 | Email link click | Opens mailto:7thrankhelp@gmail.com | |
 | CT4 | Instagram card click | Opens @7th.rank Instagram in new tab | |
 | CT5 | TikTok card click | Opens @7th.rank TikTok in new tab | |
 | CT6 | Contact form: empty submit | Validation prevents submission | |

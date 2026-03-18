@@ -2348,8 +2348,7 @@
   // !! Replace with your deployed Apps Script URL after publishing !!
   var WISHLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbynjkrlxhyLIu_jAaEkpZ25gFmNBpKzQ2egn_1B-eqsARPAyjt266tl8unjdc3OFpdj/exec';
 
-  // !! Replace with your Contact Apps Script URL after publishing (see CONTACT_FORM_SETUP.md) !!
-  var CONTACT_ENDPOINT = '';
+  var CONTACT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbz197ippeRAkzRLuBuktihwt4t8Ksra9oarj0-A5qTBHzzbfGGXlQwKj1XfUYQ_eTU/exec';
 
   function initWishlist() {
     var overlay   = document.getElementById('wishlist-overlay');

@@ -1726,24 +1726,63 @@
     contactForm.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      var name    = document.getElementById('contact-name');
-      var email   = document.getElementById('contact-email');
-      var message = document.getElementById('contact-message');
+      var nameEl    = document.getElementById('contact-name');
+      var emailEl   = document.getElementById('contact-email');
+      var messageEl = document.getElementById('contact-message');
 
-      if (!name || !email || !message) return;
-      if (!name.value.trim() || !email.value.trim() || !message.value.trim()) {
-        // Highlight empty fields
-        [name, email, message].forEach(function(inp) {
-          if (!inp.value.trim()) {
-            inp.style.borderColor = '#c0392b';
-            setTimeout(function() { inp.style.borderColor = ''; }, 3000);
-          }
-        });
+      if (!nameEl || !emailEl || !messageEl) return;
+
+      // Validate — highlight empty fields
+      var valid = true;
+      [nameEl, emailEl, messageEl].forEach(function(inp) {
+        if (!inp.value.trim()) {
+          inp.style.borderColor = '#c0392b';
+          setTimeout(function() { inp.style.borderColor = ''; }, 3000);
+          valid = false;
+        }
+      });
+      if (!valid) return;
+
+      var submitBtn = contactForm.querySelector('[type="submit"]');
+      var originalText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending\u2026'; }
+
+      // If no endpoint is configured yet, skip the fetch and go straight to confirm
+      if (!CONTACT_ENDPOINT) {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
+        showRank8ContactConfirm();
         return;
       }
 
-      // Show confirmation
-      showRank8ContactConfirm();
+      fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        body: JSON.stringify({
+          action:  'contact',
+          name:    nameEl.value.trim(),
+          email:   emailEl.value.trim(),
+          message: messageEl.value.trim()
+        })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
+        if (data.ok) {
+          showRank8ContactConfirm();
+        } else {
+          // Surface the error inline without blocking the user
+          var errMsg = data.error || 'Something went wrong. Please try again.';
+          nameEl.style.borderColor = '';
+          emailEl.style.borderColor = '';
+          messageEl.style.borderColor = '#c0392b';
+          messageEl.title = errMsg;
+          setTimeout(function() { messageEl.style.borderColor = ''; messageEl.title = ''; }, 4000);
+        }
+      })
+      .catch(function() {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
+        // Network failure — still advance to confirm so user isn't stuck
+        showRank8ContactConfirm();
+      });
     });
   }
 
@@ -2308,6 +2347,9 @@
 
   // !! Replace with your deployed Apps Script URL after publishing !!
   var WISHLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbynjkrlxhyLIu_jAaEkpZ25gFmNBpKzQ2egn_1B-eqsARPAyjt266tl8unjdc3OFpdj/exec';
+
+  // !! Replace with your Contact Apps Script URL after publishing (see CONTACT_FORM_SETUP.md) !!
+  var CONTACT_ENDPOINT = '';
 
   function initWishlist() {
     var overlay   = document.getElementById('wishlist-overlay');

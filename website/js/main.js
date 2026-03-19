@@ -1149,20 +1149,38 @@
      RANK 4: GARMENT LINES
   ══════════════════════════════════════════════════ */
   function selectCollection(collection) {
+    var isSameCollection = STATE.selectedCollection && STATE.selectedCollection.id === collection.id;
     STATE.selectedCollection = collection;
     STATE.mode = 'shopping';
 
-    // Reveal rank-4 only; ranks 5 and 6 unlock progressively as user selects
     var r4 = document.getElementById('rank-4');
     var r5 = document.getElementById('rank-5');
     var r6 = document.getElementById('rank-6');
-    if (r4) r4.removeAttribute('hidden');
-    if (r5) r5.setAttribute('hidden', '');
-    if (r6) r6.setAttribute('hidden', '');
 
-    renderSubLineSelector(collection);
-    var rank4Label = document.getElementById('rank-4-label');
-    if (rank4Label) rank4Label.textContent = collection.name;
+    if (isSameCollection) {
+      // Returning to the same collection after Continue Shopping:
+      // ranks 4-6 already have the user's prior selections — just reveal
+      // rank-4 and scroll there so they can review / adjust without losing state.
+      if (r4) r4.removeAttribute('hidden');
+    } else {
+      // Different collection (or first visit): full reset of downstream ranks.
+      STATE.selectedLine       = null;
+      STATE.selectedSubLine    = null;
+      STATE.selectedPiece      = null;
+      STATE.selectedColorway   = null;
+      STATE.selectedSize       = null;
+      STATE.selectedCBVariant  = null;
+      STATE.selectedCBPiece    = null;
+      STATE.selectedCBLocation = null;
+
+      if (r4) r4.removeAttribute('hidden');
+      if (r5) r5.setAttribute('hidden', '');
+      if (r6) r6.setAttribute('hidden', '');
+
+      renderSubLineSelector(collection);
+      var rank4Label = document.getElementById('rank-4-label');
+      if (rank4Label) rank4Label.textContent = collection.name;
+    }
 
     scrollToSection('rank-4', 'smooth');
   }
@@ -1856,11 +1874,8 @@
 
     if (continueShopBtn) {
       continueShopBtn.addEventListener('click', function() {
-        // Jump to rank-3 BEFORE any DOM changes. Ranks 4-6 are below rank-3,
-        // so hiding them afterwards doesn't affect rank-3's position and the
-        // user never sees the layout collapse or the rank-7 content swap.
         scrollToSection('rank-3', 'instant');
-        exitShoppingMode();
+        returnToCollections();
       });
     }
 
@@ -1950,6 +1965,17 @@
     });
 
     showContactRank7();
+  }
+
+  // Used by the "Continue Shopping" CTA in checkout.
+  // Unlike exitShoppingMode, this preserves the user's selections and keeps
+  // ranks 4-6 visible so they can scroll through prior choices or adjust them.
+  // Clicking the same collection at rank-3 resumes from rank-4 (pre-filled);
+  // clicking a different collection triggers a full reset via selectCollection.
+  function returnToCollections() {
+    STATE.appliedPromo = null;  // promo shouldn't carry over to a future checkout
+    showContactRank7();         // switch rank-7 from checkout → contact (off-screen)
+    // ranks 4-6 remain visible and pre-filled; STATE selections are preserved
   }
 
   /* ══════════════════════════════════════════════════

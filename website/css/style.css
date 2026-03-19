@@ -1327,12 +1327,15 @@ ul, ol {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border-light);
   margin-bottom: 0.25rem;
+  text-align: center;
+  width: 100%;
 }
 
 .sq-checkout-cta {
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.75rem;
 }
 
@@ -1357,6 +1360,7 @@ ul, ol {
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
+  width: 100%;
 }
 
 .checkout-cart-item {
@@ -1415,6 +1419,8 @@ ul, ol {
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.75rem;
 }
 
@@ -1457,6 +1463,8 @@ ul, ol {
 .checkout-product-meta {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 0.25rem;
   padding: 0.75rem 1rem;
   background: rgba(0,0,0,0.45);
@@ -1492,6 +1500,7 @@ ul, ol {
 
 /* ── Checkout: total breakdown (square f) ── */
 .checkout-total-breakdown {
+  width: 100%;
   border-top: 1px solid var(--border-light);
   padding-top: 0.6rem;
   display: flex;
@@ -1522,6 +1531,7 @@ ul, ol {
 }
 
 .promo-code-wrap {
+  width: 100%;
   margin-top: 0;
 }
 
@@ -3484,6 +3494,43 @@ ul, ol {
     padding: 0.65rem 0.5rem;
     font-size: 0.72rem;
   }
+
+  /* ── Checkout: mobile stacked layout ──────────────────────────────────
+     The 8-column horizontal grid collapses to a single scrollable column.
+     Squares that add noise on mobile (label, wishlist) are hidden.
+     Each section gets a natural height so the user scrolls through the
+     form top-to-bottom rather than swiping horizontally. */
+  .rank-7-checkout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    overflow-y: visible;
+  }
+  /* Hide: label column (a), wishlist (g) */
+  .rank-7-checkout .sq-file-label  { display: none; }
+  .rank-7-checkout [data-file="g"] { display: none; }
+
+  /* Product image: tall portrait view */
+  .rank-7-checkout .sq-checkout-product {
+    height: 72vw;
+  }
+  /* All form/content squares: auto height, generous padding */
+  .rank-7-checkout .sq-checkout-section,
+  .rank-7-checkout .sq-checkout-cta,
+  .rank-7-checkout .sq-checkout-trust {
+    height: auto;
+    min-height: 0;
+    padding: 1.5rem 1.25rem;
+  }
+  /* Trust badges: horizontal row on mobile to save vertical space */
+  .rank-7-checkout .trust-badges {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  /* Ensure promo + breakdown fill full width inside the CTA square */
+  .rank-7-checkout .promo-code-wrap,
+  .rank-7-checkout .checkout-total-breakdown { width: 100%; }
 
   /* ── Rank-5 garment cards: mobile bottom-strip layout ──────────────────
      Image fills the top of the card; the bottom strip exposes the card's

@@ -116,7 +116,6 @@ ul, ol {
   overflow-y: scroll;
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
   scroll-padding-top: var(--header-h); /* offset snap targets below fixed header (desktop) */
   position: relative;
   z-index: var(--z-board);

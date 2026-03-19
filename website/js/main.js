@@ -664,7 +664,7 @@
   /* ══════════════════════════════════════════════════
      SCROLL NAVIGATION
   ══════════════════════════════════════════════════ */
-  function scrollToSection(id, behavior) {
+  function scrollToSection(id, behavior, callback) {
     var el = document.getElementById(id);
     if (!el) return;
     // Calculate the true snap target position.
@@ -685,6 +685,7 @@
       // unlike setting scrollTop directly which the browser still animates.
       board.scrollTo({ top: targetY, behavior: 'instant' });
       if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
+      if (callback) callback();
     } else {
       STATE.isAnimating = true;
       board.style.scrollSnapType = 'none';
@@ -693,6 +694,7 @@
         // On mobile: position-based logic decides correct snap type for landing spot.
         // On desktop: restore CSS snap directly.
         if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
+        if (callback) callback();
       });
     }
   }
@@ -1554,14 +1556,24 @@
   /* ══════════════════════════════════════════════════
      CART MANAGEMENT
   ══════════════════════════════════════════════════ */
+  // Returns a stable key used to identify duplicate cart items.
+  // Chessboards include location (images differ per placement).
+  function cartItemKey(item) {
+    if (item.type === 'chessboard') {
+      return 'cb|' + item.variant + '|' + item.piece + '|' + item.location + '|' + item.size;
+    }
+    var cwId = item.colorway && item.colorway.id ? item.colorway.id : (item.colorway || '');
+    return 'pc|' + item.line + '|' + item.piece + '|' + cwId + '|' + item.size;
+  }
+
   function handleAddToCartCB(varId) {
     if (!STATE.selectedSize)       { alert('Please select a size.');      return; }
     if (!STATE.selectedCBPiece)    { alert('Please select a piece.');     return; }
     if (!STATE.selectedCBLocation) { alert('Please select a placement.'); return; }
 
     var v = CHESSBOARD_VARIANTS[varId];
-    var item = {
-      id:           'cb_' + varId + '_' + STATE.selectedCBPiece + '_' + STATE.selectedCBLocation + '_' + STATE.selectedSize + '_' + Date.now(),
+    var newItem = {
+      id:           'cb_' + varId + '_' + STATE.selectedCBPiece + '_' + STATE.selectedCBLocation + '_' + STATE.selectedSize,
       type:         'chessboard',
       collection:   STATE.selectedCollection ? STATE.selectedCollection.name : 'First Move',
       variant:      varId,
@@ -1575,7 +1587,9 @@
       image:        getChessboardImagePath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation),
       qty:          1
     };
-    STATE.cart.push(item);
+    var key = cartItemKey(newItem);
+    var existing = STATE.cart.find(function(i) { return cartItemKey(i) === key; });
+    if (existing) { existing.qty += 1; } else { STATE.cart.push(newItem); }
     updateCartUI();
     flashAddToCart();
   }
@@ -1587,8 +1601,8 @@
 
     var cwId = STATE.selectedColorway;
     var cw   = COLORWAYS.find(function(c) { return c.id === cwId; }) || { id: cwId, name: cwId, hex: '#' + cwId };
-    var item = {
-      id:       'pc_' + lineData.id + '_' + STATE.selectedPiece + '_' + cwId + '_' + STATE.selectedSize + '_' + Date.now(),
+    var newItem = {
+      id:       'pc_' + lineData.id + '_' + STATE.selectedPiece + '_' + cwId + '_' + STATE.selectedSize,
       type:     'pieces',
       collection: STATE.selectedCollection ? STATE.selectedCollection.name : 'First Move',
       line:     lineData.id,
@@ -1601,7 +1615,9 @@
       image:    getProductImagePath(lineData.id, STATE.selectedPiece, cwId),
       qty:      1
     };
-    STATE.cart.push(item);
+    var key = cartItemKey(newItem);
+    var existing = STATE.cart.find(function(i) { return cartItemKey(i) === key; });
+    if (existing) { existing.qty += 1; } else { STATE.cart.push(newItem); }
     updateCartUI();
     flashAddToCart();
   }
@@ -1644,12 +1660,15 @@
             itemName    = sanitize((item.lineName || item.line || '') + ' ' + (item.pieceName || item.piece));
             itemDetails = sanitize((item.colorway && item.colorway.name ? item.colorway.name : '') + ' · Size ' + item.size);
           }
+          var priceHtml = item.qty > 1
+            ? '<span class="cart-item-qty">×' + item.qty + '</span> ' + formatDollar(item.price * item.qty)
+            : formatDollar(item.price);
           return '<div class="cart-item">' +
                  '<img class="cart-item-img" src="' + item.image + '" alt="' + sanitize(item.pieceName || '') + '" onerror="this.style.display=\'none\'">' +
                  '<div class="cart-item-info">' +
                  '<span class="cart-item-name">' + itemName + '</span>' +
                  '<span class="cart-item-details">' + itemDetails + '</span>' +
-                 '<span class="cart-item-price">' + formatDollar(item.price) + '</span>' +
+                 '<span class="cart-item-price">' + priceHtml + '</span>' +
                  '<button class="cart-item-remove" data-item-id="' + sanitize(item.id) + '" aria-label="Remove item">Remove</button>' +
                  '</div>' +
                  '</div>';
@@ -1709,45 +1728,46 @@
       : 0;
     var total = subtotal - discount;
 
-    // ── Square b: product image + brief description ──
+    // ── Square b: cycling product image ──
+    stopCheckoutImageCycler();
     if (productDisplayEl) {
       if (STATE.cart.length === 0) {
         productDisplayEl.innerHTML = '<p class="checkout-product-empty">Your cart is empty.</p>';
       } else {
-        var first = STATE.cart[0];
-        var desc;
-        if (first.type === 'chessboard') {
-          desc = sanitize(first.variantName || first.variant) + '<br>' +
-                 sanitize((first.pieceName || first.piece) + ' · ' + (first.locationName || first.location));
-        } else {
-          desc = sanitize(first.lineName || first.line || '') + '<br>' +
-                 sanitize((first.pieceName || first.piece) + ' · ' + (first.colorway && first.colorway.name ? first.colorway.name : ''));
-        }
-        var moreCount = STATE.cart.length - 1;
+        var dotsHtml = STATE.cart.length > 1
+          ? '<div class="checkout-img-dots" id="checkout-img-dots">' +
+              STATE.cart.map(function(_, i) {
+                return '<span class="checkout-img-dot' + (i === 0 ? ' active' : '') + '"></span>';
+              }).join('') +
+            '</div>'
+          : '';
         productDisplayEl.innerHTML =
-          '<img class="checkout-product-img" src="' + (first.image || '') + '" alt="" onerror="this.style.display=\'none\'">' +
+          '<img class="checkout-product-img" id="checkout-cycling-img" src="" alt="" onerror="this.style.display=\'none\'">' +
           '<div class="checkout-product-meta">' +
-            '<span class="checkout-product-name">' + desc + '</span>' +
-            '<span class="checkout-product-size">Size: ' + sanitize(first.size || '') + '</span>' +
-            (moreCount > 0 ? '<span class="checkout-product-more">+' + moreCount + ' more item' + (moreCount > 1 ? 's' : '') + '</span>' : '') +
+            dotsHtml +
+            '<span class="checkout-product-name" id="checkout-cycling-name"></span>' +
+            '<span class="checkout-product-size" id="checkout-cycling-size"></span>' +
           '</div>';
+        updateCheckoutProductSlide(0);
+        if (STATE.cart.length > 1) initCheckoutImageCycler();
       }
     }
 
-    // ── Square f: item list ──
+    // ── Square f: item list with qty + line subtotals ──
     if (detailsEl) {
       detailsEl.innerHTML = STATE.cart.map(function(item) {
         var desc;
         if (item.type === 'chessboard') {
-          desc = (item.variantName || item.variant) + ' · ' + (item.pieceName || item.piece) +
+          desc = (item.variantName || item.variant) + ' ' + (item.pieceName || item.piece) +
                  ' (' + (item.locationName || item.location) + ', ' + item.size + ')';
         } else {
           desc = (item.lineName || item.line || '') + ' ' + (item.pieceName || item.piece) +
                  ' (' + (item.colorway && item.colorway.name ? item.colorway.name : '') + ', ' + item.size + ')';
         }
+        var qtyTag = item.qty > 1 ? ' <span class="checkout-item-qty">×' + item.qty + '</span>' : '';
         return '<div class="checkout-cart-item">' +
-               '<span>' + sanitize(desc) + '</span>' +
-               '<span>' + formatDollar(item.price) + '</span>' +
+               '<span>' + sanitize(desc) + qtyTag + '</span>' +
+               '<span>' + formatDollar(item.price * item.qty) + '</span>' +
                '</div>';
       }).join('');
     }
@@ -1773,6 +1793,58 @@
     }
 
     updateWishlistUI();
+  }
+
+  /* ══════════════════════════════════════════════════
+     CHECKOUT IMAGE CYCLER
+  ══════════════════════════════════════════════════ */
+  var _checkoutCyclerTimer = null;
+  var _checkoutCyclerIdx   = 0;
+
+  function updateCheckoutProductSlide(idx) {
+    var item   = STATE.cart[idx];
+    if (!item) return;
+    var imgEl  = document.getElementById('checkout-cycling-img');
+    var nameEl = document.getElementById('checkout-cycling-name');
+    var sizeEl = document.getElementById('checkout-cycling-size');
+
+    if (imgEl)  imgEl.src = item.image || '';
+
+    var desc;
+    if (item.type === 'chessboard') {
+      desc = sanitize(item.variantName || item.variant) + '<br>' +
+             sanitize((item.pieceName || item.piece) + ' · ' + (item.locationName || item.location));
+    } else {
+      desc = sanitize(item.lineName || item.line || '') + '<br>' +
+             sanitize((item.pieceName || item.piece) + ' · ' + (item.colorway && item.colorway.name ? item.colorway.name : ''));
+    }
+    var qtyBadge = item.qty > 1 ? ' <span class="checkout-product-qty">×' + item.qty + '</span>' : '';
+    if (nameEl) nameEl.innerHTML = desc + qtyBadge;
+    if (sizeEl) sizeEl.textContent = 'Size: ' + (item.size || '');
+
+    // Update dots
+    $$('.checkout-img-dot').forEach(function(dot, i) {
+      dot.classList.toggle('active', i === idx);
+    });
+  }
+
+  function initCheckoutImageCycler() {
+    _checkoutCyclerIdx = 0;
+    _checkoutCyclerTimer = setInterval(function() {
+      var imgEl = document.getElementById('checkout-cycling-img');
+      if (!imgEl || STATE.cart.length < 2) { stopCheckoutImageCycler(); return; }
+      imgEl.style.opacity = '0';
+      setTimeout(function() {
+        _checkoutCyclerIdx = (_checkoutCyclerIdx + 1) % STATE.cart.length;
+        updateCheckoutProductSlide(_checkoutCyclerIdx);
+        imgEl.style.opacity = '';
+      }, 350);
+    }, 4000);
+  }
+
+  function stopCheckoutImageCycler() {
+    if (_checkoutCyclerTimer) { clearInterval(_checkoutCyclerTimer); _checkoutCyclerTimer = null; }
+    _checkoutCyclerIdx = 0;
   }
 
   /* ══════════════════════════════════════════════════
@@ -1874,8 +1946,13 @@
 
     if (continueShopBtn) {
       continueShopBtn.addEventListener('click', function() {
-        scrollToSection('rank-3', 'instant');
-        returnToCollections();
+        STATE.appliedPromo = null;
+        // Smooth scroll back to Collections; only swap rank-7 to contact AFTER
+        // we've arrived so rank-7 checkout stays visible during the upward scroll
+        // and the user never sees a content flash mid-animation.
+        scrollToSection('rank-3', 'smooth', function() {
+          showContactRank7();
+        });
       });
     }
 

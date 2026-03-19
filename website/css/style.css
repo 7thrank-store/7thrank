@@ -1471,6 +1471,7 @@ ul, ol {
   object-fit: contain;
   object-position: center center;
   background: var(--sq-dark);
+  transition: opacity 0.35s ease;
 }
 
 .checkout-product-meta {
@@ -1484,6 +1485,27 @@ ul, ol {
   border-top: 1px solid var(--border-light);
 }
 
+/* Chess-square dots — small squares matching the board aesthetic */
+.checkout-img-dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 0.3rem;
+}
+.checkout-img-dot {
+  width: 5px;
+  height: 5px;
+  background: rgba(91,184,212,0.2);
+  border: 1px solid rgba(91,184,212,0.35);
+  flex-shrink: 0;
+  transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+.checkout-img-dot.active {
+  background: #5BB8D4;
+  border-color: #5BB8D4;
+  transform: scale(1.35);
+}
+
 .checkout-product-name {
   font-family: var(--font-display);
   font-size: 0.8rem;
@@ -1492,15 +1514,26 @@ ul, ol {
   line-height: 1.4;
 }
 
+.checkout-product-qty {
+  font-size: 0.7rem;
+  color: #5BB8D4;
+  letter-spacing: 0.04em;
+}
+
+.checkout-item-qty {
+  color: #5BB8D4;
+  font-size: 0.7em;
+}
+
+.cart-item-qty {
+  color: #5BB8D4;
+  font-size: 0.8em;
+  margin-right: 0.2em;
+}
+
 .checkout-product-size {
   font-size: 0.68rem;
   opacity: 0.65;
-  color: var(--sq-dark-text);
-}
-
-.checkout-product-more {
-  font-size: 0.65rem;
-  opacity: 0.5;
   color: var(--sq-dark-text);
 }
 

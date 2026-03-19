@@ -1854,8 +1854,11 @@
 
     if (continueShopBtn) {
       continueShopBtn.addEventListener('click', function() {
+        // Jump to rank-3 BEFORE any DOM changes. Ranks 4-6 are below rank-3,
+        // so hiding them afterwards doesn't affect rank-3's position and the
+        // user never sees the layout collapse or the rank-7 content swap.
+        scrollToSection('rank-3', 'instant');
         exitShoppingMode();
-        scrollToSection('rank-3', 'smooth');
       });
     }
 

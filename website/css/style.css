@@ -1312,7 +1312,8 @@ ul, ol {
   padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-start;
   gap: 0.75rem;
   overflow-y: auto;
 }
@@ -1381,12 +1382,15 @@ ul, ol {
   font-size: 0.68rem;
   opacity: 0.6;
   line-height: 1.5;
+  width: 100%;
+  text-align: center;
 }
 
 .card-row-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .checkout-checkbox {
@@ -1396,6 +1400,7 @@ ul, ol {
   font-size: 0.68rem;
   cursor: pointer;
   opacity: 0.7;
+  width: 100%;
 }
 
 .trust-badges {
@@ -1435,12 +1440,14 @@ ul, ol {
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
+  width: 100%;
 }
 
 .wishlist-empty {
   font-size: 0.72rem;
   opacity: 0.5;
   font-style: italic;
+  text-align: center;
 }
 
 /* ── Checkout: product image square (b) ── */
@@ -1705,6 +1712,7 @@ ul, ol {
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
+  width: 100%;
 }
 
 /* Light background forms */

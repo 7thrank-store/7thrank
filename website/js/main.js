@@ -681,7 +681,9 @@
     // the snap engine doesn't fight the rAF loop (causes jank on iOS).
     if (behavior === 'instant') {
       board.style.scrollSnapType = 'none';
+      board.style.scrollBehavior = 'auto'; // override CSS scroll-behavior:smooth so this is truly instant
       board.scrollTop = targetY;
+      board.style.scrollBehavior = '';
       if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
     } else {
       STATE.isAnimating = true;

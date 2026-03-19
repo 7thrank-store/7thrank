@@ -1312,6 +1312,7 @@ ul, ol {
   padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 0.75rem;
   overflow-y: auto;
 }
@@ -1336,8 +1337,13 @@ ul, ol {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
 }
+
+/* Inside the CTA square, the order details list must not stretch to fill
+   remaining space — that's what created the large gap above the promo row. */
+.sq-checkout-cta .checkout-order-details { flex: none; }
 
 .checkout-subtotal,
 .checkout-order-details {

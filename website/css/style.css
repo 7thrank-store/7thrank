@@ -1309,7 +1309,7 @@ ul, ol {
 }
 
 .sq-checkout-section {
-  padding: 1.25rem 1rem;
+  padding: 20vh 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1334,7 +1334,7 @@ ul, ol {
 }
 
 .sq-checkout-cta {
-  padding: 1.25rem 1rem;
+  padding: 20vh 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1466,12 +1466,11 @@ ul, ol {
 
 .checkout-product-img {
   width: 100%;
-  flex: 1;
+  flex: 0 0 70%;
   min-height: 0;
   object-fit: contain;
   object-position: center center;
   background: var(--sq-dark);
-  padding-top: 2rem;
 }
 
 .checkout-product-meta {

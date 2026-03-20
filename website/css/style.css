@@ -1309,7 +1309,7 @@ ul, ol {
 }
 
 .sq-checkout-section {
-  padding: 20vh 1rem 1.25rem;
+  padding: 1.5rem 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1334,7 +1334,7 @@ ul, ol {
 }
 
 .sq-checkout-cta {
-  padding: 20vh 1rem 1.25rem;
+  padding: 1.5rem 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;

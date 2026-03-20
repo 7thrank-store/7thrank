@@ -1623,7 +1623,8 @@
       colorway:  cw,
       size:     STATE.selectedSize,
       price:    PIECES_PRICE,
-      image:    getProductPNGPath(lineData.id, STATE.selectedPiece, cwId),
+      image:         getProductPNGPath(lineData.id, STATE.selectedPiece, cwId),
+      imageFallback: getProductImagePath(lineData.id, STATE.selectedPiece, cwId),
       qty:      1
     };
     var key = cartItemKey(newItem);
@@ -1753,7 +1754,7 @@
             '</div>'
           : '';
         productDisplayEl.innerHTML =
-          '<img class="checkout-product-img" id="checkout-cycling-img" src="" alt="" onerror="this.style.display=\'none\'">' +
+          '<img class="checkout-product-img" id="checkout-cycling-img" src="" alt="" onerror="if(this.src!==this.dataset.fallback&&this.dataset.fallback){this.src=this.dataset.fallback}else{this.style.display=\'none\'}">' +
           '<div class="checkout-product-meta">' +
             dotsHtml +
             '<span class="checkout-product-name" id="checkout-cycling-name"></span>' +
@@ -1819,7 +1820,11 @@
     var nameEl = document.getElementById('checkout-cycling-name');
     var sizeEl = document.getElementById('checkout-cycling-size');
 
-    if (imgEl)  imgEl.src = item.image || '';
+    if (imgEl) {
+      imgEl.dataset.fallback = item.imageFallback || '';
+      imgEl.style.display = '';
+      imgEl.src = item.image || '';
+    }
 
     var desc;
     if (item.type === 'chessboard') {

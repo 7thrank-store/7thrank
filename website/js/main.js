@@ -714,7 +714,7 @@
       if (!startTime) startTime = ts;
       var elapsed  = ts - startTime;
       var progress = Math.min(elapsed / duration, 1);
-      board.scrollTop = startY + diff * ease(progress);
+      board.scrollTo({ top: startY + diff * ease(progress), behavior: 'instant' });
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {

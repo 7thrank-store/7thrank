@@ -198,6 +198,12 @@
     return 'images/products/first_move/pieces/pieces_' + lineId + '.' + piece + '.' + colorway + '.jpg';
   }
 
+  function getProductPNGPath(line, piece, colorway) {
+    var lineId = LINE_IMAGE_PREFIX[line] || (line.charAt(0).toUpperCase() + line.slice(1));
+    var base = 'pieces_' + lineId + '.' + piece + '.' + colorway;
+    return 'images/products/first_move/pieces/' + base + '/resource/0.png';
+  }
+
   function getChessboardImagePath(variant, piece, location) {
     var shot = (location === 'sl') ? '3' : (location === 'sr') ? '2' : '1';
     // Knight on left/right chest uses all-underscore filename (chessboards_ww_knight_l_1.jpg)
@@ -1454,7 +1460,8 @@
     var darkColor  = lineData.colors[1];
     updateRankColors(document.getElementById('rank-6'), lightColor, darkColor);
 
-    var previewSrc = getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
+    var previewSrc = getProductPNGPath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
+    var previewJpg = getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
 
     var pieceGrid = ['P','B','N','R','Q','K'].map(function(p) {
       var sel = STATE.selectedPiece === p ? ' selected' : '';
@@ -1477,7 +1484,7 @@
       '<div class="cb-customization">' +
         '<div class="cb-image-col" id="cb-image-col">' +
           '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
-            '<img class="cb-preview-img" id="cb-preview-img" src="' + previewSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+            '<img class="cb-preview-img" id="cb-preview-img" src="' + previewSrc + '" data-jpg="' + previewJpg + '" alt="" onerror="if(this.src!==this.dataset.jpg){this.src=this.dataset.jpg}else{this.style.visibility=\'hidden\'}">' +
           '</div>' +
           '<div class="cb-zoom-controls">' +
             '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
@@ -1515,7 +1522,11 @@
       var img = document.getElementById('cb-preview-img');
       if (img) {
         img.style.visibility = 'visible';
-        img.src = getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
+        var pngSrc = getProductPNGPath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
+        var jpgSrc = getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
+        img.dataset.jpg = jpgSrc;
+        img.onerror = function() { img.src = jpgSrc; img.onerror = null; };
+        img.src = pngSrc;
       }
     }
 
@@ -1612,7 +1623,7 @@
       colorway:  cw,
       size:     STATE.selectedSize,
       price:    PIECES_PRICE,
-      image:    getProductImagePath(lineData.id, STATE.selectedPiece, cwId),
+      image:    getProductPNGPath(lineData.id, STATE.selectedPiece, cwId),
       qty:      1
     };
     var key = cartItemKey(newItem);

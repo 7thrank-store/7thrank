@@ -2642,7 +2642,7 @@ ul, ol {
    ════════════════════════════════════════════════════════ */
 .cb-customization {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;   /* image left, controls right */
+  grid-template-columns: 1.7fr 1fr;   /* image left, controls right */
   height: 100%;
   overflow: hidden;
 }

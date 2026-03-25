@@ -2730,8 +2730,13 @@ ul, ol {
   opacity: 1;
 }
 
-.cb-piece-btn-icon {
-  font-size: 1.4rem;
+.cb-piece-btn-img {
+  width: 100%;
+  height: 3.5rem;
+  object-fit: cover;
+  object-position: center top;
+  pointer-events: none;
+  display: block;
 }
 
 .cb-location-grid {
@@ -3536,7 +3541,7 @@ ul, ol {
     color: var(--ui-text-dark, rgba(184,205,216,0.9));
   }
   .cb-piece-btn { padding: 0.7rem 0.4rem; }
-  .cb-piece-btn-icon { font-size: 1.8rem; }
+  .cb-piece-btn-img { height: 4rem; }
   .cb-location-btn {
     padding: 0.65rem 0.5rem;
     font-size: 0.72rem;

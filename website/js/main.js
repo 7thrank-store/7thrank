@@ -264,6 +264,28 @@
     return IMAGE_POOL;
   }
 
+  function buildPiecePNGPool() {
+    var pool = [];
+    PIECES_LINE_KEYS.forEach(function(lineKey) {
+      var lineData = PIECES_LINE_DATA[lineKey];
+      var linePrefix = LINE_IMAGE_PREFIX[lineKey];
+      ['P','B','N','R','Q','K'].forEach(function(piece) {
+        lineData.colorways.forEach(function(cw) {
+          var base = 'pieces_' + linePrefix + '.' + piece + '.' + cw;
+          pool.push('images/products/first_move/pieces/' + base + '/resource/0.png');
+        });
+      });
+    });
+    return pool;
+  }
+
+  var PIECE_PNG_POOL = null;
+
+  function getPiecePNGPool() {
+    if (!PIECE_PNG_POOL) PIECE_PNG_POOL = buildPiecePNGPool();
+    return PIECE_PNG_POOL;
+  }
+
   /* ══════════════════════════════════════════════════
      LANDING IMAGE CYCLER
   ══════════════════════════════════════════════════ */
@@ -1022,7 +1044,7 @@
     if (cyclingBgEl) {
       var allPool   = getImagePool();
       var cbPool    = allPool.filter(function(p) { return p.indexOf('/chessboards/') !== -1 && /_1\.jpg$/.test(p); });
-      var pcPool    = allPool.filter(function(p) { return p.indexOf('/pieces/') !== -1; });
+      var pcPool    = getPiecePNGPool();
       var useCB     = true;
       function cycleCollectionThumb() {
         var pool = (useCB && cbPool.length) ? cbPool : (pcPool.length ? pcPool : cbPool);
@@ -1102,7 +1124,7 @@
     if (!rank4Content) return;
 
     var cbImg = 'images/products/first_move/chessboards/chessboards_ic.pawn.l_1.jpg';
-    var pcImg = 'images/products/first_move/pieces/pieces_Stoic.P.FFFFFF.jpg';
+    var pcImg = 'images/products/first_move/pieces/pieces_Stoic.P.FFFFFF/resource/0.png';
 
     rank4Content.innerHTML =
       '<div class="subline-grid">' +
@@ -1122,7 +1144,7 @@
     setTimeout(function() {
       var pool = getImagePool();
       var cbPool = pool.filter(function(p) { return p.indexOf('/chessboards/') !== -1 && /_1\.jpg$/.test(p); });
-      var pcPool = pool.filter(function(p) { return p.indexOf('/pieces/') !== -1; });
+      var pcPool = getPiecePNGPool();
       var cbBg = rank4Content.querySelector('.subline-card[data-subline="chessboards"] .subline-card-bg');
       var pcBg = rank4Content.querySelector('.subline-card[data-subline="pieces"] .subline-card-bg');
       if (cbBg && cbPool.length) startElementCycler(cbBg, cbPool, 5000);
@@ -1250,7 +1272,7 @@
         if (cp.length) startElementCycler(bgEl, cp, 5500);
       } else if (lineKey) {
         var lp = LINE_IMAGE_PREFIX[lineKey] || lineKey;
-        var lcp = pool.filter(function(p) { return p.indexOf('pieces_' + lp + '.') !== -1; });
+        var lcp = getPiecePNGPool().filter(function(p) { return p.indexOf('pieces_' + lp + '.') !== -1; });
         if (lcp.length) startElementCycler(bgEl, lcp, 5500);
       }
     }
@@ -1465,8 +1487,11 @@
 
     var pieceGrid = ['P','B','N','R','Q','K'].map(function(p) {
       var sel = STATE.selectedPiece === p ? ' selected' : '';
+      var pngSrc = getProductPNGPath(lineData.id, p, STATE.selectedColorway);
+      var jpgSrc = getProductImagePath(lineData.id, p, STATE.selectedColorway);
       return '<button class="cb-piece-btn' + sel + '" data-piece="' + p + '">' +
-             '<span class="cb-piece-btn-icon">' + PIECE_ICONS[p] + '</span>' +
+             '<img class="cb-piece-btn-img" src="' + pngSrc + '" data-jpg="' + jpgSrc + '" ' +
+             'onerror="if(this.src!==this.dataset.jpg){this.src=this.dataset.jpg}" alt="">' +
              '<span>' + PIECE_NAMES[p] + '</span>' +
              '</button>';
     }).join('');
@@ -1548,6 +1573,16 @@
         pcSwatches.forEach(function(b) { b.classList.remove('selected'); });
         btn.classList.add('selected');
         STATE.selectedColorway = btn.dataset.cw;
+        // Refresh piece button thumbnails for the new colorway
+        rank6Content.querySelectorAll('.cb-piece-btn[data-piece]').forEach(function(pieceBtn) {
+          var img = pieceBtn.querySelector('.cb-piece-btn-img');
+          if (img) {
+            var p = pieceBtn.dataset.piece;
+            img.dataset.jpg = getProductImagePath(lineData.id, p, STATE.selectedColorway);
+            img.onerror = function() { img.src = img.dataset.jpg; img.onerror = null; };
+            img.src = getProductPNGPath(lineData.id, p, STATE.selectedColorway);
+          }
+        });
         updatePreview();
       });
     });

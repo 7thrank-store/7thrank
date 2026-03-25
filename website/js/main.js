@@ -1044,7 +1044,7 @@
     if (cyclingBgEl) {
       var allPool   = getImagePool();
       var cbPool    = allPool.filter(function(p) { return p.indexOf('/chessboards/') !== -1 && /_1\.jpg$/.test(p); });
-      var pcPool    = getPiecePNGPool();
+      var pcPool    = allPool.filter(function(p) { return p.indexOf('/pieces/') !== -1; });
       var useCB     = true;
       function cycleCollectionThumb() {
         var pool = (useCB && cbPool.length) ? cbPool : (pcPool.length ? pcPool : cbPool);
@@ -1124,7 +1124,7 @@
     if (!rank4Content) return;
 
     var cbImg = 'images/products/first_move/chessboards/chessboards_ic.pawn.l_1.jpg';
-    var pcImg = 'images/products/first_move/pieces/pieces_Stoic.P.FFFFFF/resource/0.png';
+    var pcImg = 'images/products/first_move/pieces/pieces_Stoic.P.FFFFFF.jpg';
 
     rank4Content.innerHTML =
       '<div class="subline-grid">' +
@@ -1144,7 +1144,7 @@
     setTimeout(function() {
       var pool = getImagePool();
       var cbPool = pool.filter(function(p) { return p.indexOf('/chessboards/') !== -1 && /_1\.jpg$/.test(p); });
-      var pcPool = getPiecePNGPool();
+      var pcPool = pool.filter(function(p) { return p.indexOf('/pieces/') !== -1; });
       var cbBg = rank4Content.querySelector('.subline-card[data-subline="chessboards"] .subline-card-bg');
       var pcBg = rank4Content.querySelector('.subline-card[data-subline="pieces"] .subline-card-bg');
       if (cbBg && cbPool.length) startElementCycler(cbBg, cbPool, 5000);
@@ -1272,7 +1272,7 @@
         if (cp.length) startElementCycler(bgEl, cp, 5500);
       } else if (lineKey) {
         var lp = LINE_IMAGE_PREFIX[lineKey] || lineKey;
-        var lcp = getPiecePNGPool().filter(function(p) { return p.indexOf('pieces_' + lp + '.') !== -1; });
+        var lcp = pool.filter(function(p) { return p.indexOf('pieces_' + lp + '.') !== -1; });
         if (lcp.length) startElementCycler(bgEl, lcp, 5500);
       }
     }

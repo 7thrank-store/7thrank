@@ -113,7 +113,7 @@
       confirmBg: '#B58863', confirmText: '#F0D9B5',
       wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
     },
-    ic: null,
+    ic: { confirmBg: '#BFEFFF', confirmText: '#0D1B2A' },
     s: {
       unselText: '#FFFFFF', unselBorder: '#FFFFFF',
       selBg: '#FFFFFF', selText: '#535353', selBorder: '#535353',
@@ -147,7 +147,7 @@
       confirmBg: '#B58863', confirmText: '#F0D9B5',
       wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
     },
-    ti: null,
+    ti: { confirmBg: '#BFEFFF', confirmText: '#0D1B2A' },
     pasture: {
       selBg: '#255525', selText: '#FFFFFF', selBorder: '#FFFFFF',
       hoverBg: 'rgba(37,85,37,0.22)',

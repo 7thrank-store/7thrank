@@ -103,6 +103,80 @@
   var CHESSBOARD_PRICE = 99;
   var PIECES_PRICE     = 69;
 
+  /* Rank-6 modification color schemes — per variant/line */
+  var CB_MOD_COLORS = {
+    ww: {
+      selBg: '#F0D9B5', selText: null, selBorder: '#0D1B2A',
+      hoverBg: 'rgba(240,217,181,0.22)',
+      cartBg: '#F0D9B5', cartText: '#0D1B2A', cartBorder: '#0D1B2A',
+      cartHoverBg: '#B58863', cartHoverText: '#F0D9B5',
+      confirmBg: '#B58863', confirmText: '#F0D9B5',
+      wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
+    },
+    ic: null,
+    s: {
+      unselText: '#FFFFFF', unselBorder: '#FFFFFF',
+      selBg: '#FFFFFF', selText: '#535353', selBorder: '#535353',
+      hoverBg: 'rgba(255,255,255,0.22)',
+      cartBg: '#FFFFFF', cartText: '#535353', cartBorder: '#535353',
+      cartHoverBg: '#535353', cartHoverText: '#FFFFFF',
+      confirmBg: '#535353', confirmText: '#FFFFFF',
+      wishlistText: '#FFFFFF', wishlistBorder: '#FFFFFF',
+      wishlistHoverBg: '#FFFFFF', wishlistHoverText: '#535353', wishlistHoverBorder: '#535353'
+    },
+    pp: {
+      selBg: '#FBD9E1', selText: null, selBorder: null,
+      hoverBg: 'rgba(251,217,225,0.22)',
+      confirmBg: '#FBD9E1', confirmText: null,
+      wishlistHoverBg: '#FBD9E1', wishlistHoverText: null, wishlistHoverBorder: null
+    }
+  };
+
+  var PC_MOD_COLORS = {
+    stoic: {
+      selBg: '#000000', selText: '#FFFFFF', selBorder: '#FFFFFF',
+      hoverBg: 'rgba(0,0,0,0.22)',
+      confirmBg: '#000000', confirmText: '#FFFFFF',
+      wishlistHoverBg: '#000000', wishlistHoverText: '#FFFFFF', wishlistHoverBorder: '#FFFFFF'
+    },
+    grain: {
+      selBg: '#F0D9B5', selText: null, selBorder: '#0D1B2A',
+      hoverBg: 'rgba(240,217,181,0.22)',
+      cartBg: '#F0D9B5', cartText: '#0D1B2A', cartBorder: '#0D1B2A',
+      cartHoverBg: '#B58863', cartHoverText: '#F0D9B5',
+      confirmBg: '#B58863', confirmText: '#F0D9B5',
+      wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
+    },
+    ti: null,
+    pasture: {
+      selBg: '#255525', selText: '#FFFFFF', selBorder: '#FFFFFF',
+      hoverBg: 'rgba(37,85,37,0.22)',
+      wishlistHoverBg: '#255525', wishlistHoverText: '#FFFFFF', wishlistHoverBorder: '#FFFFFF'
+    },
+    harmony: {
+      selBg: '#000000', selText: '#FFFFFF', selBorder: '#FFFFFF',
+      hoverBg: 'rgba(0,0,0,0.22)',
+      confirmBg: '#000000', confirmText: '#FFFFFF',
+      wishlistHoverBg: '#000000', wishlistHoverText: '#FFFFFF', wishlistHoverBorder: '#FFFFFF'
+    }
+  };
+
+  /* Rank-5 hover name colors — per hovered variant, what color each card name becomes */
+  var CB_HOVER_COLORS = {
+    ww: { scrollbar: '#B58863', names: { ww: '#B58863', ic: '#F0D9B5', s: '#B58863', pp: '#F0D9B5' } },
+    ic: { scrollbar: '#BFEFFF', names: { ww: '#FFFEEF', ic: '#BFEFFF', s: '#FFFEEF', pp: '#BFEFFF' } },
+    s:  { scrollbar: '#535353', names: { ww: '#535353', ic: '#FFFFFF', s: '#535353', pp: '#FFFFFF' } },
+    pp: { scrollbar: '#FBD9E1', names: { ww: '#FFFFFF', ic: '#FBD9E1', s: '#FFFFFF', pp: '#FBD9E1' } }
+  };
+
+  var PC_HOVER_COLORS = {
+    stoic:   { scrollbar: '#000000', names: null },
+    grain:   { scrollbar: '#B58863', names: { stoic: '#B58863', grain: '#F0D9B5', ti: '#B58863', pasture: '#F0D9B5', harmony: '#B58863' } },
+    ti:      { scrollbar: '#BFEFFF', names: { stoic: '#FFFEEF', grain: '#BFEFFF', ti: '#FFFEEF', pasture: '#BFEFFF', harmony: '#FFFEEF' } },
+    pasture: { scrollbar: '#255525', names: { stoic: '#F0D9B5', grain: '#F0D9B5', ti: '#FBD9E1', pasture: '#255525', harmony: '#F0D9B5' } },
+    harmony: { scrollbar: '#FFFFFF', names: null }
+  };
+
   /* Pieces (crewneck) line data — now under Pieces sub-line */
   var PIECES_LINE_DATA = {
     stoic:   { id: 'stoic',   name: 'Stoic',    colors: ['#FFFFFF','#000000'], colorways: ['FFFFFF','F0D9B5','B58863','D4AF37','FBD9E1'] },
@@ -118,7 +192,7 @@
       id: 'first-move',
       name: 'First Move',
       description: 'Limited and Exclusive. For those bold enough to make the First Move.',
-      badge: 'Available Now',
+      badge: 'Coming Soon',
       thumbnail: null,  // cycles dynamically
       subLines: ['chessboards', 'pieces']
     },
@@ -689,6 +763,41 @@
     rankEl.style.removeProperty('--rank-accent-shadow');
   }
 
+  var MOD_COLOR_VARS = [
+    '--mod-sel-bg','--mod-sel-text','--mod-sel-border',
+    '--mod-unsel-text','--mod-unsel-border','--mod-hover-bg',
+    '--mod-cart-bg','--mod-cart-text','--mod-cart-border',
+    '--mod-cart-hover-bg','--mod-cart-hover-text',
+    '--mod-confirm-bg','--mod-confirm-text',
+    '--mod-wishlist-text','--mod-wishlist-border',
+    '--mod-wishlist-hover-bg','--mod-wishlist-hover-text','--mod-wishlist-hover-border'
+  ];
+
+  function applyModColors(rankEl, scheme) {
+    if (!rankEl) return;
+    // Clear all mod vars first
+    MOD_COLOR_VARS.forEach(function(v) { rankEl.style.removeProperty(v); });
+    if (!scheme) return;
+    if (scheme.selBg)              rankEl.style.setProperty('--mod-sel-bg',              scheme.selBg);
+    if (scheme.selText)            rankEl.style.setProperty('--mod-sel-text',            scheme.selText);
+    if (scheme.selBorder)          rankEl.style.setProperty('--mod-sel-border',          scheme.selBorder);
+    if (scheme.unselText)          rankEl.style.setProperty('--mod-unsel-text',          scheme.unselText);
+    if (scheme.unselBorder)        rankEl.style.setProperty('--mod-unsel-border',        scheme.unselBorder);
+    if (scheme.hoverBg)            rankEl.style.setProperty('--mod-hover-bg',            scheme.hoverBg);
+    if (scheme.cartBg)             rankEl.style.setProperty('--mod-cart-bg',             scheme.cartBg);
+    if (scheme.cartText)           rankEl.style.setProperty('--mod-cart-text',           scheme.cartText);
+    if (scheme.cartBorder)         rankEl.style.setProperty('--mod-cart-border',         scheme.cartBorder);
+    if (scheme.cartHoverBg)        rankEl.style.setProperty('--mod-cart-hover-bg',       scheme.cartHoverBg);
+    if (scheme.cartHoverText)      rankEl.style.setProperty('--mod-cart-hover-text',     scheme.cartHoverText);
+    if (scheme.confirmBg)          rankEl.style.setProperty('--mod-confirm-bg',          scheme.confirmBg);
+    if (scheme.confirmText)        rankEl.style.setProperty('--mod-confirm-text',        scheme.confirmText);
+    if (scheme.wishlistText)       rankEl.style.setProperty('--mod-wishlist-text',       scheme.wishlistText);
+    if (scheme.wishlistBorder)     rankEl.style.setProperty('--mod-wishlist-border',     scheme.wishlistBorder);
+    if (scheme.wishlistHoverBg)    rankEl.style.setProperty('--mod-wishlist-hover-bg',   scheme.wishlistHoverBg);
+    if (scheme.wishlistHoverText)  rankEl.style.setProperty('--mod-wishlist-hover-text', scheme.wishlistHoverText);
+    if (scheme.wishlistHoverBorder) rankEl.style.setProperty('--mod-wishlist-hover-border', scheme.wishlistHoverBorder);
+  }
+
   /* ══════════════════════════════════════════════════
      SCROLL NAVIGATION
   ══════════════════════════════════════════════════ */
@@ -763,11 +872,14 @@
     var bypassRanks   = direction === 'down' ? ['rank-4','rank-5','rank-6'] : ['rank-6','rank-5','rank-4'];
     var targetSection = direction === 'down' ? 'rank-7' : 'rank-3';
 
-    // Reveal bypassed ranks so they're visible during the glide
-    bypassRanks.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.removeAttribute('hidden');
-    });
+    // Only reveal bypassed ranks in shopping mode — in default mode they're
+    // empty (no content rendered) and showing blank dark squares is confusing.
+    if (STATE.mode !== 'default') {
+      bypassRanks.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.removeAttribute('hidden');
+      });
+    }
 
     // Suspend scroll-snap so the programmatic scroll moves freely
     board.style.scrollSnapType = 'none';
@@ -920,7 +1032,29 @@
 
   function updateNavDots(sectionId) {
     navDots.forEach(function(dot) {
+      if (dot.classList.contains('rank-nav-dot--hidden')) return;
       dot.classList.toggle('active', dot.dataset.rank === sectionId);
+    });
+  }
+
+  function showNavDot(rankId) {
+    var dot = document.querySelector('.rank-nav-dot[data-rank="' + rankId + '"]');
+    if (dot) {
+      dot.classList.remove('rank-nav-dot--hidden');
+      dot.removeAttribute('aria-hidden');
+      dot.setAttribute('tabindex', '0');
+    }
+  }
+
+  function resetNavDots() {
+    ['rank-4', 'rank-5', 'rank-6'].forEach(function(id) {
+      var dot = document.querySelector('.rank-nav-dot[data-rank="' + id + '"]');
+      if (dot) {
+        dot.classList.add('rank-nav-dot--hidden');
+        dot.setAttribute('aria-hidden', 'true');
+        dot.setAttribute('tabindex', '-1');
+        dot.classList.remove('active');
+      }
     });
   }
 
@@ -1122,6 +1256,7 @@
   ══════════════════════════════════════════════════ */
   function renderSubLineSelector(collection) {
     if (!rank4Content) return;
+    showNavDot('rank-4');
 
     var cbImg = 'images/products/first_move/chessboards/chessboards_ic.pawn.l_1.jpg';
     var pcImg = 'images/products/first_move/pieces/pieces_Stoic.P.FFFFFF.jpg';
@@ -1161,6 +1296,7 @@
 
   function selectSubLine(type) {
     STATE.selectedSubLine = type;
+    showNavDot('rank-5');
     // Reset palette theming from any previous selection
     clearRankColors(document.getElementById('rank-5'));
     clearRankColors(document.getElementById('rank-6'));
@@ -1207,6 +1343,7 @@
       if (r5) r5.setAttribute('hidden', '');
       if (r6) r6.setAttribute('hidden', '');
 
+      resetNavDots();
       renderSubLineSelector(collection);
       var rank4Label = document.getElementById('rank-4-label');
       if (rank4Label) rank4Label.textContent = collection.name;
@@ -1283,6 +1420,56 @@
 
     var rank5El = document.getElementById('rank-5');
 
+    var scrollbarThumb = rank5El ? rank5El.querySelector('.rank5-scrollbar-thumb') : null;
+
+    function applyRank5HoverCB(varId) {
+      var v = CHESSBOARD_VARIANTS[varId];
+      if (!v) return;
+      updateRankColors(rank5El, v.lightColor, v.darkColor);
+      var scheme = CB_HOVER_COLORS[varId];
+      if (scheme) {
+        if (scrollbarThumb) scrollbarThumb.style.background = scheme.scrollbar;
+        rank5Content.querySelectorAll('.product-card[data-variant-id]').forEach(function(c) {
+          var nameEl = c.querySelector('.product-card-name');
+          if (nameEl && scheme.names) nameEl.style.color = scheme.names[c.dataset.variantId] || '';
+        });
+      }
+    }
+
+    function clearRank5HoverCB() {
+      if (STATE.selectedCBVariant) {
+        applyRank5HoverCB(STATE.selectedCBVariant);
+      } else {
+        clearRankColors(rank5El);
+        if (scrollbarThumb) scrollbarThumb.style.background = '';
+        rank5Content.querySelectorAll('.product-card-name').forEach(function(el) { el.style.color = ''; });
+      }
+    }
+
+    function applyRank5HoverPC(lineKey) {
+      var lineData = PIECES_LINE_DATA[lineKey];
+      if (!lineData) return;
+      updateRankColors(rank5El, lineData.colors[0], lineData.colors[1]);
+      var scheme = PC_HOVER_COLORS[lineKey];
+      if (scheme) {
+        if (scrollbarThumb) scrollbarThumb.style.background = scheme.scrollbar;
+        rank5Content.querySelectorAll('.product-card[data-line-id]').forEach(function(c) {
+          var nameEl = c.querySelector('.product-card-name');
+          if (nameEl && scheme.names) nameEl.style.color = scheme.names[c.dataset.lineId] || '';
+        });
+      }
+    }
+
+    function clearRank5HoverPC() {
+      if (STATE.selectedLine) {
+        applyRank5HoverPC(STATE.selectedLine.id);
+      } else {
+        clearRankColors(rank5El);
+        if (scrollbarThumb) scrollbarThumb.style.background = '';
+        rank5Content.querySelectorAll('.product-card-name').forEach(function(el) { el.style.color = ''; });
+      }
+    }
+
     // Chessboard variant selection
     rank5Content.querySelectorAll('.product-card[data-variant-id]').forEach(function(card) {
       card.addEventListener('click', function() {
@@ -1294,19 +1481,8 @@
         renderChessboardCustomization(varId);
         scrollToSection('rank-6', 'smooth');
       });
-      card.addEventListener('mouseenter', function() {
-        var v = CHESSBOARD_VARIANTS[card.dataset.variantId];
-        if (v) updateRankColors(rank5El, v.lightColor, v.darkColor);
-      });
-      card.addEventListener('mouseleave', function() {
-        // Restore to selected variant colors if one is selected, else clear
-        if (STATE.selectedCBVariant) {
-          var sel = CHESSBOARD_VARIANTS[STATE.selectedCBVariant];
-          updateRankColors(rank5El, sel.lightColor, sel.darkColor);
-        } else {
-          clearRankColors(rank5El);
-        }
-      });
+      card.addEventListener('mouseenter', function() { applyRank5HoverCB(card.dataset.variantId); });
+      card.addEventListener('mouseleave', clearRank5HoverCB);
       card.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
       });
@@ -1318,24 +1494,13 @@
         var lineKey = card.dataset.lineId;
         var lineData = PIECES_LINE_DATA[lineKey];
         STATE.selectedLine = lineData;
-        var lightColor = lineData.colors[0];
-        var darkColor  = lineData.colors[1];
-        updateRankColors(rank5El, lightColor, darkColor);
+        updateRankColors(rank5El, lineData.colors[0], lineData.colors[1]);
         updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Pieces', lineData.name]);
         renderPiecesCustomization(lineData);
         scrollToSection('rank-6', 'smooth');
       });
-      card.addEventListener('mouseenter', function() {
-        var lineData = PIECES_LINE_DATA[card.dataset.lineId];
-        if (lineData) updateRankColors(rank5El, lineData.colors[0], lineData.colors[1]);
-      });
-      card.addEventListener('mouseleave', function() {
-        if (STATE.selectedLine) {
-          updateRankColors(rank5El, STATE.selectedLine.colors[0], STATE.selectedLine.colors[1]);
-        } else {
-          clearRankColors(rank5El);
-        }
-      });
+      card.addEventListener('mouseenter', function() { applyRank5HoverPC(card.dataset.lineId); });
+      card.addEventListener('mouseleave', clearRank5HoverPC);
       card.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
       });
@@ -1353,6 +1518,7 @@
   ══════════════════════════════════════════════════ */
   function renderChessboardCustomization(varId) {
     if (!rank6Content) return;
+    showNavDot('rank-6');
     var r6 = document.getElementById('rank-6');
     if (r6) r6.removeAttribute('hidden');
     var r6Label = document.getElementById('rank-6-label');
@@ -1362,7 +1528,9 @@
     if (!STATE.selectedCBPiece)    STATE.selectedCBPiece    = 'pawn';
     if (!STATE.selectedCBLocation) STATE.selectedCBLocation = 'l';
 
-    updateRankColors(document.getElementById('rank-6'), v.lightColor, v.darkColor);
+    var r6El = document.getElementById('rank-6');
+    updateRankColors(r6El, v.lightColor, v.darkColor);
+    applyModColors(r6El, CB_MOD_COLORS[varId] || null);
 
     function buildHtml() {
       var previewSrc = getChessboardImagePath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
@@ -1467,6 +1635,7 @@
   ══════════════════════════════════════════════════ */
   function renderPiecesCustomization(lineData) {
     if (!rank6Content) return;
+    showNavDot('rank-6');
     var r6 = document.getElementById('rank-6');
     if (r6) r6.removeAttribute('hidden');
     var r6Label = document.getElementById('rank-6-label');
@@ -1480,7 +1649,9 @@
 
     var lightColor = lineData.colors[0];
     var darkColor  = lineData.colors[1];
-    updateRankColors(document.getElementById('rank-6'), lightColor, darkColor);
+    var r6ElPc = document.getElementById('rank-6');
+    updateRankColors(r6ElPc, lightColor, darkColor);
+    applyModColors(r6ElPc, PC_MOD_COLORS[lineData.id] || null);
 
     var previewSrc = getProductPNGPath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
     var previewJpg = getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
@@ -1624,6 +1795,7 @@
     var existing = STATE.cart.find(function(i) { return cartItemKey(i) === key; });
     if (existing) { existing.qty += 1; } else { STATE.cart.push(newItem); }
     updateCartUI();
+    saveCart();
     flashAddToCart();
   }
 
@@ -1653,6 +1825,7 @@
     var existing = STATE.cart.find(function(i) { return cartItemKey(i) === key; });
     if (existing) { existing.qty += 1; } else { STATE.cart.push(newItem); }
     updateCartUI();
+    saveCart();
     flashAddToCart();
   }
 
@@ -1661,18 +1834,17 @@
     if (!btn) return;
     var orig = btn.textContent;
     btn.textContent = 'Added ♛';
-    btn.style.background = '#2d5a3d';
-    btn.style.borderColor = '#2d5a3d';
+    btn.classList.add('btn-confirmed');
     setTimeout(function() {
       btn.textContent = orig;
-      btn.style.background = '';
-      btn.style.borderColor = '';
+      btn.classList.remove('btn-confirmed');
     }, 2000);
   }
 
   function removeFromCart(itemId) {
     STATE.cart = STATE.cart.filter(function(i) { return i.id !== itemId; });
     updateCartUI();
+    saveCart();
   }
 
   function updateCartUI() {
@@ -2055,6 +2227,7 @@
     STATE.cart          = [];
     STATE.appliedPromo  = null;
     updateCartUI();
+    saveCart();
 
     scrollToSection('rank-8', 'smooth');
     exitShoppingMode();
@@ -2078,6 +2251,7 @@
       var el = document.getElementById(id);
       if (el) el.setAttribute('hidden', '');
     });
+    resetNavDots();
 
     showContactRank7();
   }
@@ -2106,6 +2280,27 @@
     if (cartDrawer)   cartDrawer.classList.remove('open');
     if (cartBackdrop) cartBackdrop.classList.remove('active');
     if (cartDrawer)   cartDrawer.setAttribute('aria-hidden', 'true');
+  }
+
+  var CART_STORAGE_KEY = '7thrank_cart_v1';
+
+  function saveCart() {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(STATE.cart));
+    } catch(e) {}
+  }
+
+  function restoreCart() {
+    try {
+      var raw = localStorage.getItem(CART_STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          STATE.cart = parsed;
+          updateCartUI();
+        }
+      }
+    } catch(e) {}
   }
 
   function initCart() {
@@ -2553,6 +2748,8 @@
     initCart();
     initMobileMenu();
     initNavDots();
+    resetNavDots(); // ensure rank-4/5/6 dots are hidden on every fresh load
+    restoreCart();  // reload persisted cart items from localStorage
     initHeaderNav();
     initObservers();
     initHeaderScroll();

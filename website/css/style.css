@@ -497,7 +497,7 @@ ul, ol {
   top: 0;
   left: 0;
   height: 100%;
-  background: var(--gold);
+  background: var(--rank5-scrollbar-color, var(--gold));
   border-radius: 3px;
   cursor: ew-resize;
   pointer-events: all;
@@ -2012,6 +2012,7 @@ ul, ol {
 
 .rank-nav-dot:hover { opacity: 0.7; transform: scale(1.3); }
 .rank-nav-dot.active { opacity: 1; background: var(--gold); transform: scale(1.4); }
+.rank-nav-dot--hidden { display: none !important; }
 
 /* Labels removed — dots only */
 
@@ -2718,15 +2719,19 @@ ul, ol {
   transition: border-color 0.2s, background 0.2s;
 }
 
+.cb-piece-btn {
+  color: var(--mod-unsel-text, inherit);
+  border-color: var(--mod-unsel-border, rgba(160,160,160,0.5));
+}
 .cb-piece-btn:hover {
-  border-color: #5BB8D4;
-  background: rgba(91,184,212,0.18);
+  border-color: var(--mod-sel-border, #5BB8D4);
+  background: var(--mod-hover-bg, rgba(91,184,212,0.18));
 }
 .cb-piece-btn.selected {
-  background: #5BB8D4;
-  border-color: #5BB8D4;
+  background: var(--mod-sel-bg, #5BB8D4);
+  border-color: var(--mod-sel-border, #5BB8D4);
   border-width: 2px;
-  color: #0D1B2A;
+  color: var(--mod-sel-text, #0D1B2A);
   opacity: 1;
 }
 
@@ -2754,15 +2759,19 @@ ul, ol {
   transition: border-color 0.2s, background 0.2s;
 }
 
+.cb-location-btn {
+  color: var(--mod-unsel-text, inherit);
+  border-color: var(--mod-unsel-border, rgba(160,160,160,0.5));
+}
 .cb-location-btn:hover {
-  border-color: #5BB8D4;
-  background: rgba(91,184,212,0.18);
+  border-color: var(--mod-sel-border, #5BB8D4);
+  background: var(--mod-hover-bg, rgba(91,184,212,0.18));
 }
 .cb-location-btn.selected {
-  background: #5BB8D4;
-  border-color: #5BB8D4;
+  background: var(--mod-sel-bg, #5BB8D4);
+  border-color: var(--mod-sel-border, #5BB8D4);
   border-width: 2px;
-  color: #0D1B2A;
+  color: var(--mod-sel-text, #0D1B2A);
   opacity: 1;
 }
 
@@ -3006,6 +3015,41 @@ ul, ol {
   background: rgba(91,184,212,0.18);
   border-color: #5BB8D4;
   color: #5BB8D4;
+}
+
+/* ── Rank-6 modification color overrides (set via CSS vars by JS) ── */
+#rank-6 .btn-wishlist {
+  color: var(--mod-wishlist-text, var(--ui-text-dark, var(--sq-dark-text)));
+  border-color: var(--mod-wishlist-border, currentColor);
+}
+#rank-6 .btn-wishlist:hover {
+  opacity: 1;
+  background: var(--mod-wishlist-hover-bg, rgba(91,184,212,0.18));
+  border-color: var(--mod-wishlist-hover-border, #5BB8D4);
+  color: var(--mod-wishlist-hover-text, #5BB8D4);
+}
+#rank-6 .btn-primary {
+  background: var(--mod-cart-bg, var(--rank-accent, var(--gold)));
+  color: var(--mod-cart-text, var(--rank-accent-text, var(--sq-dark)));
+  border-color: var(--mod-cart-border, var(--rank-accent, var(--gold)));
+}
+#rank-6 .btn-primary:hover {
+  background: var(--mod-cart-hover-bg, var(--rank-accent, var(--gold-bright)));
+  color: var(--mod-cart-hover-text, var(--rank-accent-text, var(--sq-dark)));
+  border-color: var(--mod-cart-hover-bg, var(--rank-accent, var(--gold-bright)));
+  filter: brightness(1.05);
+}
+#rank-6 .btn-primary.btn-confirmed {
+  background: var(--mod-confirm-bg, #2d5a3d) !important;
+  color: var(--mod-confirm-text, #FFFFFF) !important;
+  border-color: var(--mod-confirm-bg, #2d5a3d) !important;
+  filter: none !important;
+}
+#rank-6 .size-btn.selected,
+#rank-6 .size-btn:hover {
+  background: var(--mod-sel-bg, var(--rank-accent, var(--gold)));
+  border-color: var(--mod-sel-border, var(--rank-accent, var(--gold)));
+  color: var(--mod-sel-text, var(--rank-accent-text, var(--sq-dark)));
 }
 
 /* ════════════════════════════════════════════════════════

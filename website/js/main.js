@@ -1487,11 +1487,8 @@
 
     var pieceGrid = ['P','B','N','R','Q','K'].map(function(p) {
       var sel = STATE.selectedPiece === p ? ' selected' : '';
-      var pngSrc = getProductPNGPath(lineData.id, p, STATE.selectedColorway);
-      var jpgSrc = getProductImagePath(lineData.id, p, STATE.selectedColorway);
       return '<button class="cb-piece-btn' + sel + '" data-piece="' + p + '">' +
-             '<img class="cb-piece-btn-img" src="' + pngSrc + '" data-jpg="' + jpgSrc + '" ' +
-             'onerror="if(this.src!==this.dataset.jpg){this.src=this.dataset.jpg}" alt="">' +
+             '<span class="cb-piece-btn-icon">' + PIECE_ICONS[p] + '</span>' +
              '<span>' + PIECE_NAMES[p] + '</span>' +
              '</button>';
     }).join('');
@@ -1573,16 +1570,6 @@
         pcSwatches.forEach(function(b) { b.classList.remove('selected'); });
         btn.classList.add('selected');
         STATE.selectedColorway = btn.dataset.cw;
-        // Refresh piece button thumbnails for the new colorway
-        rank6Content.querySelectorAll('.cb-piece-btn[data-piece]').forEach(function(pieceBtn) {
-          var img = pieceBtn.querySelector('.cb-piece-btn-img');
-          if (img) {
-            var p = pieceBtn.dataset.piece;
-            img.dataset.jpg = getProductImagePath(lineData.id, p, STATE.selectedColorway);
-            img.onerror = function() { img.src = img.dataset.jpg; img.onerror = null; };
-            img.src = getProductPNGPath(lineData.id, p, STATE.selectedColorway);
-          }
-        });
         updatePreview();
       });
     });

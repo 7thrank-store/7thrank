@@ -2656,6 +2656,10 @@
               var innerAtTop = !innerEl || innerEl.scrollTop <= 0;
               if (innerAtTop) scrollToSection(backTarget, 'smooth');
             }
+          } else if (direction === 'down' && STATE.currentSection === 'rank-6') {
+            var innerEl = document.querySelector('.cb-customization, .pieces-customization');
+            var atBottom = !innerEl || (innerEl.scrollTop + innerEl.clientHeight >= innerEl.scrollHeight - 20);
+            if (atBottom) scrollToSection('rank-7', 'smooth');
           }
           return;
         }

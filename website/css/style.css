@@ -3556,8 +3556,14 @@ ul, ol {
        and accidentally snap to rank-7 (Contact). Up-swipe back-navigation is
        handled explicitly by the JS touchend handler when scrollTop === 0. */
     overscroll-behavior-y: none;
-    /* Extra bottom clearance for Safari's floating toolbar + device safe area */
-    padding-bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 5rem));
+    /* Android/default: small clearance */
+    padding-bottom: 1.5rem;
+  }
+  /* iOS Safari only: extra clearance for floating toolbar */
+  @supports (-webkit-touch-callout: none) {
+    .cb-customization {
+      padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5rem));
+    }
   }
   .cb-image-col {
     height: 62vw;

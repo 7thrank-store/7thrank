@@ -924,12 +924,20 @@
   var wheelCooldown = 1200; // ms
 
   function handleWheel(e) {
-    if (STATE.isScrolling || STATE.isBypassing) return;
+    // Block native scroll during any programmatic animation — without this,
+    // rapid trackpad events fight the bypass animation and cause flashing.
+    if (STATE.isBypassing || STATE.isAnimating) {
+      e.preventDefault();
+      return;
+    }
 
     var now = Date.now();
     if (now - lastWheelTime < wheelCooldown) return;
 
     if (STATE.mode !== 'default') return; // shopping mode: normal scroll
+
+    // Ignore tiny trackpad micro-scrolls that shouldn't trigger a bypass
+    if (Math.abs(e.deltaY) < 10) return;
 
     var direction = e.deltaY > 0 ? 'down' : 'up';
 

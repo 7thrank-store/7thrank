@@ -2482,7 +2482,7 @@ ul, ol {
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
     gap: 0;
     padding-bottom: 2px;
   }
@@ -2500,7 +2500,7 @@ ul, ol {
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
     gap: 0;
     padding-bottom: 2px;
     /* Reset grid */

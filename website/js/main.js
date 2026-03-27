@@ -921,41 +921,57 @@
    * In default mode: rank-7 → rank-3 (bypassing 6-5-4)
    */
   var lastWheelTime = 0;
-  var wheelCooldown = 1200; // ms
+  var wheelCooldown = 1200; // ms — longer than both the 600ms scroll and 900ms bypass animations
+
+  // Visible sections in default mode (ranks 4-6 hidden, rank-8 hidden)
+  var DEFAULT_SECTIONS = ['landing', 'rank-3', 'rank-7'];
 
   function handleWheel(e) {
-    // Block native scroll during any programmatic animation — without this,
-    // rapid trackpad events fight the bypass animation and cause flashing.
+    // Always block native scroll during programmatic animation.
+    // Without this, rapid trackpad events fight the animation and cause flashing.
     if (STATE.isBypassing || STATE.isAnimating) {
       e.preventDefault();
       return;
     }
 
-    var now = Date.now();
-    if (now - lastWheelTime < wheelCooldown) return;
+    if (STATE.mode !== 'default') return; // shopping mode: native scroll handles it
 
-    if (STATE.mode !== 'default') return; // shopping mode: normal scroll
-
-    // Ignore tiny trackpad micro-scrolls that shouldn't trigger a bypass
+    // Ignore sub-threshold trackpad micro-scrolls
     if (Math.abs(e.deltaY) < 10) return;
+
+    var now = Date.now();
+    // During cooldown: suppress native scroll so the same gesture can't jump
+    // a second page. This is the key fix for trackpad 2-page skips.
+    if (now - lastWheelTime < wheelCooldown) {
+      e.preventDefault();
+      return;
+    }
 
     var direction = e.deltaY > 0 ? 'down' : 'up';
 
-    // Bypass trigger: scrolling down from rank-3
+    // Bypass cases
     if (STATE.currentSection === 'rank-3' && direction === 'down') {
       e.preventDefault();
       lastWheelTime = now;
       bypassMiddleRanks('down');
       return;
     }
-
-    // Bypass trigger: scrolling up from rank-7
     if (STATE.currentSection === 'rank-7' && direction === 'up') {
       e.preventDefault();
       lastWheelTime = now;
       bypassMiddleRanks('up');
       return;
     }
+
+    // All other default-mode sections (landing ↔ rank-3, rank-7 ↔ rank-8 etc.):
+    // take full control so CSS snap momentum can't skip two sections at once.
+    var idx = DEFAULT_SECTIONS.indexOf(STATE.currentSection);
+    if (idx === -1) return;
+    var nextIdx = direction === 'down' ? idx + 1 : idx - 1;
+    if (nextIdx < 0 || nextIdx >= DEFAULT_SECTIONS.length) return;
+    e.preventDefault();
+    lastWheelTime = now;
+    scrollToSection(DEFAULT_SECTIONS[nextIdx], 'smooth');
   }
 
   /* ══════════════════════════════════════════════════

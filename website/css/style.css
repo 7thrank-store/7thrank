@@ -2737,6 +2737,10 @@ ul, ol {
 
 .cb-piece-btn-icon {
   font-size: 1.4rem;
+  /* Prevent iOS from substituting emoji font for chess glyphs */
+  font-family: 'Apple Symbols', 'Segoe UI Symbol', 'Symbola', 'Arial Unicode MS', sans-serif;
+  line-height: 1;
+  display: block;
 }
 
 .cb-location-grid {
@@ -3548,9 +3552,12 @@ ul, ol {
     height: calc(100vh - var(--header-h));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    /* overscroll-behavior-y intentionally unset: allows scroll to propagate
-       to .chess-board when user swipes up from scrollTop=0, so they can
-       return to rank-5. With proximity snap on the board, bottom bleed is benign. */
+    /* Contain overscroll so bottom rubber-band doesn't propagate to .chess-board
+       and accidentally snap to rank-7 (Contact). Up-swipe back-navigation is
+       handled explicitly by the JS touchend handler when scrollTop === 0. */
+    overscroll-behavior-y: none;
+    /* Extra bottom clearance for Safari's floating toolbar + device safe area */
+    padding-bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 5rem));
   }
   .cb-image-col {
     height: 62vw;

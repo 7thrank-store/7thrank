@@ -54,8 +54,10 @@
     K: 'King'
   };
 
+  // \uFE0E = variation selector-15 (text presentation) — prevents iOS from
+  // rendering chess glyphs as coloured emoji; forces consistent text rendering.
   var PIECE_ICONS = {
-    P: '♟', B: '♝', N: '♞', R: '♜', Q: '♛', K: '♚'
+    P: '♟\uFE0E', B: '♝\uFE0E', N: '♞\uFE0E', R: '♜\uFE0E', Q: '♛\uFE0E', K: '♚\uFE0E'
   };
 
   var PIECE_PRICES = {
@@ -84,7 +86,7 @@
 
   var CHESSBOARD_PIECES_CB = ['pawn','rook','knight','bishop','queen','king'];
   var CHESSBOARD_PIECE_ICONS_CB = {
-    pawn: '♟', rook: '♜', knight: '♞', bishop: '♝', queen: '♛', king: '♚'
+    pawn: '♟\uFE0E', rook: '♜\uFE0E', knight: '♞\uFE0E', bishop: '♝\uFE0E', queen: '♛\uFE0E', king: '♚\uFE0E'
   };
   var CHESSBOARD_PIECE_NAMES_CB = {
     pawn: 'Pawn', rook: 'Rook', knight: 'Knight', bishop: 'Bishop', queen: 'Queen', king: 'King'
@@ -639,7 +641,7 @@
         if (maxLeft > 0) {
           if (container.scrollLeft >= maxLeft - 1) {
             container.scrollLeft = 0;
-            resume(500); // pause at the wrap point before scrolling again
+            resume(5000); // 5s pause at the wrap point before looping again
           } else {
             container.scrollLeft += speed;
           }
@@ -828,8 +830,10 @@
       board.style.scrollSnapType = 'none';
       smoothScrollTo(targetY, 600, function() {
         STATE.isAnimating = false;
-        // On mobile: position-based logic decides correct snap type for landing spot.
-        // On desktop: restore CSS snap directly.
+        // Manually sync section state — observer is suppressed during animation
+        STATE.currentSection = id;
+        updateNavDots(id);
+        updateHeader(id);
         if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
         if (callback) callback();
       });
@@ -904,8 +908,10 @@
       }
 
       STATE.isBypassing = false;
-      // On mobile: use position-based logic so rank-7 gets snap disabled immediately.
-      // On desktop: restore CSS snap (y mandatory from stylesheet).
+      // Manually sync section state — observer is suppressed during animation
+      STATE.currentSection = targetSection;
+      updateNavDots(targetSection);
+      updateHeader(targetSection);
       if (window.innerWidth <= 767) {
         applyMobileSnap();
       } else {
@@ -980,6 +986,9 @@
   var sectionObserver = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (!entry.isIntersecting) return;
+      // Suppress mid-animation: state is pushed manually in the animation callback
+      // to avoid nav dot flicker and header flash during bypass/scroll.
+      if (STATE.isBypassing || STATE.isAnimating) return;
       var id = entry.target.id || 'landing';
       if (!id) return;
       STATE.currentSection = id;

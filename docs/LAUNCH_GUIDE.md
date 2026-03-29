@@ -9,6 +9,7 @@
 ## Table of Contents
 
 1. [Pre-Launch Checklist](#1-pre-launch-checklist)
+   - 1.5 [Email Acquisition & Privacy Compliance](#15-email-acquisition--privacy-compliance)
 2. [Full Site Test Plan](#2-full-site-test-plan)
 3. [Hosting & Deployment](#3-hosting--deployment)
 4. [Shopify Integration](#4-shopify-integration)
@@ -16,13 +17,14 @@
 6. [Automated Workflows](#6-automated-workflows)
 7. [Post-Launch Monitoring](#7-post-launch-monitoring)
 8. [Inputs Needed From You](#8-inputs-needed-from-you)
+9. [Re-enabling Cart & Checkout](#9-re-enabling-cart--checkout)
 
 ---
 
 ## 1. Pre-Launch Checklist
 
 ### Domain & DNS
-- [ ] Purchase `7thrank.com` (if not already owned) — recommended registrars: Cloudflare, Namecheap
+- [ ] Purchase domain — **enter your domain here: `___________`** (recommended: Cloudflare Registrar or Namecheap)
 - [ ] Set up DNS: A record → host IP, CNAME `www` → root
 - [ ] Enable HTTPS/SSL (free via Cloudflare or Let's Encrypt)
 - [x] Set up `7thrankhelp@gmail.com` as a forwarding alias if using a custom domain email
@@ -57,6 +59,138 @@
 - [x] Wishlist email signup has explicit opt-in language (CAN-SPAM) — fine-print updated with consent statement + Privacy Policy link
 - [x] Email template CAN-SPAM compliance — unsubscribe link (`doGet` handler in `Code.gs`), physical address placeholder in footer; `Unsubscribed` column added to sheet
 - [ ] **ACTION REQUIRED**: Replace `[MAILING ADDRESS PLACEHOLDER]` in `email_template.html` with your actual registered mailing address before sending any emails
+- [ ] Review Privacy Policy modal — confirm email collection purpose, retention period, and third-party sharing disclosures are accurate and up to date
+- [ ] If collecting emails from EU/UK residents: add explicit GDPR consent checkbox to wishlist form (separate from marketing opt-in)
+
+### Pre-Launch Phase: Email Acquisition (Cart Disabled)
+The site launches in email-acquisition mode. Cart, cart drawer, and checkout have been commented out and are ready to re-enable. See [Section 9 — Re-enabling Cart & Checkout](#9-re-enabling-cart--checkout).
+- [x] "Add to Cart" buttons replaced with "Make My Move" (wishlist/email signup) on rank-6
+- [x] Cart icon removed from header navigation
+- [x] Checkout panel commented out
+- [ ] Confirm "Make My Move" button opens wishlist modal and flash confirmation animates correctly
+- [ ] Confirm wishlist form submits to Google Apps Script and email is received
+
+---
+
+---
+
+## 1.5. Email Acquisition & Privacy Compliance
+
+> This section covers everything required to collect email addresses safely, legally, and respectfully during the pre-commerce launch phase.
+
+---
+
+### Why This Matters
+
+You are collecting personal data (email addresses). Under **CAN-SPAM** (US), **GDPR** (EU/UK), and **CASL** (Canada), this creates legal obligations. Non-compliance can result in fines and, more practically, email providers (Gmail, Outlook) marking your sends as spam — killing deliverability before you have a customer base.
+
+---
+
+### Data Flow Audit
+
+```
+User enters email in Wishlist modal
+    ↓ HTTPS (encrypted in transit)
+Google Apps Script (doPost handler)
+    ↓
+Google Sheets (subscriber list)
+    ↓ Google Apps Script (doGet handler)
+Confirmation email → user's inbox
+    ↓
+Unsubscribe link → doGet removes row from sheet
+```
+
+**What data is collected:** Email address only. No name required (good — data minimization principle).
+
+---
+
+### Security Checklist
+
+#### Google Apps Script
+- [ ] **Do NOT commit your Apps Script URL** to the GitHub repo. It is currently hardcoded in `main.js` — move it to a GitHub Secret or environment variable before open-sourcing or sharing the repo
+- [ ] Add **origin validation** to your `doPost` function: check that the request comes from `www.7thrank.com` and reject all others:
+  ```javascript
+  // In Code.gs doPost():
+  var allowedOrigin = 'https://www.7thrank.com';
+  // For Apps Script, use a secret token instead (see below)
+  ```
+- [ ] Add a **shared secret token**: pass a static token from the frontend that the script validates — prevents anyone who finds your script URL from submitting fake signups:
+  ```javascript
+  // In main.js (wishlist submit):
+  body: JSON.stringify({ email: email, token: '7R_WL_2026' })
+
+  // In Code.gs doPost():
+  if (data.token !== '7R_WL_2026') return ContentService.createTextOutput('Unauthorized');
+  ```
+- [ ] **Rate-limit submissions**: Apps Script has daily quotas — add a check that the same email cannot be submitted more than once (already implied by duplicate detection, but verify it's in `Code.gs`)
+- [ ] Restrict Google Sheet sharing: set to "Restricted — only people with access" (not "Anyone with link"). Only founders should have edit access.
+
+#### Google Sheets (Subscriber List)
+- [ ] **Limit access**: Settings → Share → ensure only `7thrankhelp@gmail.com` and co-founder accounts have access. No "anyone with link" access.
+- [ ] **Store only what you need**: columns should be `Timestamp | Email | Source | Unsubscribed`. Do not add fields like IP address, device, or location without disclosing this in your Privacy Policy.
+- [ ] **Backup the sheet**: periodically export to CSV and store in a secure location. If your Google account is compromised, you could lose your entire subscriber list.
+- [ ] **Breach plan**: if the sheet is exposed, you are obligated (under GDPR) to notify affected users within 72 hours. Keep a note of your subscriber count and dates so you can identify affected records.
+
+---
+
+### Consent & Compliance Checklist
+
+#### CAN-SPAM (United States — applies to all commercial emails)
+- [x] Unsubscribe link in every email — implemented via `doGet` handler
+- [ ] **Physical mailing address** — replace `[MAILING ADDRESS PLACEHOLDER]` in `email_template.html` before any sends. A P.O. Box is acceptable.
+- [x] Honest subject lines — no deceptive "Re:" or fake urgency
+- [x] Sender identification — `From:` shows a real address
+
+#### GDPR (European Union / UK — applies if any EU/UK users sign up)
+- [x] Explicit consent checkbox on signup form — fine print with Privacy Policy link
+- [ ] **Right to erasure**: your unsubscribe handler removes the row from Google Sheets — verify this is permanent deletion, not just flagging
+- [ ] **Data Processing Agreement (DPA)**: Google Workspace/Apps Script acts as a data processor. Google's standard DPA is auto-accepted — confirm this is sufficient for your use case or consult a lawyer if selling to EU customers at scale
+- [ ] Add "Where is my data stored?" to your Privacy Policy: "Email addresses are stored in Google Sheets, hosted on Google's servers in the United States."
+
+#### CASL (Canada — applies if any Canadian users)
+- [x] Express consent at point of collection (the wishlist form checkbox)
+- [ ] Keep a record of when and how consent was given (the `Timestamp` column in Google Sheets serves this purpose)
+
+---
+
+### Double Opt-In (Recommended)
+
+Currently the site uses **single opt-in** (submit email → added to list → confirmation email sent). This is legal but has risks:
+
+- Anyone can sign up with someone else's email
+- Higher spam complaint rates if users forget they signed up
+- Some email platforms (Mailchimp, etc.) require double opt-in for bulk sends
+
+**To implement double opt-in** (optional but strongly recommended before large sends):
+1. On submission: add email to sheet with status `PENDING` instead of `ACTIVE`
+2. Send a confirmation email with a unique token link: `https://script.google.com/macros/s/[ID]/exec?confirm=TOKEN`
+3. `doGet` handler: find the token, update status to `ACTIVE`
+4. Only include `ACTIVE` rows in marketing sends
+
+---
+
+### Email Deliverability Checklist
+
+Poor deliverability = emails go to spam = your First Mover list never sees your launch announcement.
+
+- [ ] **SPF record**: add a DNS TXT record: `v=spf1 include:_spf.google.com ~all` — tells email providers Google is authorized to send on your behalf
+- [ ] **DKIM**: enable in Google Workspace or Gmail settings (if using a custom domain email)
+- [ ] **Send a test email** to a Gmail, Outlook, and Yahoo address before your first real send. Check spam folders.
+- [ ] **Warm up your sending domain**: don't send 500 emails on day one. Start with 50, then 150, then 500 over several weeks.
+- [ ] **Subject line best practices**: avoid all-caps, excessive exclamation marks, and spam trigger words ("FREE", "BUY NOW", "WINNER")
+- [ ] Check your email score at [mail-tester.com](https://www.mail-tester.com/) before your first real campaign
+
+---
+
+### What to Put in Your Privacy Policy (Verify These Are Covered)
+
+Your existing Privacy Policy modal should explicitly address:
+- [ ] What data is collected: "your email address"
+- [ ] Why it's collected: "to notify you of product launches and exclusive offers"
+- [ ] How long it's retained: "until you unsubscribe or request deletion"
+- [ ] Who it's shared with: "not shared with third parties; processed by Google Apps Script"
+- [ ] How to request deletion: "email us at [address] or click Unsubscribe in any email"
+- [ ] Cookie usage: "we use localStorage to remember your consent preference; no third-party tracking cookies are set without your consent"
 
 ---
 
@@ -182,14 +316,17 @@ Test on the following browser/OS combinations:
 | CT7 | Contact form: valid submission | Success state shown | |
 | CT8 | Mobile layout | Grid collapses gracefully | |
 
-#### Cart & Checkout
+#### Cart & Checkout *(Phase 2 — Commerce Launch)*
+> Cart, cart drawer, and checkout are commented out during email-acquisition launch phase. Re-enable per Section 9 when ready to take orders.
+
 | # | Test | Expected Result | Pass/Fail |
 |---|------|----------------|-----------|
-| K1 | Cart drawer opens/closes | Smooth animation | |
-| K2 | Remove item from cart | Item removed, count updates | |
-| K3 | Cart shows correct price | $99 for chessboard, $69 for pieces | |
-| K4 | Checkout button (post-Shopify) | Routes to Shopify checkout | |
-| K5 | Empty cart state | "Your cart is empty" message | |
+| K1 | Cart icon hidden | No cart icon visible in header | |
+| K2 | "Make My Move" button (rank-6) | Opens wishlist modal with primary CTA styling | |
+| K3 | "Make My Move" flash | Button shows "Saved ♛" briefly then reverts | |
+| K4 | *[Phase 2]* Cart drawer opens/closes | Smooth animation | |
+| K5 | *[Phase 2]* Cart shows correct price | $99 for chessboard, $69 for pieces | |
+| K6 | *[Phase 2]* Checkout routes to Shopify | Shopify checkout loads | |
 
 #### Wishlist & Email
 | # | Test | Expected Result | Pass/Fail |
@@ -692,25 +829,29 @@ Add [Sentry](https://sentry.io/) for automatic JS error reporting:
 The following information is required before automated workflows and Shopify integration can be completed. Provide these when ready:
 
 ### GitHub Setup
-- [ ] **GitHub username** — needed to configure repo URL and GitHub Pages domain
-- [ ] **Repository name** — `7th-rank-website` or your preferred name
+- [ ] **GitHub username** — `7thrank-store` *(update if different)*
+- [ ] **Repository name** — `7th-rank-website` *(confirm)*
 - [ ] **Preferred deploy branch** — `main` (recommended)
 
 ### Domain & Hosting
-- [ ] **Domain registrar** — where is `7thrank.com` registered? (Namecheap, GoDaddy, etc.)
+- [ ] **Domain name** — `___________` *(enter your domain — e.g., `7thrank.com`)*
+- [ ] **Domain registrar** — where is the domain registered? (Namecheap, GoDaddy, Cloudflare, etc.)
 - [ ] **Domain already purchased?** — Y/N. If not, purchase before configuring DNS.
 - [ ] **Cloudflare account** — create one at cloudflare.com before DNS config
 
-### Shopify
+### Email / Google Apps Script *(Required for launch — email acquisition phase)*
+- [ ] **Deployed Google Apps Script URL** — the `exec` URL for the wishlist submission handler
+  - Verify this is not committed to the public GitHub repo (keep it private or use a GitHub Secret)
+- [ ] **Confirmed test send** — has a test email been sent and received successfully?
+- [ ] **Mailing address** — your physical/P.O. Box address for `[MAILING ADDRESS PLACEHOLDER]` in `email_template.html`
+- [ ] **Subscriber list Google Sheet** — confirm access is restricted to founders only (not "anyone with link")
+
+### Shopify *(Phase 2 — Commerce Launch)*
 - [ ] **Shopify store URL** — `your-store.myshopify.com`
 - [ ] **Shopify Storefront API access token** — generated from Shopify admin
 - [ ] **Product variant IDs** — needed to map cart items to Shopify checkout line items
 - [ ] **Chosen integration method** — Buy Button (simpler) or Storefront API (more control)?
 - [ ] **Discount code format** — what format are First Mover codes? (e.g., `FM-XXXX-XXXX`)
-
-### Email / Google Apps Script
-- [ ] **Deployed Google Apps Script URL** — the `exec` URL for the wishlist submission handler
-- [ ] **Confirmed test send** — has a test email been sent and received successfully?
 
 ### Analytics
 - [ ] **Google Analytics 4 Measurement ID** — `G-XXXXXXXXXX`
@@ -720,6 +861,67 @@ The following information is required before automated workflows and Shopify int
 - [ ] **OG image created** — `/images/og-image.jpg` at 1200×630px
 - [ ] **Favicon set** — `/favicon.ico`, `/images/favicon-32x32.png`
 - [ ] **Apple touch icon** — `/images/apple-touch-icon.png` at 180×180px
+
+---
+
+---
+
+## 9. Re-enabling Cart & Checkout
+
+When you're ready to take orders, follow this checklist to restore the full commerce experience. Everything is preserved in code — no rebuilding required.
+
+### Step 1 — Shopify Setup (Pre-requisite)
+Complete the Shopify integration steps in [Section 4](#4-shopify-integration) first. You need a live Shopify store with products created before enabling checkout.
+
+### Step 2 — Uncomment HTML (`website/index.html`)
+
+Search for `CART_ENABLED` — there are 4 blocks to uncomment:
+
+| Block | Location | What it restores |
+|-------|----------|-----------------|
+| Cart icon | Header `<nav>` | Cart bag icon + count badge |
+| Mobile cart button | `#mobile-overlay` nav | "Cart" button in mobile menu |
+| Cart drawer | After `<div id="mobile-overlay">` | Slide-out cart panel |
+| Checkout panel | Inside `<section id="rank-7">` | Full checkout form (rank-7) |
+
+**To uncomment:** remove the `<!-- CART_ENABLED:` opening and `END CART_ENABLED -->` closing tags from each block.
+
+### Step 3 — Uncomment JS (`website/js/main.js`)
+
+Search for `CART_ENABLED` — there are 2 blocks to uncomment:
+
+| Block | Location | What it restores |
+|-------|----------|-----------------|
+| Add to Cart listener (Chessboards) | `renderChessboardCustomization()` | Cart handler binding |
+| Add to Cart listener (Pieces) | `renderPiecesCustomization()` | Cart handler binding |
+
+**To uncomment:** remove the `/* CART_ENABLED:` opening and `END CART_ENABLED */` closing from each block.
+
+### Step 4 — Restore "Add to Cart" Button HTML
+
+In `main.js`, search for both occurrences of:
+```javascript
+/* CART_ENABLED: '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' + */
+```
+
+Uncomment each one (remove the `/* CART_ENABLED:` and `*/`).
+
+Also change the wishlist button back to secondary styling if desired:
+```javascript
+// Current (email-acquisition phase):
+'<button class="btn btn-primary" id="add-to-wishlist-btn">Make My Move</button>'
+
+// Commerce phase (optional — or keep both):
+'<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' +
+'<button class="btn btn-outline" id="add-to-wishlist-btn">Add to Wishlist</button>'
+```
+
+### Step 5 — Shopify Checkout Integration
+
+Replace the `handleAddToCartCB` and `handleAddToCartPieces` functions with Shopify API calls per [Section 4](#4-shopify-integration).
+
+### Step 6 — Test
+Run the full **Cart & Checkout** test cases (K4–K6) from Section 2C.
 
 ---
 

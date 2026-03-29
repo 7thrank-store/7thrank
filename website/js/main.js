@@ -1595,6 +1595,7 @@
         STATE.selectedCBVariant = varId;
         var v = CHESSBOARD_VARIANTS[varId];
         updateRankColors(rank5El, v.lightColor, v.darkColor);
+        applyRank5HoverCB(varId);  // apply name colors on selection (mobile has no hover)
         updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Chessboards', v.name]);
         renderChessboardCustomization(varId);
         scrollToSection('rank-6', 'smooth');
@@ -1613,6 +1614,7 @@
         var lineData = PIECES_LINE_DATA[lineKey];
         STATE.selectedLine = lineData;
         updateRankColors(rank5El, lineData.colors[0], lineData.colors[1]);
+        applyRank5HoverPC(lineKey);  // apply name colors on selection (mobile has no hover)
         updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Pieces', lineData.name]);
         renderPiecesCustomization(lineData);
         scrollToSection('rank-6', 'smooth');
@@ -1708,8 +1710,8 @@
             }).join('') +
             '</div></div>' +
             '<p class="product-card-price">$' + CHESSBOARD_PRICE + '</p>' +
-            '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' +
-            '<button class="btn btn-wishlist" id="add-to-wishlist-btn">Add to Wishlist</button>' +
+            /* CART_ENABLED: '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' + */
+            '<button class="btn btn-primary" id="add-to-wishlist-btn">Make My Move</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -1764,8 +1766,10 @@
       });
     });
 
+    /* CART_ENABLED:
     var addBtn = document.getElementById('add-to-cart-btn');
     if (addBtn) addBtn.addEventListener('click', function() { handleAddToCartCB(varId); });
+    END CART_ENABLED */
   }
 
   /* ══════════════════════════════════════════════════
@@ -1841,8 +1845,8 @@
             }).join('') +
             '</div></div>' +
             '<p class="product-card-price">$' + PIECES_PRICE + '</p>' +
-            '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' +
-            '<button class="btn btn-wishlist" id="add-to-wishlist-btn">Add to Wishlist</button>' +
+            /* CART_ENABLED: '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' + */
+            '<button class="btn btn-primary" id="add-to-wishlist-btn">Make My Move</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -1891,8 +1895,10 @@
       });
     });
 
+    /* CART_ENABLED:
     var addBtn = document.getElementById('add-to-cart-btn');
     if (addBtn) addBtn.addEventListener('click', function() { handleAddToCartPieces(lineData); });
+    END CART_ENABLED */
   }
 
   /* ══════════════════════════════════════════════════
@@ -1972,6 +1978,18 @@
     if (!btn) return;
     var orig = btn.textContent;
     btn.textContent = 'Added ♛';
+    btn.classList.add('btn-confirmed');
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.classList.remove('btn-confirmed');
+    }, 2000);
+  }
+
+  function flashAddToWishlist() {
+    var btn = document.getElementById('add-to-wishlist-btn');
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = 'Saved ♛';
     btn.classList.add('btn-confirmed');
     setTimeout(function() {
       btn.textContent = orig;
@@ -2944,6 +2962,7 @@
     // Use event delegation so it works after rank-6 re-renders.
     document.addEventListener('click', function(e) {
       if (e.target && e.target.id === 'add-to-wishlist-btn') {
+        flashAddToWishlist();
         openWishlist();
       }
     });

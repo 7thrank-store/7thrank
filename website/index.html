@@ -163,10 +163,12 @@
       <a href="#rank-3" class="nav-link" data-target="rank-3">Collections</a>
       <a href="#rank-7" class="nav-link" data-target="rank-7">Contact</a>
       <button class="nav-link nav-link--ghost" id="view-wishlist-trigger" aria-label="View my wishlist">My Wishlist</button>
+      <!-- CART_ENABLED: cart icon — uncomment when ready to take orders
       <button class="cart-trigger" aria-label="View cart" id="cart-trigger">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         <span class="cart-count" id="cart-count" aria-live="polite">0</span>
       </button>
+      END CART_ENABLED -->
     </nav>
     <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false" id="menu-toggle">
       <span class="hamburger-line"></span>
@@ -182,7 +184,7 @@
       <a href="#landing" class="mobile-nav-link">Home</a>
       <a href="#rank-3" class="mobile-nav-link">Collections</a>
       <a href="#rank-7" class="mobile-nav-link">Contact</a>
-      <button class="mobile-nav-link mobile-nav-btn" id="mobile-cart-btn">Cart</button>
+      <!-- CART_ENABLED: <button class="mobile-nav-link mobile-nav-btn" id="mobile-cart-btn">Cart</button> END CART_ENABLED -->
       <button class="mobile-nav-link mobile-nav-btn" id="mobile-wishlist-btn">My Wishlist</button>
     </nav>
   </div>
@@ -199,9 +201,7 @@
     <div class="rank-nav-dot" data-rank="rank-7" data-label="Contact" role="button" tabindex="0" aria-label="Contact"></div>
   </aside>
 
-  <!-- ═══════════════════════════════════════
-       CART DRAWER
-  ═══════════════════════════════════════ -->
+  <!-- CART_ENABLED: cart drawer + backdrop — uncomment when ready to take orders
   <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart" aria-hidden="true">
     <div class="cart-header">
       <h2 class="cart-title">Your Move</h2>
@@ -219,6 +219,7 @@
     </div>
   </aside>
   <div class="cart-backdrop" id="cart-backdrop"></div>
+  END CART_ENABLED -->
 
   <!-- ═══════════════════════════════════════
        MAIN CHESS BOARD
@@ -549,7 +550,7 @@
 
       </div><!-- /rank-7-contact -->
 
-      <!-- CHECKOUT MODE (shopping) -->
+      <!-- CART_ENABLED: checkout panel — uncomment when ready to take orders
       <div class="rank-7-checkout rank-7-panel" id="rank-7-checkout" hidden role="region" aria-label="Checkout">
 
         <div class="square sq-light sq-file-label" data-file="a" data-rank-num="7">
@@ -651,7 +652,8 @@
           </div>
         </div>
 
-      </div><!-- /rank-7-checkout -->
+      </div>
+      END CART_ENABLED -->
 
     </section><!-- /rank-7 -->
 

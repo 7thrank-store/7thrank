@@ -551,6 +551,7 @@
       </div><!-- /rank-7-contact -->
 
       <!-- CART_ENABLED: checkout panel — uncomment when ready to take orders
+      (Note: inner HTML comments removed to prevent comment nesting issues)
       <div class="rank-7-checkout rank-7-panel" id="rank-7-checkout" hidden role="region" aria-label="Checkout">
 
         <div class="square sq-light sq-file-label" data-file="a" data-rank-num="7">
@@ -558,14 +559,10 @@
           <span class="file-label-text">Checkout</span>
         </div>
 
-        <!-- Product image square -->
         <div class="square sq-dark sq-checkout-product" data-file="b">
-          <div id="checkout-product-display" class="checkout-product-display">
-            <!-- JS populates: product image + brief description -->
-          </div>
+          <div id="checkout-product-display" class="checkout-product-display"></div>
         </div>
 
-        <!-- Shipping details square -->
         <div class="square sq-light sq-checkout-section" data-file="c">
           <h3 class="checkout-sq-title">Shipping</h3>
           <div class="checkout-form-mini">
@@ -584,7 +581,6 @@
           </div>
         </div>
 
-        <!-- Contact info square -->
         <div class="square sq-dark sq-checkout-section" data-file="d">
           <h3 class="checkout-sq-title">Contact</h3>
           <div class="checkout-form-mini">
@@ -597,12 +593,10 @@
           </div>
         </div>
 
-        <!-- Payment square -->
         <div class="square sq-light sq-checkout-section" data-file="e">
           <h3 class="checkout-sq-title">Payment</h3>
           <p class="checkout-payment-note">Secure payment powered by Stripe. Your card details are never stored on our servers.</p>
           <div id="stripe-card-element" class="stripe-element-placeholder">
-            <!-- Stripe Elements mount here -->
             <div class="stripe-placeholder-ui">
               <input type="text" class="form-input form-input-sm" placeholder="Card Number" id="card-number">
               <div class="card-row-split">
@@ -613,24 +607,18 @@
           </div>
         </div>
 
-        <!-- Order total / promo / CTA square -->
         <div class="square sq-dark sq-checkout-cta" data-file="f">
           <h3 class="checkout-sq-title">Order Total</h3>
-          <div id="checkout-order-details" class="checkout-order-details">
-            <!-- JS populates item list -->
-          </div>
+          <div id="checkout-order-details" class="checkout-order-details"></div>
           <div class="promo-code-wrap">
             <input type="text" class="form-input form-input-sm" placeholder="Promo code" id="promo-input">
             <button class="btn btn-outline btn-sm" id="promo-apply-btn">Apply</button>
           </div>
-          <div id="checkout-total-breakdown" class="checkout-total-breakdown">
-            <!-- JS populates: subtotal, discount, grand total -->
-          </div>
+          <div id="checkout-total-breakdown" class="checkout-total-breakdown"></div>
           <button class="btn btn-primary btn-full" id="place-order-btn">Place Order</button>
           <button class="btn btn-outline btn-full btn-sm" id="continue-shopping-btn">Continue Shopping</button>
         </div>
 
-        <!-- Wishlist square -->
         <div class="square sq-light sq-checkout-section" data-file="g">
           <h3 class="checkout-sq-title">Wishlist</h3>
           <div id="wishlist-items" class="wishlist-list">
@@ -638,7 +626,6 @@
           </div>
         </div>
 
-        <!-- Trust square -->
         <div class="square sq-dark sq-checkout-trust" data-file="h">
           <div class="trust-badges">
             <div class="trust-badge">

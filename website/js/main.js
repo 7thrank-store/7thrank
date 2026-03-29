@@ -1595,7 +1595,6 @@
         STATE.selectedCBVariant = varId;
         var v = CHESSBOARD_VARIANTS[varId];
         updateRankColors(rank5El, v.lightColor, v.darkColor);
-        applyRank5HoverCB(varId);  // apply name colors on selection (mobile has no hover)
         updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Chessboards', v.name]);
         renderChessboardCustomization(varId);
         scrollToSection('rank-6', 'smooth');
@@ -1614,7 +1613,6 @@
         var lineData = PIECES_LINE_DATA[lineKey];
         STATE.selectedLine = lineData;
         updateRankColors(rank5El, lineData.colors[0], lineData.colors[1]);
-        applyRank5HoverPC(lineKey);  // apply name colors on selection (mobile has no hover)
         updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Pieces', lineData.name]);
         renderPiecesCustomization(lineData);
         scrollToSection('rank-6', 'smooth');

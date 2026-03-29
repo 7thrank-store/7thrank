@@ -289,6 +289,31 @@
     return 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
   }
 
+  // Path to PNG inside CLO viewer folder (static preview frame)
+  function getChessboardPNGPath(variant, piece, location, shot) {
+    shot = shot || '1';
+    var folder, filename;
+    if (piece === 'knight' && (location === 'l' || location === 'r')) {
+      folder   = 'chessboards_' + variant + '_knight_' + location;
+      filename = variant + '_knight_' + location + '_' + shot + '.png';
+    } else {
+      folder   = 'chessboards_' + variant + '.' + piece + '.' + location;
+      filename = variant + '.' + piece + '.' + location + '_' + shot + '.png';
+    }
+    return 'images/products/first_move/chessboards/' + folder + '/resource/' + filename;
+  }
+
+  // Path to CLO interactive HTML viewer
+  function getChessboardViewerPath(variant, piece, location) {
+    var folder;
+    if (piece === 'knight' && (location === 'l' || location === 'r')) {
+      folder = 'chessboards_' + variant + '_knight_' + location;
+    } else {
+      folder = 'chessboards_' + variant + '.' + piece + '.' + location;
+    }
+    return 'images/products/first_move/chessboards/' + folder + '/' + folder + '.html';
+  }
+
   function sanitize(str) {
     var d = document.createElement('div');
     d.textContent = str;
@@ -301,31 +326,23 @@
   function buildImagePool() {
     var pool = [];
 
-    // Chessboard images: only _1, _2, _3, _4 suffixes
-    var cbLocations = CHESSBOARD_LOCATION_KEYS;
+    // Chessboard images: use PNGs inside CLO viewer folders (_1 front-view only for pool)
     CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
       CHESSBOARD_PIECES_CB.forEach(function(piece) {
-        cbLocations.forEach(function(loc) {
-          [1,2,3,4].forEach(function(shot) {
-            var path;
-            if (piece === 'knight' && (loc === 'l' || loc === 'r')) {
-              path = 'images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + loc + '_' + shot + '.jpg';
-            } else {
-              path = 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + loc + '_' + shot + '.jpg';
-            }
-            pool.push(path);
-          });
+        CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
+          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
         });
       });
     });
 
-    // Pieces images
+    // Pieces images: use PNGs inside CLO viewer folders
     PIECES_LINE_KEYS.forEach(function(lineKey) {
       var lineData = PIECES_LINE_DATA[lineKey];
       var linePrefix = LINE_IMAGE_PREFIX[lineKey];
       ['P','B','N','R','Q','K'].forEach(function(piece) {
         lineData.colorways.forEach(function(cw) {
-          pool.push('images/products/first_move/pieces/pieces_' + linePrefix + '.' + piece + '.' + cw + '.jpg');
+          var base = 'pieces_' + linePrefix + '.' + piece + '.' + cw;
+          pool.push('images/products/first_move/pieces/' + base + '/resource/0.png');
         });
       });
     });
@@ -360,6 +377,26 @@
   function getPiecePNGPool() {
     if (!PIECE_PNG_POOL) PIECE_PNG_POOL = buildPiecePNGPool();
     return PIECE_PNG_POOL;
+  }
+
+  // Shot-1 (front view) PNG for every chessboard variant/piece/location
+  function buildChessboardPNGPool() {
+    var pool = [];
+    CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
+      CHESSBOARD_PIECES_CB.forEach(function(piece) {
+        CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
+          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
+        });
+      });
+    });
+    return pool;
+  }
+
+  var CHESSBOARD_PNG_POOL = null;
+
+  function getChessboardPNGPool() {
+    if (!CHESSBOARD_PNG_POOL) CHESSBOARD_PNG_POOL = buildChessboardPNGPool();
+    return CHESSBOARD_PNG_POOL;
   }
 
   /* ══════════════════════════════════════════════════
@@ -667,7 +704,14 @@
     // as a belt-and-suspenders guarantee that the thumb gets its width.
     if (window.IntersectionObserver && rank5El) {
       var thumbObs = new IntersectionObserver(function(entries) {
-        entries.forEach(function(e) { if (e.isIntersecting) updateThumb(); });
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            updateThumb();
+            // On mobile, a touch event during the snap-scroll transition may have
+            // called pause(). Kick-start auto-scroll once the section is visible.
+            if (paused && !thumbDrag) { resume(300); }
+          }
+        });
       }, { threshold: 0.1 });
       thumbObs.observe(rank5El);
     }
@@ -1209,9 +1253,8 @@
     // Cycle First Move thumbnail alternating between chessboards and pieces
     var cyclingBgEl = collectionsTrack.querySelector('.collection-card-cycling-bg');
     if (cyclingBgEl) {
-      var allPool   = getImagePool();
-      var cbPool    = allPool.filter(function(p) { return p.indexOf('/chessboards/') !== -1 && /_1\.jpg$/.test(p); });
-      var pcPool    = allPool.filter(function(p) { return p.indexOf('/pieces/') !== -1; });
+      var cbPool = getChessboardPNGPool();
+      var pcPool = getPiecePNGPool();
       var useCB     = true;
       function cycleCollectionThumb() {
         var pool = (useCB && cbPool.length) ? cbPool : (pcPool.length ? pcPool : cbPool);
@@ -1291,8 +1334,8 @@
     if (!rank4Content) return;
     showNavDot('rank-4');
 
-    var cbImg = 'images/products/first_move/chessboards/chessboards_ic.pawn.l_1.jpg';
-    var pcImg = 'images/products/first_move/pieces/pieces_Stoic.P.FFFFFF.jpg';
+    var cbImg = getChessboardPNGPath('ic', 'pawn', 'l', '1');
+    var pcImg = getProductPNGPath('stoic', 'P', 'FFFFFF');
 
     rank4Content.innerHTML =
       '<div class="subline-grid">' +
@@ -1310,9 +1353,8 @@
 
     // Start cycling backgrounds for each subline card
     setTimeout(function() {
-      var pool = getImagePool();
-      var cbPool = pool.filter(function(p) { return p.indexOf('/chessboards/') !== -1 && /_1\.jpg$/.test(p); });
-      var pcPool = pool.filter(function(p) { return p.indexOf('/pieces/') !== -1; });
+      var cbPool = getChessboardPNGPool();
+      var pcPool = getPiecePNGPool();
       var cbBg = rank4Content.querySelector('.subline-card[data-subline="chessboards"] .subline-card-bg');
       var pcBg = rank4Content.querySelector('.subline-card[data-subline="pieces"] .subline-card-bg');
       if (cbBg && cbPool.length) startElementCycler(cbBg, cbPool, 5000);
@@ -1425,24 +1467,21 @@
     rank5Content.innerHTML = html;
     rank5Content.classList.add('stagger');
 
-    // Start per-card image cycling
-    var pool = getImagePool();
-
+    // Start per-card image cycling using PNG pools
     function startCyclerForCard(card) {
-      var varId  = card.dataset.variantId;
+      var varId   = card.dataset.variantId;
       var lineKey = card.dataset.lineId;
-      var bgEl   = card.querySelector('.product-card-cycling-bg');
+      var bgEl    = card.querySelector('.product-card-cycling-bg');
       if (!bgEl) return;
       if (varId) {
-        var cp = pool.filter(function(p) {
-          return (p.indexOf('chessboards_' + varId + '.') !== -1 ||
-                  p.indexOf('chessboards_' + varId + '_knight') !== -1) &&
-                 /_1\.jpg$/.test(p);
+        var cp = getChessboardPNGPool().filter(function(p) {
+          return p.indexOf('chessboards_' + varId + '.') !== -1 ||
+                 p.indexOf('chessboards_' + varId + '_knight') !== -1;
         });
         if (cp.length) startElementCycler(bgEl, cp, 5500);
       } else if (lineKey) {
-        var lp = LINE_IMAGE_PREFIX[lineKey] || lineKey;
-        var lcp = pool.filter(function(p) { return p.indexOf('pieces_' + lp + '.') !== -1; });
+        var lp  = LINE_IMAGE_PREFIX[lineKey] || lineKey;
+        var lcp = getPiecePNGPool().filter(function(p) { return p.indexOf('pieces_' + lp + '.') !== -1; });
         if (lcp.length) startElementCycler(bgEl, lcp, 5500);
       }
     }
@@ -1566,7 +1605,7 @@
     applyModColors(r6El, CB_MOD_COLORS[varId] || null);
 
     function buildHtml() {
-      var previewSrc = getChessboardImagePath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
+      var viewerSrc = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
 
       var pieceGrid = CHESSBOARD_PIECES_CB.map(function(p) {
         var sel = STATE.selectedCBPiece === p ? ' selected' : '';
@@ -1584,13 +1623,7 @@
 
       return '<div class="cb-customization">' +
         '<div class="cb-image-col" id="cb-image-col">' +
-          '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
-            '<img class="cb-preview-img" id="cb-preview-img" src="' + previewSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
-          '</div>' +
-          '<div class="cb-zoom-controls">' +
-            '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
-            '<button class="cb-zoom-btn cb-zoom-out" aria-label="Zoom out">\u2212</button>' +
-          '</div>' +
+          '<iframe class="cb-preview-iframe" id="cb-preview-iframe" src="' + viewerSrc + '" title="Garment preview" frameborder="0" scrolling="no" allowfullscreen></iframe>' +
         '</div>' +
         '<div class="cb-controls-col">' +
           '<div class="cb-control-groups-wrap">' +
@@ -1619,13 +1652,11 @@
     }
 
     rank6Content.innerHTML = buildHtml();
-    initPreviewZoom();
 
     function updatePreview() {
-      var img = document.getElementById('cb-preview-img');
-      if (img) {
-        img.style.visibility = 'visible';
-        img.src = getChessboardImagePath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
+      var frame = document.getElementById('cb-preview-iframe');
+      if (frame) {
+        frame.src = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
       }
     }
 
@@ -1821,7 +1852,7 @@
       locationName: CHESSBOARD_LOCATIONS[STATE.selectedCBLocation],
       size:         STATE.selectedSize,
       price:        CHESSBOARD_PRICE,
-      image:        getChessboardImagePath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation),
+      image:        getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, '1'),
       qty:          1
     };
     var key = cartItemKey(newItem);

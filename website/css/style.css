@@ -2552,6 +2552,7 @@ ul, ol {
 
   .form-row-2col { grid-template-columns: 1fr; }
 
+
   /* ── RANK 8 ───────────────────────────────────────── */
   .rank-8-panel { grid-template-columns: 1fr; }
 
@@ -2796,6 +2797,15 @@ ul, ol {
   object-position: center top;
   pointer-events: none; /* drag handled by wrap */
   -webkit-user-drag: none;
+}
+
+/* CLO interactive 3D viewer iframe */
+.cb-preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: transparent;
 }
 
 /* Zoom +/- overlay */
@@ -3459,6 +3469,11 @@ ul, ol {
      container scroll-padding-top in a non-root scroll container on iOS. */
   .rank-full {
     scroll-margin-top: var(--header-h);
+    /* Prevent momentum scrolling from jumping past sections on iOS */
+    scroll-snap-stop: always;
+  }
+  .landing-view {
+    scroll-snap-stop: always;
   }
 
   /* ── Landing: larger, more prominent content in 33vw × 50vh squares ──
@@ -3648,4 +3663,28 @@ ul, ol {
   .rank-5 .product-card[data-variant-id] .product-card-cycling-bg { background-size: cover; background-position: center top; }
   .rank-5 .product-card::after                   { display: none; }
   .rank-5 .product-card[data-variant-id]::after  { display: none; }
+
+  /* ── Rank-6: CLO iframe fills the image column ── */
+  .cb-preview-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 58vw;
+    border: none;
+    display: block;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   iOS SAFARI SPECIFIC — scoped with @supports to avoid
+   affecting Android/desktop where env() = 0 and touch-
+   callout is not the detection signal.
+   ═══════════════════════════════════════════════════════════ */
+@supports (-webkit-touch-callout: none) {
+  /* Contact page: extra bottom clearance so "Make Your Move" CTA
+     is not obscured by the Safari floating toolbar. */
+  @media (max-width: 767px) {
+    .rank-7-contact .sq-contact-form-wrap {
+      padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5.5rem));
+    }
+  }
 }

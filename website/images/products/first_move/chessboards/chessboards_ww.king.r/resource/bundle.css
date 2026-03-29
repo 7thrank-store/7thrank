@@ -1,0 +1,39 @@
+.wrapper {
+    position: relative;
+}
+
+.image-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%);
+}
+
+.viewer-box {
+    position: relative;
+}
+
+.viewer-box #image-viewer {
+    user-select: none;
+}
+
+.viewer-box #bi-clo {
+    display: inline-block;
+
+    width: 84px;
+    height: 30px;
+
+    background-size: 100% 100%;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+.btn-prev {
+    float: left;
+}
+.btn-next {
+    float: right;
+}
+

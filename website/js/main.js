@@ -289,7 +289,16 @@
     return 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
   }
 
-  // Path to PNG inside CLO viewer folder (static preview frame)
+  // Direct JPG at chessboards root — works on all platforms including mobile
+  function getChessboardJPGPath(variant, piece, location, shot) {
+    shot = shot || '1';
+    if (piece === 'knight' && (location === 'l' || location === 'r')) {
+      return 'images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
+    }
+    return 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
+  }
+
+  // Path to PNG inside CLO viewer folder (desktop cycler only)
   function getChessboardPNGPath(variant, piece, location, shot) {
     shot = shot || '1';
     var folder, filename;
@@ -326,11 +335,11 @@
   function buildImagePool() {
     var pool = [];
 
-    // Chessboard images: use PNGs inside CLO viewer folders (_1 front-view only for pool)
+    // Chessboard images: direct JPGs at root level (_1 front-view only for pool)
     CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
       CHESSBOARD_PIECES_CB.forEach(function(piece) {
         CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
-          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
+          pool.push(getChessboardJPGPath(variant, piece, loc, '1'));
         });
       });
     });
@@ -379,13 +388,13 @@
     return PIECE_PNG_POOL;
   }
 
-  // Shot-1 (front view) PNG for every chessboard variant/piece/location
+  // Shot-1 (front view) JPG for every chessboard variant/piece/location
   function buildChessboardPNGPool() {
     var pool = [];
     CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
       CHESSBOARD_PIECES_CB.forEach(function(piece) {
         CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
-          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
+          pool.push(getChessboardJPGPath(variant, piece, loc, '1'));
         });
       });
     });
@@ -550,31 +559,50 @@
       zoomAt(e.clientX - rect.left, e.clientY - rect.top, scale * delta, false);
     }, { passive: false });
 
-    // Trackpad / touch pinch
+    // Touch pinch-to-zoom + single-finger pan when zoomed
     var pinchDist = 0;
+    var touchDrag = false, touchDragX = 0, touchDragY = 0, startTouchTx = 0, startTouchTy = 0;
+
     col.addEventListener('touchstart', function(e) {
       if (e.touches.length === 2) {
         pinchDist = Math.hypot(
           e.touches[1].clientX - e.touches[0].clientX,
           e.touches[1].clientY - e.touches[0].clientY
         );
+        touchDrag = false;
+      } else if (e.touches.length === 1 && scale > MIN) {
+        touchDrag   = true;
+        touchDragX  = e.touches[0].clientX;
+        touchDragY  = e.touches[0].clientY;
+        startTouchTx = tx;
+        startTouchTy = ty;
       }
     }, { passive: true });
+
     col.addEventListener('touchmove', function(e) {
-      if (e.touches.length !== 2 || !pinchDist) return;
-      e.preventDefault();
-      var dist = Math.hypot(
-        e.touches[1].clientX - e.touches[0].clientX,
-        e.touches[1].clientY - e.touches[0].clientY
-      );
-      var rect = col.getBoundingClientRect();
-      var midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
-      var midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
-      zoomAt(midX, midY, scale * (dist / pinchDist), false);
-      pinchDist = dist;
+      if (e.touches.length === 2 && pinchDist) {
+        e.preventDefault();
+        var dist = Math.hypot(
+          e.touches[1].clientX - e.touches[0].clientX,
+          e.touches[1].clientY - e.touches[0].clientY
+        );
+        var rect = col.getBoundingClientRect();
+        var midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+        var midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+        zoomAt(midX, midY, scale * (dist / pinchDist), false);
+        pinchDist = dist;
+      } else if (e.touches.length === 1 && touchDrag) {
+        e.preventDefault();
+        tx = startTouchTx + (e.touches[0].clientX - touchDragX);
+        ty = startTouchTy + (e.touches[0].clientY - touchDragY);
+        clamp();
+        applyTransform(false);
+      }
     }, { passive: false });
+
     col.addEventListener('touchend', function(e) {
       if (e.touches.length < 2) pinchDist = 0;
+      if (e.touches.length === 0) touchDrag = false;
     });
 
     // Mouse drag when zoomed in
@@ -952,9 +980,8 @@
     var snapOffset = padTop || marginTop;
     var targetY  = targetEl ? targetEl.offsetTop - snapOffset : 0;
 
-    // Glide to destination in ~900 ms — fast enough to feel like an advance,
-    // slow enough that the passing ranks are perceptible
-    smoothScrollTo(targetY, 900, function() {
+    // Glide to destination — use native smooth on mobile to avoid RAF-loop jank
+    function onBypassComplete() {
       // Re-hide middle ranks BEFORE restoring snap — otherwise y:mandatory
       // can grab a temporarily-visible bypass rank during the brief window
       // between snap restore and rank hide.
@@ -964,9 +991,7 @@
           if (el) el.setAttribute('hidden', '');
         });
       }
-
       STATE.isBypassing = false;
-      // Manually sync section state — observer is suppressed during animation
       STATE.currentSection = targetSection;
       updateNavDots(targetSection);
       updateHeader(targetSection);
@@ -976,7 +1001,14 @@
         board.style.scrollSnapType = '';
       }
       if (callback) callback();
-    });
+    }
+
+    if (window.innerWidth <= 767) {
+      board.scrollTo({ top: targetY, behavior: 'smooth' });
+      setTimeout(onBypassComplete, 900);
+    } else {
+      smoothScrollTo(targetY, 900, onBypassComplete);
+    }
   }
 
   /**
@@ -1348,7 +1380,7 @@
     if (!rank4Content) return;
     showNavDot('rank-4');
 
-    var cbImg = getChessboardPNGPath('ic', 'pawn', 'l', '1');
+    var cbImg = getChessboardJPGPath('ic', 'pawn', 'l', '1');
     var pcImg = getProductPNGPath('stoic', 'P', 'FFFFFF');
 
     rank4Content.innerHTML =
@@ -1625,9 +1657,10 @@
     function buildHtml() {
       var previewEl;
       if (useMobileImg) {
-        var pngSrc = getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, '1');
+        var initShot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
+        var jpgSrc = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, initShot);
         previewEl = '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
-                    '<img class="cb-preview-img" id="cb-preview-img" src="' + pngSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+                    '<img class="cb-preview-img" id="cb-preview-img" src="' + jpgSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
                     '</div>' +
                     '<div class="cb-zoom-controls">' +
                     '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
@@ -1690,7 +1723,8 @@
         var img = document.getElementById('cb-preview-img');
         if (img) {
           img.style.visibility = 'visible';
-          img.src = getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, '1');
+          var shot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
+          img.src = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot);
         }
       } else {
         var frame = document.getElementById('cb-preview-iframe');
@@ -1892,7 +1926,7 @@
       locationName: CHESSBOARD_LOCATIONS[STATE.selectedCBLocation],
       size:         STATE.selectedSize,
       price:        CHESSBOARD_PRICE,
-      image:        getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, '1'),
+      image:        getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, '1'),
       qty:          1
     };
     var key = cartItemKey(newItem);

@@ -175,7 +175,7 @@
     stoic:   { scrollbar: '#000000', names: null },
     grain:   { scrollbar: '#B58863', names: { stoic: '#B58863', grain: '#F0D9B5', ti: '#B58863', pasture: '#F0D9B5', harmony: '#B58863' } },
     ti:      { scrollbar: '#BFEFFF', names: { stoic: '#FFFEEF', grain: '#BFEFFF', ti: '#FFFEEF', pasture: '#BFEFFF', harmony: '#FFFEEF' } },
-    pasture: { scrollbar: '#255525', names: { stoic: '#F0D9B5', grain: '#F0D9B5', ti: '#FBD9E1', pasture: '#255525', harmony: '#F0D9B5' } },
+    pasture: { scrollbar: '#255525', names: { stoic: '#F0D9B5', grain: '#F0D9B5', ti: '#F0D9B5', pasture: '#255525', harmony: '#F0D9B5' } },
     harmony: { scrollbar: '#FFFFFF', names: null }
   };
 
@@ -869,6 +869,20 @@
       board.scrollTo({ top: targetY, behavior: 'instant' });
       if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
       if (callback) callback();
+    } else if (window.innerWidth <= 767) {
+      // On mobile, use the browser's own smooth scroll — avoids the rAF loop
+      // fighting iOS's scroll engine and causing per-frame micro-jank.
+      STATE.isAnimating = true;
+      board.style.scrollSnapType = 'none';
+      board.scrollTo({ top: targetY, behavior: 'smooth' });
+      setTimeout(function() {
+        STATE.isAnimating = false;
+        STATE.currentSection = id;
+        updateNavDots(id);
+        updateHeader(id);
+        applyMobileSnap();
+        if (callback) callback();
+      }, 700);
     } else {
       STATE.isAnimating = true;
       board.style.scrollSnapType = 'none';
@@ -878,7 +892,7 @@
         STATE.currentSection = id;
         updateNavDots(id);
         updateHeader(id);
-        if (window.innerWidth <= 767) { applyMobileSnap(); } else { board.style.scrollSnapType = ''; }
+        board.style.scrollSnapType = '';
         if (callback) callback();
       });
     }
@@ -1604,8 +1618,25 @@
     updateRankColors(r6El, v.lightColor, v.darkColor);
     applyModColors(r6El, CB_MOD_COLORS[varId] || null);
 
+    // On mobile, CLO viewer JS doesn't initialise inside an iframe reliably —
+    // fall back to the static PNG (same approach as Pieces) and restore iframe on desktop.
+    var useMobileImg = window.innerWidth <= 767;
+
     function buildHtml() {
-      var viewerSrc = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
+      var previewEl;
+      if (useMobileImg) {
+        var pngSrc = getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, '1');
+        previewEl = '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
+                    '<img class="cb-preview-img" id="cb-preview-img" src="' + pngSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+                    '</div>' +
+                    '<div class="cb-zoom-controls">' +
+                    '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
+                    '<button class="cb-zoom-btn cb-zoom-out" aria-label="Zoom out">\u2212</button>' +
+                    '</div>';
+      } else {
+        var viewerSrc = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
+        previewEl = '<iframe class="cb-preview-iframe" id="cb-preview-iframe" src="' + viewerSrc + '" title="Garment preview" frameborder="0" scrolling="no" allowfullscreen></iframe>';
+      }
 
       var pieceGrid = CHESSBOARD_PIECES_CB.map(function(p) {
         var sel = STATE.selectedCBPiece === p ? ' selected' : '';
@@ -1623,7 +1654,7 @@
 
       return '<div class="cb-customization">' +
         '<div class="cb-image-col" id="cb-image-col">' +
-          '<iframe class="cb-preview-iframe" id="cb-preview-iframe" src="' + viewerSrc + '" title="Garment preview" frameborder="0" scrolling="no" allowfullscreen></iframe>' +
+          previewEl +
         '</div>' +
         '<div class="cb-controls-col">' +
           '<div class="cb-control-groups-wrap">' +
@@ -1652,11 +1683,20 @@
     }
 
     rank6Content.innerHTML = buildHtml();
+    if (useMobileImg) { initPreviewZoom(); }
 
     function updatePreview() {
-      var frame = document.getElementById('cb-preview-iframe');
-      if (frame) {
-        frame.src = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
+      if (useMobileImg) {
+        var img = document.getElementById('cb-preview-img');
+        if (img) {
+          img.style.visibility = 'visible';
+          img.src = getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, '1');
+        }
+      } else {
+        var frame = document.getElementById('cb-preview-iframe');
+        if (frame) {
+          frame.src = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
+        }
       }
     }
 

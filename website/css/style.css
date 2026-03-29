@@ -3469,11 +3469,6 @@ ul, ol {
      container scroll-padding-top in a non-root scroll container on iOS. */
   .rank-full {
     scroll-margin-top: var(--header-h);
-    /* Prevent momentum scrolling from jumping past sections on iOS */
-    scroll-snap-stop: always;
-  }
-  .landing-view {
-    scroll-snap-stop: always;
   }
 
   /* ── Landing: larger, more prominent content in 33vw × 50vh squares ──

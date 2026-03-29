@@ -1652,26 +1652,19 @@
     updateRankColors(r6El, v.lightColor, v.darkColor);
     applyModColors(r6El, CB_MOD_COLORS[varId] || null);
 
-    // On mobile, CLO viewer JS doesn't initialise inside an iframe reliably —
-    // fall back to the static PNG (same approach as Pieces) and restore iframe on desktop.
-    var useMobileImg = window.innerWidth <= 767;
-
+    // Use direct JPG images on all devices — CLO iframe had rendering issues in
+    // deployed environments (wrong camera framing, grey background). JPG + zoom
+    // works reliably everywhere. getChessboardViewerPath() preserved for future use.
     function buildHtml() {
-      var previewEl;
-      if (useMobileImg) {
-        var initShot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
-        var jpgSrc = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, initShot);
-        previewEl = '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
-                    '<img class="cb-preview-img" id="cb-preview-img" src="' + jpgSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
-                    '</div>' +
-                    '<div class="cb-zoom-controls">' +
-                    '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
-                    '<button class="cb-zoom-btn cb-zoom-out" aria-label="Zoom out">\u2212</button>' +
-                    '</div>';
-      } else {
-        var viewerSrc = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
-        previewEl = '<iframe class="cb-preview-iframe" id="cb-preview-iframe" src="' + viewerSrc + '" title="Garment preview" frameborder="0" scrolling="no" allowfullscreen></iframe>';
-      }
+      var initShot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
+      var jpgSrc = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, initShot);
+      var previewEl = '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
+                  '<img class="cb-preview-img" id="cb-preview-img" src="' + jpgSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+                  '</div>' +
+                  '<div class="cb-zoom-controls">' +
+                  '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
+                  '<button class="cb-zoom-btn cb-zoom-out" aria-label="Zoom out">\u2212</button>' +
+                  '</div>';
 
       var pieceGrid = CHESSBOARD_PIECES_CB.map(function(p) {
         var sel = STATE.selectedCBPiece === p ? ' selected' : '';
@@ -1718,21 +1711,14 @@
     }
 
     rank6Content.innerHTML = buildHtml();
-    if (useMobileImg) { initPreviewZoom(); }
+    initPreviewZoom();
 
     function updatePreview() {
-      if (useMobileImg) {
-        var img = document.getElementById('cb-preview-img');
-        if (img) {
-          img.style.visibility = 'visible';
-          var shot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
-          img.src = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot);
-        }
-      } else {
-        var frame = document.getElementById('cb-preview-iframe');
-        if (frame) {
-          frame.src = getChessboardViewerPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation);
-        }
+      var img = document.getElementById('cb-preview-img');
+      if (img) {
+        img.style.visibility = 'visible';
+        var shot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
+        img.src = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot);
       }
     }
 

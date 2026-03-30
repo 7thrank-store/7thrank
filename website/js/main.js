@@ -166,16 +166,16 @@
   /* Rank-5 hover name colors — per hovered variant, what color each card name becomes */
   var CB_HOVER_COLORS = {
     ww: { scrollbar: '#B58863', names: { ww: '#B58863', ic: '#F0D9B5', s: '#B58863', pp: '#F0D9B5' } },
-    ic: { scrollbar: '#BFEFFF', names: { ww: '#FFFEEF', ic: '#BFEFFF', s: '#FFFEEF', pp: '#BFEFFF' } },
+    ic: { scrollbar: '#BFEFFF', names: null },
     s:  { scrollbar: '#535353', names: { ww: '#535353', ic: '#FFFFFF', s: '#535353', pp: '#FFFFFF' } },
-    pp: { scrollbar: '#FBD9E1', names: { ww: '#FFFFFF', ic: '#FBD9E1', s: '#FFFFFF', pp: '#FBD9E1' } }
+    pp: { scrollbar: '#FBD9E1', names: null }
   };
 
   var PC_HOVER_COLORS = {
     stoic:   { scrollbar: '#000000', names: null },
     grain:   { scrollbar: '#B58863', names: { stoic: '#B58863', grain: '#F0D9B5', ti: '#B58863', pasture: '#F0D9B5', harmony: '#B58863' } },
-    ti:      { scrollbar: '#BFEFFF', names: { stoic: '#FFFEEF', grain: '#BFEFFF', ti: '#FFFEEF', pasture: '#BFEFFF', harmony: '#FFFEEF' } },
-    pasture: { scrollbar: '#255525', names: { stoic: '#F0D9B5', grain: '#F0D9B5', ti: '#F0D9B5', pasture: '#255525', harmony: '#F0D9B5' } },
+    ti:      { scrollbar: '#BFEFFF', names: null },
+    pasture: { scrollbar: '#255525', names: { stoic: '#F0D9B5', grain: '#255525', ti: '#F0D9B5', pasture: '#255525', harmony: '#F0D9B5' } },
     harmony: { scrollbar: '#FFFFFF', names: null }
   };
 

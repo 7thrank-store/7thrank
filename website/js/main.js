@@ -174,7 +174,7 @@
   var PC_HOVER_COLORS = {
     stoic:   { scrollbar: '#000000', names: null },
     grain:   { scrollbar: '#B58863', names: { stoic: '#B58863', grain: '#F0D9B5', ti: '#B58863', pasture: '#F0D9B5', harmony: '#B58863' } },
-    ti:      { scrollbar: '#BFEFFF', names: null },
+    ti:      { scrollbar: '#BFEFFF', names: { stoic: '#FFFEEF', grain: '#BFEFFF', ti: '#FFFEEF', pasture: '#BFEFFF', harmony: '#FFFEEF' } },
     pasture: { scrollbar: '#255525', names: { stoic: '#F0D9B5', grain: '#255525', ti: '#F0D9B5', pasture: '#255525', harmony: '#F0D9B5' } },
     harmony: { scrollbar: '#FFFFFF', names: null }
   };
@@ -1549,7 +1549,7 @@
         if (scrollbarThumb) scrollbarThumb.style.background = scheme.scrollbar;
         rank5Content.querySelectorAll('.product-card[data-variant-id]').forEach(function(c) {
           var nameEl = c.querySelector('.product-card-name');
-          if (nameEl && scheme.names) nameEl.style.color = scheme.names[c.dataset.variantId] || '';
+          if (nameEl) nameEl.style.color = (scheme.names && scheme.names[c.dataset.variantId]) || '';
         });
       }
     }
@@ -1573,7 +1573,7 @@
         if (scrollbarThumb) scrollbarThumb.style.background = scheme.scrollbar;
         rank5Content.querySelectorAll('.product-card[data-line-id]').forEach(function(c) {
           var nameEl = c.querySelector('.product-card-name');
-          if (nameEl && scheme.names) nameEl.style.color = scheme.names[c.dataset.lineId] || '';
+          if (nameEl) nameEl.style.color = (scheme.names && scheme.names[c.dataset.lineId]) || '';
         });
       }
     }

@@ -166,9 +166,9 @@
   /* Rank-5 hover name colors — per hovered variant, what color each card name becomes */
   var CB_HOVER_COLORS = {
     ww: { scrollbar: '#B58863', names: { ww: '#B58863', ic: '#F0D9B5', s: '#B58863', pp: '#F0D9B5' } },
-    ic: { scrollbar: '#BFEFFF', names: null },
+    ic: { scrollbar: '#BFEFFF', names: { ww: '#FFFEEF', ic: '#BFEFFF', s: '#FFFEEF', pp: '#BFEFFF' } },
     s:  { scrollbar: '#535353', names: { ww: '#535353', ic: '#FFFFFF', s: '#535353', pp: '#FFFFFF' } },
-    pp: { scrollbar: '#FBD9E1', names: null }
+    pp: { scrollbar: '#FBD9E1', names: { ww: '#FFFFFF', ic: '#FBD9E1', s: '#FFFFFF', pp: '#FBD9E1' } }
   };
 
   var PC_HOVER_COLORS = {

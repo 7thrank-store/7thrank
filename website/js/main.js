@@ -2248,6 +2248,7 @@
         method: 'POST',
         body: JSON.stringify({
           action:  'contact',
+          token:   SECRET_TOKEN,
           name:    nameEl.value.trim(),
           email:   emailEl.value.trim(),
           message: messageEl.value.trim()
@@ -2346,7 +2347,7 @@
       // Fire-and-forget — does not block order completion
       fetch(WISHLIST_ENDPOINT, {
         method: 'POST',
-        body:   JSON.stringify({ action: 'newsletter', email: customerEmail, name: customerName })
+        body:   JSON.stringify({ action: 'newsletter', token: SECRET_TOKEN, email: customerEmail, name: customerName })
       }).catch(function() {});
     }
 
@@ -2643,7 +2644,7 @@
 
       fetch(WISHLIST_ENDPOINT, {
         method: 'POST',
-        body:   JSON.stringify({ action: 'validateCode', code: code })
+        body:   JSON.stringify({ action: 'validateCode', token: SECRET_TOKEN, code: code })
       })
       .then(function(res) { return res.json(); })
       .then(function(data) {
@@ -2928,8 +2929,8 @@
 
   // !! Replace with your deployed Apps Script URL after publishing !!
   var WISHLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbynjkrlxhyLIu_jAaEkpZ25gFmNBpKzQ2egn_1B-eqsARPAyjt266tl8unjdc3OFpdj/exec';
-
-  var CONTACT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbz197ippeRAkzRLuBuktihwt4t8Ksra9oarj0-A5qTBHzzbfGGXlQwKj1XfUYQ_eTU/exec';
+  var CONTACT_ENDPOINT  = 'https://script.google.com/macros/s/AKfycbz197ippeRAkzRLuBuktihwt4t8Ksra9oarj0-A5qTBHzzbfGGXlQwKj1XfUYQ_eTU/exec';
+  var SECRET_TOKEN      = '7R_FM_2026';
 
   function initWishlist() {
     var overlay   = document.getElementById('wishlist-overlay');
@@ -2977,6 +2978,7 @@
       submitBtn.textContent = 'Sending\u2026';
 
       var payload = {
+        token: SECRET_TOKEN,
         email: email,
         items: buildWishlistItems()
       };
@@ -3083,7 +3085,7 @@
 
       fetch(WISHLIST_ENDPOINT, {
         method: 'POST',
-        body:   JSON.stringify({ action: 'login', email: email })
+        body:   JSON.stringify({ action: 'login', token: SECRET_TOKEN, email: email })
       })
       .then(function(res) { return res.json(); })
       .then(function(data) {

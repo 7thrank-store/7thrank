@@ -29,6 +29,7 @@ var SHEET_NAME     = 'Wishlist Signups';
 var SENDER_NAME    = '7th Rank';
 var DISCOUNT_PCT   = 15;
 var SITE_URL       = 'https://7thrank-store.github.io/7thrank/';
+var SECRET_TOKEN   = '7R_FM_2026';
 // ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -90,7 +91,12 @@ function markUnsubscribed(email) {
 function doPost(e) {
   try {
     var payload = JSON.parse(e.postData.contents);
-    var email   = (payload.email || '').trim().toLowerCase();
+
+    if ((payload.token || '') !== SECRET_TOKEN) {
+      return jsonResponse({ success: false, error: 'Unauthorized.' });
+    }
+
+    var email = (payload.email || '').trim().toLowerCase();
 
     if (!isValidEmail(email)) {
       return jsonResponse({ success: false, error: 'Invalid email address.' });

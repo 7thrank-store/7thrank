@@ -60,7 +60,7 @@
 - [x] Email template CAN-SPAM compliance — unsubscribe link (`doGet` handler in `Code.gs`), physical address placeholder in footer; `Unsubscribed` column added to sheet
 - [x] Replace mailing address in `email_template.html` — set to `7th Rank Designs · 1114 Main Ave, Clifton, NJ 07011`
 - [x] Review Privacy Policy modal — 10-section modal updated: data storage disclosure, Google Apps Script processor, localStorage consent, permanent deletion on unsubscribe
-- [ ] If collecting emails from EU/UK residents: add explicit GDPR consent checkbox to wishlist form (separate from marketing opt-in)
+- [x] GDPR consent checkbox added to wishlist form — explicit opt-in with age confirmation (16+), Privacy Policy link, client-side validation prevents submission without consent
 
 ### Pre-Launch Phase: Email Acquisition (Cart Disabled)
 The site launches in email-acquisition mode. Cart, cart drawer, and checkout have been commented out and are ready to re-enable. See [Section 9 — Re-enabling Cart & Checkout](#9-re-enabling-cart--checkout).

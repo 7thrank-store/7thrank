@@ -742,6 +742,15 @@
                  placeholder="you@example.com" autocomplete="email" required>
           <span class="wishlist-field-error" id="wishlist-email-error" aria-live="polite"></span>
         </div>
+        <!-- GDPR explicit consent checkbox -->
+        <div class="wishlist-consent-row">
+          <input type="checkbox" id="wishlist-consent" class="wishlist-consent-check" required>
+          <label for="wishlist-consent" class="wishlist-consent-label">
+            I agree to receive marketing emails from 7th Rank Designs and confirm I am 16 or older.
+            See our <a href="#" class="legal-inline-link" data-open="privacy">Privacy Policy</a>.
+          </label>
+        </div>
+        <span class="wishlist-field-error" id="wishlist-consent-error" aria-live="polite"></span>
         <button type="submit" class="btn btn-primary wishlist-submit" id="wishlist-submit">
           Become a First Mover
         </button>
@@ -759,11 +768,9 @@
         </button>
       </div>
 
-      <!-- Fine print + CAN-SPAM opt-in consent -->
+      <!-- Fine print -->
       <p class="wishlist-fine-print">
-        By submitting, you agree to receive marketing emails from 7th Rank Designs.
         You can unsubscribe at any time. No spam. Code is single-use and unique to you.
-        See our <a href="#" class="legal-inline-link" data-open="privacy">Privacy Policy</a>.
       </p>
     </div>
   </div>

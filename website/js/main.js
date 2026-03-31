@@ -2937,10 +2937,12 @@
     var closeBtn  = document.getElementById('wishlist-close');
     var form      = document.getElementById('wishlist-form');
     var emailInput = document.getElementById('wishlist-email');
-    var emailError = document.getElementById('wishlist-email-error');
-    var submitBtn  = document.getElementById('wishlist-submit');
-    var successEl  = document.getElementById('wishlist-success');
-    var successMsg = document.getElementById('wishlist-success-body');
+    var emailError    = document.getElementById('wishlist-email-error');
+    var consentCheck  = document.getElementById('wishlist-consent');
+    var consentError  = document.getElementById('wishlist-consent-error');
+    var submitBtn     = document.getElementById('wishlist-submit');
+    var successEl     = document.getElementById('wishlist-success');
+    var successMsg    = document.getElementById('wishlist-success-body');
     if (!overlay) return;
 
     // Open wishlist popup when any wishlist button is clicked.
@@ -2967,10 +2969,16 @@
       var email = (emailInput.value || '').trim();
 
       // Basic client-side validation
-      emailError.textContent = '';
+      emailError.textContent   = '';
+      consentError.textContent = '';
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         emailError.textContent = 'Please enter a valid email address.';
         emailInput.focus();
+        return;
+      }
+      if (consentCheck && !consentCheck.checked) {
+        consentError.textContent = 'Please confirm your consent to continue.';
+        consentCheck.focus();
         return;
       }
 

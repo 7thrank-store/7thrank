@@ -76,10 +76,10 @@ function markUnsubscribed(email) {
   try {
     var sheet = getOrCreateSheet();
     var data  = sheet.getDataRange().getValues();
-    // Column M (index 12) = Unsubscribed flag
-    for (var i = 1; i < data.length; i++) {
+    // Iterate in reverse so row deletions don't shift subsequent indices
+    for (var i = data.length - 1; i >= 1; i--) {
       if ((data[i][1] || '').toString().toLowerCase().trim() === email) {
-        sheet.getRange(i + 1, 13).setValue(true);
+        sheet.deleteRow(i + 1);
       }
     }
   } catch (err) {

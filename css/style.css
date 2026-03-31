@@ -1,0 +1,3685 @@
+/* ════════════════════════════════════════════════════════
+   7th Rank — Main Stylesheet
+   Chess Board Layout · Luxury Streetwear Aesthetic
+   Inspired by Jesko Jets: rich without being heavy
+   ════════════════════════════════════════════════════════ */
+
+/* ── GOOGLE FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ════════════════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+   ════════════════════════════════════════════════════════ */
+:root {
+  /* Chess Board */
+  --sq-light:         #B8CDD8;
+  --sq-dark:          #1A3049;
+  --sq-dark-warm:     #223850;
+  --sq-light-text:    #0D1B2A;
+  --sq-dark-text:     #B8CDD8;
+
+  /* Brand Accent */
+  --gold:             #5BB8D4;
+  --gold-bright:      #7EC8E3;
+  --gold-muted:       #3D8FA8;
+  --gold-bg:          rgba(91, 184, 212, 0.08);
+
+  /* UI */
+  --bg-overlay:       rgba(13, 27, 42, 0.88);
+  --border-light:     rgba(184, 205, 216, 0.15);
+  --border-gold:      rgba(91, 184, 212, 0.4);
+
+  /* Typography */
+  --font-display:     'Bebas Neue', 'Arial Black', sans-serif;
+  --font-italiana:    'Italianno', Georgia, serif;
+  --font-heading:     'Playfair Display', Georgia, serif;
+  --font-body:        'Inter', 'Helvetica Neue', sans-serif;
+
+  /* Sizing */
+  --header-h:         64px;
+  --nav-dot-size:     8px;
+  --sq-letter-size:   clamp(4rem, 8vw, 9rem);
+  --sq-piece-size:    clamp(3rem, 6vw, 6rem);
+
+  /* Transitions */
+  --ease-luxury:      cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce:      cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-fast:           0.2s var(--ease-luxury);
+  --t-base:           0.4s var(--ease-luxury);
+  --t-slow:           0.7s var(--ease-luxury);
+  --t-piece:          0.5s var(--ease-bounce);
+
+  /* Z-index layers */
+  --z-board:          1;
+  --z-header:         100;
+  --z-nav:            90;
+  --z-cart:           200;
+  --z-overlay:        150;
+  --z-mobile:         300;
+}
+
+/* ════════════════════════════════════════════════════════
+   RESET & BASE
+   ════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--sq-dark);
+  color: var(--sq-dark-text);
+  overflow: hidden; /* chess-board handles scroll */
+  line-height: 1.6;
+}
+
+body.loaded {
+  visibility: visible;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ════════════════════════════════════════════════════════
+   SCROLL CONTAINER
+   ════════════════════════════════════════════════════════ */
+.chess-board {
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-h); /* offset snap targets below fixed header (desktop) */
+  position: relative;
+  z-index: var(--z-board);
+
+  /* Smooth hardware-accelerated scroll */
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+  /* Prevent body/page from catching momentum at snap boundaries */
+  overscroll-behavior-y: contain;
+}
+
+/* Hide scrollbar while preserving scroll function */
+.chess-board::-webkit-scrollbar { display: none; }
+.chess-board { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ════════════════════════════════════════════════════════
+   RANK SECTIONS
+   ════════════════════════════════════════════════════════ */
+
+/* Landing view (Ranks 1 + 2 combined = full 100vh)
+   scroll-padding-top does not apply here since scrollTop is clamped at 0 */
+.landing-view {
+  scroll-snap-align: start;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Full-height individual rank sections */
+.rank-full {
+  scroll-snap-align: start;
+  /* scroll-margin-top is set on mobile only (see late cascade block) where iOS Safari
+     needs element-level margin instead of container scroll-padding-top.
+     On desktop, scroll-padding-top on .chess-board handles the header offset. */
+  /* +1px prevents sub-pixel rounding from exposing 1px of the next section
+     at the viewport bottom when scroll-padding-top aligns the snap exactly. */
+  min-height: calc(100vh - var(--header-h) + 1px);
+  height: calc(100vh - var(--header-h) + 1px);
+  position: relative;
+  display: grid;
+  grid-template-columns: 12.5% 1fr; /* file label + content area */
+  grid-template-rows: 100%; /* ensures children can use height: 100% */
+  overflow: hidden;
+}
+
+/* Base rank layout for ranks 1 & 2 */
+.rank {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  flex-shrink: 0;
+}
+
+.rank-1 {
+  flex: 0 0 48%;  /* % resolves against landing-view's definite height */
+  min-height: 48%;
+}
+
+.rank-2 {
+  flex: 0 0 52%; /* slightly taller — back row at top gets more space */
+  min-height: 52%;
+}
+
+/* ════════════════════════════════════════════════════════
+   CHESS SQUARES
+   ════════════════════════════════════════════════════════ */
+.square {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+
+.sq-light {
+  background: var(--sq-light);
+  color: var(--sq-light-text);
+}
+
+.sq-dark {
+  background: var(--sq-dark);
+  color: var(--sq-dark-text);
+}
+
+/* Subtle inner texture on dark squares */
+.sq-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(91,184,212,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════════
+   RANK LABEL (chess notation — top-left of a-file square)
+   ════════════════════════════════════════════════════════ */
+.rank-label {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ════════════════════════════════════════════════════════
+   RANK 1: BRAND NAME LETTERS
+   ════════════════════════════════════════════════════════ */
+.sq-letter {
+  font-family: var(--font-italiana);
+  font-size: var(--sq-letter-size);
+  line-height: 0.85;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  user-select: none;
+  transition: transform var(--t-slow);
+}
+
+/* Letter hover lift on parent */
+.rank-1 .square:hover .sq-letter {
+  transform: translateY(-4px);
+}
+
+/* "7" numeral renders smaller in Italianno than uppercase letters */
+.square[data-file="a"][data-rank-num="1"] .sq-letter {
+  font-size: calc(var(--sq-letter-size) * 1.25);
+}
+
+/* Logo square */
+.sq-logo {
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.sq-logo-img {
+  width: 95%;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  /* Invert for dark squares — handled via filter */
+}
+
+.sq-light .sq-logo-img {
+  filter: none;
+}
+
+/* ── Logo animation: "7" pen-stroke draw-on ─────────────────────────────
+   stroke-dashoffset 1000→0 progressively reveals Path 3 from start to
+   finish, like a pen writing the "7" numeral stroke.
+   ──────────────────────────────────────────────────────────────────── */
+@keyframes logo-pen-7 {
+  0%   { stroke-dashoffset: 1000; opacity: 0; }
+  2%   { stroke-dashoffset: 1000; opacity: 1; }
+  40%  { stroke-dashoffset: 0;    opacity: 1; }
+  55%  { stroke-dashoffset: 0;    opacity: 0; }
+  100% { stroke-dashoffset: 0;    opacity: 0; }
+}
+
+/* Each 7 s cycle the trace draws in a different collection color */
+@keyframes streak-color-cycle {
+  0%       { stroke: #E8B87A; }   /* Weathered Walnut — brighter amber  */
+  16.667%  { stroke: #A8DFFF; }   /* Ice Castle — vivid sky blue        */
+  33.333%  { stroke: #AAAAAA; }   /* Stone — lighter gray               */
+  50%      { stroke: #FFB8CC; }   /* Princess Pink — more saturated     */
+  66.667%  { stroke: #4DB84D; }   /* Pasture — brighter green           */
+  83.333%  { stroke: #F0CC44; }   /* Gold accent — brighter gold        */
+  100%     { stroke: #E8B87A; }
+}
+
+.streak-7 {
+  animation:
+    logo-pen-7        7s  ease-in-out infinite,
+    streak-color-cycle 42s linear      infinite;
+}
+
+
+.sq-tagline {
+  font-family: var(--font-body);
+  font-size: clamp(0.7rem, 1.2vw, 1.1rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* ════════════════════════════════════════════════════════
+   RANK 2: PIECE SQUARES
+   ════════════════════════════════════════════════════════ */
+
+/* Decorative background pawn (low-opacity fill) */
+.sq-piece-deco {
+  font-size: clamp(2.5rem, 5vw, 5.5rem);
+  opacity: 0.08;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity var(--t-base), transform var(--t-slow);
+}
+
+/* Interactive piece squares (Queen + King) */
+.sq-interactive {
+  cursor: pointer;
+  gap: 0.75rem;
+  padding: 1rem;
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base),
+    background var(--t-fast);
+  outline: none;
+}
+
+.sq-interactive:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+.sq-piece {
+  font-size: var(--sq-piece-size);
+  line-height: 1;
+  transition: transform var(--t-piece), filter var(--t-base);
+  filter: drop-shadow(0 4px 12px rgba(91,184,212,0.2));
+}
+
+.sq-action-label {
+  font-family: var(--font-italiana);
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  transition: opacity var(--t-base), letter-spacing var(--t-base);
+}
+
+/* Hover reveal overlay */
+.sq-hover-reveal {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem;
+  background: linear-gradient(to top, rgba(13,27,42,0.7) 0%, transparent 100%);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--t-base), transform var(--t-base);
+  pointer-events: none;
+}
+
+.sq-light .sq-hover-reveal {
+  background: linear-gradient(to top, rgba(184,205,216,0.5) 0%, transparent 100%);
+}
+
+.sq-hover-text {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Hover states */
+.sq-interactive:hover,
+.sq-interactive:focus-visible {
+  transform: scale(1.02);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+.sq-interactive:hover .sq-piece,
+.sq-interactive:focus-visible .sq-piece {
+  transform: translateY(-6px) scale(1.05);
+  filter: drop-shadow(0 8px 24px rgba(91,184,212,0.4));
+}
+
+.sq-interactive:hover .sq-hover-reveal,
+.sq-interactive:focus-visible .sq-hover-reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Queen — gold glow */
+.sq-queen:hover {
+  box-shadow: 0 0 40px rgba(91,184,212,0.25), 0 8px 40px rgba(0,0,0,0.4);
+}
+
+/* Active (clicked) state */
+.sq-interactive.activated .sq-piece {
+  animation: pieceActivate 0.4s var(--ease-bounce) forwards;
+}
+
+@keyframes pieceActivate {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15) rotate(-5deg); }
+  70%  { transform: scale(0.95) rotate(3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Scroll cue */
+.scroll-cue {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.5;
+  transition: opacity var(--t-base);
+  pointer-events: none;
+}
+
+.scroll-cue-text {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.scroll-cue-arrow {
+  width: 1px;
+  height: 2rem;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50%       { opacity: 1; transform: scaleY(1.2); }
+}
+
+/* ════════════════════════════════════════════════════════
+   RANK 3: COLLECTIONS
+   ════════════════════════════════════════════════════════ */
+.rank-3 {
+  grid-template-columns: 12.5% 1fr;
+}
+
+/* Ranks 4-6 share the same label + content split */
+.rank-4, .rank-5, .rank-6 {
+  grid-template-columns: 12.5% 1fr;
+}
+
+/* Rank-4 subline selector: block layout so subline-grid fills full content area */
+.rank-4 .rank-dynamic-content {
+  display: block;
+  height: 100%;
+}
+
+/* Rank-5 garment selector: tall vertical cards in a horizontal scroll row */
+.rank-5 .rank-dynamic-content {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.rank-5 .rank-dynamic-content::-webkit-scrollbar { display: none; }
+
+/* Custom scrollbar — always a real DOM element, immune to paint-deferral */
+.rank5-scrollbar {
+  position: absolute;
+  bottom: 0;
+  left: 12.5%;
+  right: 0;
+  height: 6px;
+  background: rgba(255,255,255,0.12);
+  z-index: 20;
+  pointer-events: none;
+}
+.rank5-scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--rank5-scrollbar-color, var(--gold));
+  border-radius: 3px;
+  cursor: ew-resize;
+  pointer-events: all;
+  will-change: transform;
+}
+
+.rank-5 .product-card {
+  flex: 0 0 50%;
+  height: 100%;
+  justify-content: flex-end;
+  padding: 1.5rem 1.5rem 5rem;
+  gap: 0.5rem;
+}
+
+.rank-5 .product-card-cycling-bg {
+  position: absolute;
+  inset: 0;
+  flex: none;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* Gradient overlay so name stays legible below the contained image on desktop */
+.rank-5 .product-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rank-5 .product-card-name,
+.rank-5 .product-card-palette {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+}
+
+.sq-file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0.5rem;
+  overflow: hidden;
+}
+
+.file-label-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  text-align: center;
+  opacity: 1;
+  transition: color 0.6s ease;
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+
+.rank-4 .file-label-text,
+.rank-5 .file-label-text,
+.rank-6 .file-label-text {
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+}
+
+/* Palette text with outline — keeps light-on-light and dark-on-dark readable */
+.rank-4 .sq-light .file-label-text,
+.rank-5 .sq-light .file-label-text,
+.rank-6 .sq-light .file-label-text {
+  text-shadow:
+    -1px -1px 0 var(--label-outline-light, transparent),
+     1px -1px 0 var(--label-outline-light, transparent),
+    -1px  1px 0 var(--label-outline-light, transparent),
+     1px  1px 0 var(--label-outline-light, transparent);
+}
+.rank-4 .sq-dark .file-label-text,
+.rank-5 .sq-dark .file-label-text,
+.rank-6 .sq-dark .file-label-text {
+  text-shadow:
+    -1px -1px 0 var(--label-outline-dark, transparent),
+     1px -1px 0 var(--label-outline-dark, transparent),
+    -1px  1px 0 var(--label-outline-dark, transparent),
+     1px  1px 0 var(--label-outline-dark, transparent);
+}
+
+/* On a light-background label, use luminance-computed contrast color */
+.sq-light .file-label-text {
+  color: var(--text-on-light, var(--sq-light-text));
+}
+
+/* On a dark-background label, use luminance-computed contrast color */
+.sq-dark .file-label-text {
+  color: var(--text-on-dark, var(--sq-dark-text));
+}
+
+.collections-carousel-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  height: 100%;
+}
+
+.collections-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr;
+  width: 100%;
+  height: 100%;
+}
+
+/* Collection cards — vertical tile style (matches subline selector) */
+.collection-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1.5rem 1rem 1.75rem;
+  cursor: pointer;
+  transition: transform var(--t-base), box-shadow var(--t-base);
+  position: relative;
+  overflow: hidden;
+  gap: 0.4rem;
+}
+
+/* Alternating chess-square colors */
+.collection-card:nth-child(odd) {
+  background: var(--sq-light);
+  color: var(--sq-light-text);
+}
+.collection-card:nth-child(even) {
+  background: var(--sq-dark-warm);
+  color: var(--sq-dark-text);
+}
+
+.collection-card:hover {
+  transform: scale(1.01);
+  z-index: 2;
+  box-shadow: 0 0 40px rgba(0,0,0,0.4);
+}
+
+/* Full-card gradient so text stays legible over the garment image */
+.collection-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 40%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+.collection-card:nth-child(odd)::after {
+  background: linear-gradient(to top, rgba(184,205,216,0.97) 0%, rgba(184,205,216,0.6) 40%, transparent 100%);
+}
+
+.collection-card-name {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+}
+
+.collection-card-desc {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  text-align: center;
+  line-height: 1.4;
+  min-height: 2.2em; /* keeps name at consistent height even when desc is empty */
+}
+
+.collection-card-badge {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  background: var(--gold);
+  color: var(--sq-dark);
+  border-radius: 2px;
+  margin-top: 0.5rem;
+}
+
+.collection-card-coming-soon {
+  opacity: 0.65;
+  cursor: default;
+  pointer-events: none;
+}
+
+
+/* Logo display for coming-soon collection cards */
+.collection-card-logo-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.collection-card-logo-svg {
+  width: 45%;
+  opacity: 0.28;
+}
+/* Light cards need a nudge — gold on ivory is subtler than gold on dark */
+.collection-card:nth-child(odd) .collection-card-logo-svg {
+  opacity: 0.42;
+}
+/* Knight body paths rendered gold — visible on both light and dark backgrounds
+   without disturbing the .streak-7 animation stroke color */
+.collection-card-logo-svg path:not(.streak-7) {
+  fill: var(--gold) !important;
+}
+
+/* Carousel buttons */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 2.5rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: var(--bg-overlay);
+  color: var(--sq-dark-text);
+  border: 1px solid var(--border-light);
+  transition: background var(--t-fast), opacity var(--t-fast);
+}
+
+.carousel-btn:hover { background: rgba(91,184,212,0.2); }
+.carousel-prev { left: 0; }
+.carousel-next { right: 0; }
+
+/* Keep pawn-advance element hidden and out of layout flow */
+#pawn-advance { display: none; }
+
+/* ════════════════════════════════════════════════════════
+   RANKS 4 + 5: PRODUCT FLOW (dynamic content)
+   4 cols × 2 rows gives near-square chess cells at 16:9
+   ════════════════════════════════════════════════════════ */
+.rank-dynamic-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  height: 100%;
+}
+
+/* Product line cards */
+.product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 0.75rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--t-base), box-shadow var(--t-base);
+  height: 100%;
+}
+
+.product-card:nth-child(odd) {
+  background: var(--sq-light-override, var(--sq-light));
+  color: var(--text-on-light, var(--sq-light-text));
+  transition: background-color 0.6s ease, transform var(--t-base), box-shadow var(--t-base);
+}
+
+.product-card:nth-child(even) {
+  background: var(--sq-dark-override, var(--sq-dark-warm));
+  color: var(--text-on-dark, var(--sq-dark-text));
+  transition: background-color 0.6s ease, transform var(--t-base), box-shadow var(--t-base);
+}
+
+/* Row 2 (items 5-8) flips the pattern — true chess-board alternation in grid layouts */
+.product-card:nth-child(n+5):nth-child(odd) {
+  background: var(--sq-dark-override, var(--sq-dark-warm));
+  color: var(--text-on-dark, var(--sq-dark-text));
+}
+.product-card:nth-child(n+5):nth-child(even) {
+  background: var(--sq-light-override, var(--sq-light));
+  color: var(--text-on-light, var(--sq-light-text));
+}
+
+/* rank-5 is a horizontal row — no row-flip; use explicit sq-light/sq-dark classes instead */
+.rank-5 .product-card.sq-light {
+  background: var(--sq-light-override, var(--sq-light));
+  color: var(--text-on-light, var(--sq-light-text));
+  transition: background-color 0.6s ease, transform var(--t-base), box-shadow var(--t-base);
+}
+.rank-5 .product-card.sq-dark {
+  background: var(--sq-dark-override, var(--sq-dark-warm));
+  color: var(--text-on-dark, var(--sq-dark-text));
+  transition: background-color 0.6s ease, transform var(--t-base), box-shadow var(--t-base);
+}
+
+.product-card.selected {
+  outline: 3px solid var(--rank-accent, var(--gold));
+  outline-offset: -3px;
+}
+
+.product-card:hover {
+  transform: scale(1.02);
+  z-index: 2;
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+}
+
+.product-card-img-wrap {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Cycling background for garment-line cards (replaces static img) */
+.product-card-cycling-bg {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  background-size: cover;
+  background-position: center center;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.product-card-cycling-bg.visible { opacity: 1; }
+
+.product-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-slow);
+}
+
+.product-card:hover .product-card-img {
+  transform: scale(1.06);
+}
+
+.product-card-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  letter-spacing: 0.08em;
+  text-align: center;
+  /* Use contrast-safe ui-text vars so names stay legible when variant palette
+     overrides make a "dark" square actually light (e.g. Ice Castle, Princess Pink) */
+  color: var(--ui-text-light, var(--sq-light-text));
+}
+/* Dark cards — explicit classes (rank-5 row) and nth-child patterns (rank-6 grid) */
+.product-card.sq-dark .product-card-name,
+.product-card:nth-child(even) .product-card-name,
+.product-card:nth-child(n+5):nth-child(odd) .product-card-name {
+  color: var(--ui-text-dark, var(--sq-dark-text));
+}
+/* rank-5 uses explicit sq-light/sq-dark classes — these beat the nth-child rules above */
+.rank-5 .product-card.sq-light .product-card-name { color: var(--ui-text-light, var(--sq-light-text)); }
+.rank-5 .product-card.sq-dark  .product-card-name { color: var(--ui-text-dark,  var(--sq-dark-text)); }
+
+.product-card-piece-label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.product-card-price {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rank-accent, var(--gold));
+}
+
+.product-card-piece-icon {
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 1;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+
+/* ════════════════════════════════════════════════════════
+   RANK 6: COLORWAY CUSTOMIZATION
+   rank-dynamic-content must be a plain block so colorway-grid
+   fills the full 87.5% content area instead of one grid cell
+   ════════════════════════════════════════════════════════ */
+.rank-6 .rank-dynamic-content {
+  display: block;
+  height: 100%;
+}
+
+.colorway-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  height: 100%;
+}
+
+.colorway-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.25rem 0.75rem;
+  cursor: pointer;
+  position: relative;
+  height: 100%;
+  transition: transform var(--t-base), box-shadow var(--t-base);
+}
+
+.colorway-slot:nth-child(odd) {
+  background: var(--sq-light-override, var(--sq-light));
+  color: var(--ui-text-light, var(--sq-light-text));
+}
+
+.colorway-slot:nth-child(even) {
+  background: var(--sq-dark-override, var(--sq-dark-warm));
+  color: var(--ui-text-dark, var(--sq-dark-text));
+}
+
+/* Row 2 (items 5-8) flips the pattern — true chess-board alternation */
+/* Exclude the customization panel which has its own fixed dark background */
+.colorway-slot:not(.customization-panel):nth-child(n+5):nth-child(odd) {
+  background: var(--sq-dark-override, var(--sq-dark-warm));
+  color: var(--ui-text-dark, var(--sq-dark-text));
+}
+.colorway-slot:not(.customization-panel):nth-child(n+5):nth-child(even) {
+  background: var(--sq-light-override, var(--sq-light));
+  color: var(--ui-text-light, var(--sq-light-text));
+}
+
+.colorway-slot.selected {
+  outline: 3px solid var(--rank-accent, var(--gold));
+  outline-offset: -3px;
+}
+
+.colorway-slot:hover { transform: scale(1.02); z-index: 2; }
+.customization-panel:hover { transform: none; z-index: auto; }
+
+.colorway-preview-img {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  object-fit: cover;
+  transition: transform var(--t-slow);
+}
+
+.colorway-slot:hover .colorway-preview-img { transform: scale(1.05); }
+
+.colorway-swatch {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  transition: transform var(--t-fast);
+}
+
+.colorway-slot:hover .colorway-swatch { transform: scale(1.15); }
+
+.colorway-name {
+  font-family: var(--font-display);
+  font-size: clamp(0.8rem, 1.4vw, 1.2rem);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* Customization panel: position/span set dynamically in JS based on colorway count */
+.customization-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.5rem 1rem;
+  background: var(--sq-dark);
+  color: var(--sq-dark-text);
+}
+
+.size-selector {
+  width: 100%;
+  text-align: center;
+}
+
+.size-label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.5rem;
+}
+
+.size-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.size-btn {
+  padding: 0.3rem 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border: 1px solid currentColor;
+  color: inherit;
+  opacity: 0.85;
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast), opacity var(--t-fast);
+}
+
+.size-btn:hover,
+.size-btn.selected {
+  background: var(--rank-accent, var(--gold));
+  border-color: var(--rank-accent, var(--gold));
+  color: var(--rank-accent-text, var(--sq-dark));
+  opacity: 1;
+}
+
+/* Inverse palette when customization panel lands on a light square */
+.customization-panel.sq-light {
+  color: var(--sq-light-text);
+}
+
+.customization-panel.sq-light .size-label {
+  color: var(--sq-light-text);
+}
+
+.customization-panel.sq-light .size-btn {
+  color: var(--sq-light-text);
+  border-color: rgba(28, 20, 16, 0.3);
+}
+
+.customization-panel.sq-light .size-btn:hover,
+.customization-panel.sq-light .size-btn.selected {
+  background: var(--rank-accent, var(--gold-muted));
+  border-color: var(--rank-accent, var(--gold-muted));
+  color: var(--rank-accent-text, var(--sq-dark));
+}
+
+.customization-panel.sq-light .product-card-price {
+  color: var(--rank-accent, var(--gold-muted));
+}
+
+/* ════════════════════════════════════════════════════════
+   RANK 7: CONTACT / CHECKOUT
+   ════════════════════════════════════════════════════════ */
+.rank-7 {
+  grid-template-columns: 1fr; /* overridden by flex panels */
+}
+
+.rank-7-panel {
+  display: grid;
+  grid-template-columns: 12.5% 1fr;
+  height: 100%;
+  width: 100%;
+}
+
+/* ════════════════════════════════════════════════════════
+   CONTACT — Editorial Redesign
+   Grid: 12.5% (label) | 37.5% (info panel) | 50% (form)
+   ════════════════════════════════════════════════════════ */
+
+.rank-7-contact {
+  grid-template-columns: 12.5% 37.5% 50%;
+}
+
+/* Info panel: light square — spans b–d columns */
+.contact-info-panel {
+  position: relative;
+  background: var(--sq-light);
+  color: var(--sq-light-text);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem 2rem;
+}
+
+/* Animated logo watermark */
+.contact-watermark-logo {
+  position: absolute;
+  top: -5%;
+  right: -10%;
+  width: 80%;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.contact-watermark-logo-svg {
+  width: 100%;
+  opacity: 0.18;
+}
+
+/* Knight body — dark silhouette on light bg; streak animates in color */
+.contact-watermark-logo-svg path:not(.streak-7) {
+  fill: var(--sq-light-text) !important;
+}
+
+.contact-info-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 2rem;
+}
+
+.contact-info-top { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.contact-eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold-muted);
+  margin: 0;
+}
+
+.contact-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.2vw, 3.4rem);
+  letter-spacing: 0.06em;
+  line-height: 0.95;
+  color: var(--sq-light-text);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.contact-info-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-channel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.contact-channel-label {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold-muted);
+  opacity: 0.8;
+}
+
+.contact-channel-value {
+  font-family: var(--font-body);
+  font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+  font-weight: 500;
+  color: var(--sq-light-text);
+  transition: color var(--t-fast);
+  word-break: break-all;
+}
+.contact-channel-value:hover { color: var(--gold-muted); }
+
+.contact-divider-line {
+  height: 1px;
+  background: rgba(13,27,42,0.15);
+}
+
+/* Social cards — two prominent cards side-by-side */
+.contact-social-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.contact-social-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem 0.9rem;
+  background: rgba(13,27,42,0.06);
+  border: 1px solid rgba(13,27,42,0.15);
+  color: var(--sq-light-text);
+  text-decoration: none;
+  position: relative;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast), transform var(--t-fast);
+  overflow: hidden;
+}
+.contact-social-card:hover {
+  background: rgba(13,27,42,0.12);
+  border-color: var(--gold-muted);
+  color: var(--gold-muted);
+  transform: translateY(-2px);
+}
+
+.contact-social-card-icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.8;
+  transition: opacity var(--t-fast);
+}
+.contact-social-card:hover .contact-social-card-icon { opacity: 1; }
+
+.contact-social-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.contact-social-card-name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.contact-social-card-handle {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  opacity: 0.6;
+  letter-spacing: 0.04em;
+}
+
+.contact-social-card-arrow {
+  position: absolute;
+  bottom: 0.7rem;
+  right: 0.8rem;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+.contact-social-card:hover .contact-social-card-arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Form panel */
+.sq-contact-form-wrap {
+  background: var(--sq-dark-warm);
+  color: var(--sq-dark-text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.75rem;
+  padding: 2.5rem 2.5rem;
+}
+
+.rank-7-contact .sq-contact-form-wrap {
+  grid-column: auto; /* reset any inherited grid-column */
+}
+
+.contact-form-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.contact-form-eyebrow {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.contact-form-sub {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  line-height: 1.65;
+  opacity: 0.5;
+  margin: 0;
+}
+
+/* Two-column name + email row */
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Checkout panel */
+.rank-7-checkout {
+  grid-template-columns: 12.5% repeat(7, 1fr);
+}
+
+.sq-checkout-section {
+  padding: 1.5rem 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  overflow-y: auto;
+}
+
+.sq-checkout-section::-webkit-scrollbar { width: 3px; }
+.sq-checkout-section::-webkit-scrollbar-track { background: transparent; }
+.sq-checkout-section::-webkit-scrollbar-thumb { background: var(--border-gold); border-radius: 2px; }
+
+.checkout-sq-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 0.25rem;
+  text-align: center;
+  width: 100%;
+}
+
+.sq-checkout-cta {
+  padding: 1.5rem 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+}
+
+/* Inside the CTA square, the order details list must not stretch to fill
+   remaining space — that's what created the large gap above the promo row. */
+.sq-checkout-cta .checkout-order-details { flex: none; }
+
+.checkout-subtotal,
+.checkout-order-details {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+}
+
+.checkout-subtotal {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+  margin-top: auto;
+}
+
+.checkout-cart-list,
+.checkout-order-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  width: 100%;
+}
+
+.checkout-cart-item {
+  font-size: 0.72rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  opacity: 0.8;
+}
+
+.checkout-payment-note {
+  font-size: 0.68rem;
+  opacity: 0.6;
+  line-height: 1.5;
+  width: 100%;
+  text-align: center;
+}
+
+.card-row-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.checkout-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  cursor: pointer;
+  opacity: 0.7;
+  width: 100%;
+}
+
+.trust-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  opacity: 0.8;
+}
+
+.trust-icon { font-size: 1rem; }
+
+.promo-code-wrap {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.sq-checkout-trust {
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.wishlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  width: 100%;
+}
+
+.wishlist-empty {
+  font-size: 0.72rem;
+  opacity: 0.5;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ── Checkout: product image square (b) ── */
+.sq-checkout-product {
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.checkout-product-display {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.checkout-product-img {
+  width: 100%;
+  flex: 0 0 70%;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center center;
+  background: var(--sq-dark);
+  transition: opacity 0.35s ease;
+}
+
+.checkout-product-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0,0,0,0.45);
+  border-top: 1px solid var(--border-light);
+}
+
+/* Chess-square dots — small squares matching the board aesthetic */
+.checkout-img-dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 0.3rem;
+}
+.checkout-img-dot {
+  width: 5px;
+  height: 5px;
+  background: rgba(91,184,212,0.2);
+  border: 1px solid rgba(91,184,212,0.35);
+  flex-shrink: 0;
+  transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+.checkout-img-dot.active {
+  background: #5BB8D4;
+  border-color: #5BB8D4;
+  transform: scale(1.35);
+}
+
+.checkout-product-name {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--sq-dark-text);
+  line-height: 1.4;
+}
+
+.checkout-product-qty {
+  font-size: 0.7rem;
+  color: #5BB8D4;
+  letter-spacing: 0.04em;
+}
+
+.checkout-item-qty {
+  color: #5BB8D4;
+  font-size: 0.7em;
+}
+
+.cart-item-qty {
+  color: #5BB8D4;
+  font-size: 0.8em;
+  margin-right: 0.2em;
+}
+
+.checkout-product-size {
+  font-size: 0.68rem;
+  opacity: 0.65;
+  color: var(--sq-dark-text);
+}
+
+.checkout-product-empty {
+  font-size: 0.72rem;
+  opacity: 0.5;
+  font-style: italic;
+  padding: 1.25rem 1rem;
+}
+
+/* ── Checkout: total breakdown (square f) ── */
+.checkout-total-breakdown {
+  width: 100%;
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.checkout-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.checkout-discount-row {
+  color: #5BB87A;
+  opacity: 1;
+}
+
+.checkout-breakdown-total {
+  font-size: 0.88rem;
+  font-weight: 700;
+  opacity: 1;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border-light);
+  margin-top: 0.1rem;
+}
+
+.promo-code-wrap {
+  width: 100%;
+  margin-top: 0;
+}
+
+
+/* ════════════════════════════════════════════════════════
+   RANK 8: CONFIRMATION
+   ════════════════════════════════════════════════════════ */
+.rank-8 {
+  grid-template-columns: 12.5% 1fr;
+  flex-direction: column;
+}
+
+.rank-8-panel {
+  grid-column: 1 / -1; /* span full width of parent rank-full grid */
+  display: grid;
+  grid-template-columns: 12.5% 1fr;
+  height: 100%;
+}
+
+.sq-confirmation-content {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: var(--sq-dark);
+  color: var(--sq-dark-text);
+}
+
+/* Contact confirmation: light square paradigm */
+#rank-8-contact-confirm .sq-confirmation-content {
+  background: var(--sq-light);
+  color: var(--sq-light-text);
+}
+#rank-8-contact-confirm .confirm-piece {
+  filter: drop-shadow(0 0 20px rgba(26,48,73,0.25));
+}
+#rank-8-contact-confirm .confirm-title,
+#rank-8-contact-confirm .confirm-desc,
+#rank-8-contact-confirm .confirm-sub,
+#rank-8-contact-confirm .social-link {
+  color: var(--sq-light-text);
+}
+
+.confirm-piece {
+  font-size: 5rem;
+  filter: drop-shadow(0 0 20px rgba(184,205,216,0.3));
+  animation: confirmPulse 3s ease-in-out infinite;
+}
+
+.confirm-piece-gold {
+  filter: drop-shadow(0 0 20px rgba(91,184,212,0.5));
+  color: var(--gold);
+}
+
+@keyframes confirmPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.05); }
+}
+
+.confirm-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.confirm-desc {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  opacity: 0.8;
+  max-width: 40ch;
+  line-height: 1.7;
+}
+
+.confirm-sub {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  opacity: 0.5;
+  letter-spacing: 0.05em;
+}
+
+.social-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.social-link {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  transition: opacity var(--t-fast), color var(--t-fast);
+}
+
+.social-link:hover { opacity: 1; color: var(--gold); }
+
+/* ════════════════════════════════════════════════════════
+   FORMS
+   ════════════════════════════════════════════════════════ */
+.contact-form {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.form-input {
+  background: rgba(184,205,216,0.06);
+  border: 1px solid var(--border-light);
+  color: var(--sq-dark-text);
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  transition: border-color var(--t-fast), background var(--t-fast);
+  border-radius: 0;
+  width: 100%;
+  -webkit-appearance: none;
+}
+
+.form-input::placeholder { opacity: 0.4; }
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(91,184,212,0.05);
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-input-sm {
+  padding: 0.5rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.checkout-form-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  width: 100%;
+}
+
+/* Light background forms */
+.sq-light .form-input {
+  background: rgba(13,27,42,0.06);
+  border-color: rgba(13,27,42,0.2);
+  color: var(--sq-light-text);
+}
+
+.sq-light .form-input:focus {
+  border-color: var(--gold-muted);
+}
+
+/* ════════════════════════════════════════════════════════
+   BUTTONS
+   ════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background var(--t-fast),
+    color var(--t-fast),
+    border-color var(--t-fast),
+    transform var(--t-fast),
+    box-shadow var(--t-fast);
+  border-radius: 0;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--rank-accent, var(--gold));
+  color: var(--rank-accent-text, var(--sq-dark));
+  border-color: var(--rank-accent, var(--gold));
+  box-shadow: 0 4px 20px var(--rank-accent-shadow, rgba(91,184,212,0.25));
+}
+
+.btn-primary:hover {
+  background: var(--rank-accent, var(--gold-bright));
+  border-color: var(--rank-accent, var(--gold-bright));
+  box-shadow: 0 8px 32px var(--rank-accent-shadow, rgba(91,184,212,0.4));
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--sq-dark-text);
+  border-color: var(--border-light);
+}
+
+.btn-outline:hover {
+  border-color: var(--rank-accent, var(--gold));
+  color: var(--rank-accent, var(--gold));
+  background: var(--rank-accent-15, var(--gold-bg));
+}
+
+.sq-light .btn-outline {
+  color: var(--sq-light-text);
+  border-color: rgba(13,27,42,0.3);
+}
+
+.sq-light .btn-outline:hover {
+  border-color: var(--gold-muted);
+  color: var(--gold-muted);
+}
+
+.btn-full { width: 100%; }
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+}
+
+/* ════════════════════════════════════════════════════════
+   FLOATING HEADER
+   ════════════════════════════════════════════════════════ */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  transition: background var(--t-base), backdrop-filter var(--t-base), box-shadow var(--t-base);
+  /* Starts transparent */
+  background: transparent;
+}
+
+.site-header.scrolled {
+  background: rgba(28, 20, 16, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--border-light);
+}
+
+.header-logo img {
+  height: 28px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+  transition: opacity var(--t-fast);
+}
+
+.header-logo:hover img { opacity: 1; }
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  opacity: 0.85;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  transition: opacity var(--t-fast), color var(--t-fast);
+}
+
+.nav-link:hover { opacity: 1; color: var(--gold); }
+
+/* Button-style nav link (no underline, no background — matches <a> nav links) */
+.nav-link--ghost {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
+.cart-trigger {
+  position: relative;
+  color: #FFFFFF;
+  opacity: 0.85;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6));
+  transition: opacity var(--t-fast), color var(--t-fast);
+  padding: 0.25rem;
+}
+
+.cart-trigger:hover { opacity: 1; color: var(--gold); }
+
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: var(--gold);
+  color: var(--sq-dark);
+  font-size: 0.55rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+}
+
+/* Hamburger */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+}
+
+.hamburger-line {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--sq-dark-text);
+  transition: transform var(--t-base), opacity var(--t-fast);
+}
+
+.menu-toggle.active .hamburger-line:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.menu-toggle.active .hamburger-line:nth-child(2) { opacity: 0; }
+.menu-toggle.active .hamburger-line:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ════════════════════════════════════════════════════════
+   MOBILE OVERLAY NAV
+   ════════════════════════════════════════════════════════ */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-mobile);
+  background: var(--bg-overlay);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-base);
+}
+
+.mobile-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.mobile-nav-link {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.1em;
+  color: var(--sq-dark-text);
+  opacity: 0.8;
+  transition: opacity var(--t-fast), color var(--t-fast);
+}
+
+.mobile-nav-link:hover { opacity: 1; color: var(--gold); }
+
+/* ════════════════════════════════════════════════════════
+   RANK NAVIGATOR (side dots)
+   ════════════════════════════════════════════════════════ */
+.rank-navigator {
+  position: fixed;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: var(--z-nav);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.rank-nav-dot {
+  width: var(--nav-dot-size);
+  height: var(--nav-dot-size);
+  border-radius: 50%;
+  background: var(--sq-dark-text);
+  opacity: 0.3;
+  cursor: pointer;
+  transition: opacity var(--t-fast), background var(--t-fast), transform var(--t-fast);
+  position: relative;
+}
+
+.rank-nav-dot:hover { opacity: 0.7; transform: scale(1.3); }
+.rank-nav-dot.active { opacity: 1; background: var(--gold); transform: scale(1.4); }
+.rank-nav-dot--hidden { display: none !important; }
+
+/* Labels removed — dots only */
+
+/* ════════════════════════════════════════════════════════
+   CART DRAWER
+   ════════════════════════════════════════════════════════ */
+.cart-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-base);
+}
+
+.cart-backdrop.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 92vw);
+  z-index: var(--z-cart);
+  background: var(--sq-dark-warm);
+  border-left: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--t-slow);
+}
+
+.cart-drawer.open {
+  transform: translateX(0);
+}
+
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.cart-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  color: var(--sq-dark-text);
+}
+
+.cart-close {
+  color: var(--sq-dark-text);
+  opacity: 0.6;
+  font-size: 1.1rem;
+  transition: opacity var(--t-fast);
+  padding: 0.25rem;
+}
+
+.cart-close:hover { opacity: 1; }
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart-empty {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.cart-empty-cta {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gold);
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.cart-item {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.cart-item-img {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.cart-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cart-item-name {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sq-dark-text);
+}
+
+.cart-item-details {
+  font-size: 0.68rem;
+  opacity: 0.6;
+}
+
+.cart-item-price {
+  font-size: 0.8rem;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.cart-item-remove {
+  font-size: 0.7rem;
+  opacity: 0.4;
+  cursor: pointer;
+  transition: opacity var(--t-fast);
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.cart-item-remove:hover { opacity: 1; }
+
+.cart-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart-subtotal {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sq-dark-text);
+}
+
+/* ════════════════════════════════════════════════════════
+   BREADCRUMB
+   ════════════════════════════════════════════════════════ */
+.breadcrumb {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-display);
+  font-size: clamp(0.65rem, 0.9vw, 0.9rem);
+  letter-spacing: 0.1em;
+  opacity: 0.4;
+  overflow: hidden;
+  max-height: 85%;
+  max-width: 100%;
+}
+
+.breadcrumb-item {
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.breadcrumb-item.active {
+  opacity: 1;
+  color: var(--gold);
+}
+
+/* ════════════════════════════════════════════════════════
+   QUICK-SCROLL BYPASS ANIMATION
+   Ranks 4-6 flash animation when bypassed
+   ════════════════════════════════════════════════════════ */
+.rank-full.bypassing {
+  opacity: 0.6;
+  transition: none;
+}
+
+/* Flash effect on individual squares during bypass */
+@keyframes bypassFlash {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.rank-full.bypassing .square {
+  animation: bypassFlash 0.2s ease forwards;
+}
+
+/* ════════════════════════════════════════════════════════
+   ANIMATIONS & TRANSITIONS
+   ════════════════════════════════════════════════════════ */
+
+/* Initial states for animatable elements */
+.anim-ready {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--t-slow), transform var(--t-slow);
+}
+
+.anim-ready.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.stagger > *:nth-child(1) { transition-delay: 0.0s; }
+.stagger > *:nth-child(2) { transition-delay: 0.06s; }
+.stagger > *:nth-child(3) { transition-delay: 0.12s; }
+.stagger > *:nth-child(4) { transition-delay: 0.18s; }
+.stagger > *:nth-child(5) { transition-delay: 0.24s; }
+.stagger > *:nth-child(6) { transition-delay: 0.30s; }
+.stagger > *:nth-child(7) { transition-delay: 0.36s; }
+.stagger > *:nth-child(8) { transition-delay: 0.42s; }
+
+/* Page load intro */
+@keyframes boardReveal {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
+.rank-1 {
+  animation: boardReveal 1.2s var(--ease-luxury) forwards;
+}
+
+.rank-2 {
+  animation: boardReveal 1.2s var(--ease-luxury) 0.15s forwards;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+/* ════════════════════════════════════════════════════════
+   SITE FOOTER (inside rank 8)
+   ════════════════════════════════════════════════════════ */
+.site-footer {
+  background: var(--sq-dark);
+  border-top: 1px solid var(--border-light);
+  padding: 1.25rem 1.5rem;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-copy {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  opacity: 0.4;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-nav a {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  opacity: 0.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: opacity var(--t-fast);
+}
+
+.footer-nav a:hover { opacity: 1; }
+
+/* SEO hidden text for crawlers */
+.footer-seo {
+  font-size: 0.6rem;
+  opacity: 0.15;
+  width: 100%;
+  line-height: 1.8;
+}
+
+/* ════════════════════════════════════════════════════════
+   UTILITY
+   ════════════════════════════════════════════════════════ */
+[hidden] { display: none !important; }
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .chess-board { scroll-snap-type: none; }
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (768px–1023px)
+   ════════════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+  :root {
+    --sq-letter-size: clamp(3rem, 9vw, 6rem);
+    --sq-piece-size:  clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .rank-dynamic-content,
+  .colorway-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: calc((100vh - var(--header-h)) / 2);
+    height: auto;
+  }
+
+  .collections-track {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: calc((100vh - var(--header-h)) / 2);
+  }
+
+  .rank-7-contact {
+    grid-template-columns: 12.5% 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .rank-7-contact .sq-contact-form-wrap {
+    grid-column: 3 / 4;
+    padding: 2rem 1.5rem;
+  }
+
+  .form-row-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .rank-7-checkout {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, calc((100vh - var(--header-h)) / 2));
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .rank-7-checkout .sq-file-label {
+    display: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (< 768px)
+   ════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  :root {
+    --sq-letter-size: clamp(4.5rem, 20vw, 7rem);
+    --sq-piece-size:  clamp(2.8rem, 13vw, 5rem);
+    --header-h: 56px;
+  }
+
+  /* ── HEADER ──────────────────────────────────────── */
+  .header-nav .nav-link { display: none; }
+  .menu-toggle {
+    display: flex;
+    background: rgba(13, 10, 8, 0.45);
+    border-radius: 5px;
+    padding: 6px 5px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* ── MOBILE OVERLAY CLOSE BUTTON ─────────────────── */
+  .mobile-overlay-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: none;
+    border: none;
+    color: var(--sq-dark-text);
+    font-size: 2.2rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity var(--t-fast);
+    padding: 0.25rem 0.5rem;
+    z-index: 1;
+  }
+  .mobile-overlay-close:hover { opacity: 1; }
+
+  /* Button-style mobile nav items (cart, my wishlist) */
+  .mobile-nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-display);
+  }
+
+  /* ── LANDING: 3-square layout ────────────────────── */
+  .rank-1, .rank-2 {
+    flex: 0 0 50%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+  }
+
+  /* Rank-2: show only cycling bg square (a), Collections (d), Contact (e) */
+  .rank-2 .square { display: none; }
+  .rank-2 [data-file="a"],
+  .rank-2 [data-file="d"],
+  .rank-2 [data-file="e"] { display: flex; }
+
+  /* Rank-1: show only "7" (a), logo (d), "R" (e) */
+  .rank-1 .square { display: none; }
+  .rank-1 [data-file="a"],
+  .rank-1 [data-file="d"],
+  .rank-1 [data-file="e"] { display: flex; }
+
+  /* Larger interactive pieces in wider squares */
+  .rank-2 .sq-action-label { font-size: clamp(1.2rem, 5.5vw, 2rem); }
+  .rank-2 [data-file="a"] .sq-piece-deco { font-size: clamp(3.5rem, 16vw, 7rem); opacity: 0.14; }
+  .rank-1 .sq-logo-img { width: 58%; }
+  .rank-1 .sq-tagline { font-size: clamp(0.42rem, 1.8vw, 0.58rem); }
+
+  /* ── RANK-FULL SECTIONS ──────────────────────────── */
+  .rank-full {
+    height: auto;
+    min-height: calc(100vh - var(--header-h));
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sq-file-label { display: none; }
+
+  /* ── COLLECTIONS: horizontal swipe carousel ───────── */
+  .collections-track {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    gap: 0;
+    padding-bottom: 2px;
+  }
+  .collections-track .collection-card {
+    flex: 0 0 85vw;
+    scroll-snap-align: start;
+    min-height: calc(100vh - var(--header-h) - 56px);
+  }
+
+  /* ── SUB-LINE + VARIANT GRIDS: horizontal swipe ───── */
+  .rank-dynamic-content {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    gap: 0;
+    padding-bottom: 2px;
+    /* Reset grid */
+    grid-template-columns: unset;
+    grid-auto-rows: unset;
+  }
+  .rank-dynamic-content .product-card,
+  .rank-dynamic-content .colorway-slot:not(.customization-panel) {
+    flex: 0 0 85vw;
+    scroll-snap-align: start;
+    min-height: 60vh;
+  }
+
+  /* ── COLORWAY GRID (Pieces customization) ────────── */
+  .colorway-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: auto;
+  }
+  .colorway-slot { min-height: 40vw; }
+
+  /* ── CONTACT PAGE: allow full content scroll ──────── */
+  #rank-7 {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .rank-7-panel { height: auto; }
+
+  .rank-7-contact,
+  .rank-7-checkout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+    /* No overflow-y: auto here — iOS treats any overflow:auto element as an inner
+       scroll container and intercepts touch gestures, preventing the outer
+       .chess-board from scrolling the user through the full contact form.
+       The outer board handles all vertical scrolling on mobile. */
+  }
+
+  .rank-7-contact .contact-info-panel { min-height: 50vw; }
+
+  .rank-7-contact .sq-contact-form-wrap {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 2rem 1.25rem;
+    overflow-y: visible;
+    height: auto;
+  }
+
+  .form-row-2col { grid-template-columns: 1fr; }
+
+
+  /* ── RANK 8 ───────────────────────────────────────── */
+  .rank-8-panel { grid-template-columns: 1fr; }
+
+  .sq-confirmation-content {
+    grid-column: 1;
+    min-height: 80vh;
+    padding: 2rem 1.5rem;
+  }
+
+  /* ── NAVIGATION ──────────────────────────────────── */
+  .rank-navigator { display: none; }
+
+  /* ── FOOTER ──────────────────────────────────────── */
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .footer-nav {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   PRINT
+   ════════════════════════════════════════════════════════ */
+@media print {
+  .site-header,
+  .rank-navigator,
+  .cart-drawer,
+  .cart-backdrop,
+  .mobile-overlay,
+  .scroll-cue { display: none; }
+
+  .chess-board {
+    height: auto;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .rank-full { height: auto; page-break-inside: avoid; }
+}
+
+/* ════════════════════════════════════════════════════════
+   BACK ROW: Product image cycling background
+   ════════════════════════════════════════════════════════ */
+.sq-back-rank {
+  position: relative;
+  overflow: hidden;
+}
+
+.sq-cycling-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sq-cycling-bg.visible {
+  opacity: 0.42;
+}
+
+.sq-back-rank .sq-piece-deco {
+  position: relative;
+  z-index: 1;
+}
+
+/* ════════════════════════════════════════════════════════
+   DYNAMIC BACKGROUND COLORS (per garment selection)
+   ════════════════════════════════════════════════════════ */
+.sq-light {
+  background-color: var(--sq-light-override, var(--sq-light));
+  transition: background-color 0.6s ease;
+}
+
+.sq-dark {
+  background-color: var(--sq-dark-override, var(--sq-dark));
+  transition: background-color 0.6s ease;
+}
+
+/* ════════════════════════════════════════════════════════
+   CHESSBOARD CUSTOMIZATION PANEL (rank-6 for Chessboards)
+   ════════════════════════════════════════════════════════ */
+.cb-customization {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;   /* image left, controls right */
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Right column: controls top + cart bottom always visible */
+.cb-controls-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--sq-dark-override, var(--sq-dark));
+  /* --ui-text-dark is contrast-safe for buttons/icons/labels regardless of palette lightness */
+  color: var(--ui-text-dark, var(--sq-dark-text));
+  border-left: 3px solid var(--sq-light-override, transparent);
+  transition: background-color 0.6s ease, border-color 0.6s ease, color 0.6s ease;
+}
+
+/* Scrollable area for piece/location controls */
+.cb-control-groups-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 0.5rem;
+}
+.cb-control-groups-wrap::-webkit-scrollbar { width: 3px; }
+.cb-control-groups-wrap::-webkit-scrollbar-track { background: transparent; }
+.cb-control-groups-wrap::-webkit-scrollbar-thumb { background: var(--sq-light-override, var(--border-gold)); border-radius: 2px; }
+
+.cb-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cb-control-label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* Left column: full-height product image */
+.cb-image-col {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--sq-light-override, var(--sq-light));
+}
+
+.cb-piece-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.cb-piece-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid rgba(160,160,160,0.5);
+  background: rgba(128,128,128,0.08);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: inherit;
+  opacity: 1;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.cb-piece-btn {
+  color: var(--mod-unsel-text, inherit);
+  border-color: var(--mod-unsel-border, rgba(160,160,160,0.5));
+}
+.cb-piece-btn:hover {
+  border-color: var(--mod-sel-border, #5BB8D4);
+  background: var(--mod-hover-bg, rgba(91,184,212,0.18));
+}
+.cb-piece-btn.selected {
+  background: var(--mod-sel-bg, #5BB8D4);
+  border-color: var(--mod-sel-border, #5BB8D4);
+  border-width: 2px;
+  color: var(--mod-sel-text, #0D1B2A);
+  opacity: 1;
+}
+
+.cb-piece-btn-icon {
+  font-size: 1.4rem;
+  /* Prevent iOS from substituting emoji font for chess glyphs */
+  font-family: 'Apple Symbols', 'Segoe UI Symbol', 'Symbola', 'Arial Unicode MS', sans-serif;
+  line-height: 1;
+  display: block;
+}
+
+.cb-location-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.cb-location-btn {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid rgba(160,160,160,0.5);
+  background: rgba(128,128,128,0.08);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: inherit;
+  opacity: 1;
+  text-transform: uppercase;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.cb-location-btn {
+  color: var(--mod-unsel-text, inherit);
+  border-color: var(--mod-unsel-border, rgba(160,160,160,0.5));
+}
+.cb-location-btn:hover {
+  border-color: var(--mod-sel-border, #5BB8D4);
+  background: var(--mod-hover-bg, rgba(91,184,212,0.18));
+}
+.cb-location-btn.selected {
+  background: var(--mod-sel-bg, #5BB8D4);
+  border-color: var(--mod-sel-border, #5BB8D4);
+  border-width: 2px;
+  color: var(--mod-sel-text, #0D1B2A);
+  opacity: 1;
+}
+
+.cb-preview-zoom-wrap {
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 0;
+  will-change: transform;
+  cursor: default;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.cb-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+  pointer-events: none; /* drag handled by wrap */
+  -webkit-user-drag: none;
+}
+
+/* CLO interactive 3D viewer iframe */
+.cb-preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: transparent;
+}
+
+/* Zoom +/- overlay */
+.cb-zoom-controls {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cb-zoom-btn {
+  width: 2rem;
+  height: 2rem;
+  background: rgba(28, 20, 16, 0.72);
+  color: var(--gold);
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  border-radius: 2px;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  backdrop-filter: blur(4px);
+}
+
+.cb-zoom-btn:hover {
+  background: rgba(201, 168, 76, 0.22);
+  border-color: var(--gold);
+}
+
+.cb-zoom-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+
+.cb-cart-section {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--sq-light-override, rgba(255,255,255,0.1));
+}
+
+/* ════════════════════════════════════════════════════════
+   SUB-LINE SELECTOR (rank-4: Chessboards vs Pieces)
+   ════════════════════════════════════════════════════════ */
+.subline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+}
+
+.subline-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1.5rem 1.5rem 5rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.subline-card:hover { transform: scale(1.01); }
+
+.subline-card-bg {
+  position: absolute;
+  inset: 0;
+  background-size: contain;
+  background-position: center 40%;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  z-index: 0;
+}
+
+.subline-card-bg.visible { opacity: 1; }
+
+/* Gradient backing so label text is legible over the garment image */
+.subline-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sq-light.subline-card::after {
+  background: linear-gradient(to top, rgba(184,205,216,0.92) 0%, rgba(184,205,216,0.5) 50%, transparent 100%);
+}
+
+.subline-card-label {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  margin-bottom: 0.2rem;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6);
+}
+
+/* Explicit label colors so they stay readable over any cycling product image */
+.subline-card.sq-dark .subline-card-label { color: #FFFFFF; }
+.subline-card.sq-light .subline-card-label { color: var(--sq-light-text); }
+
+.subline-card-sub {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.subline-card.sq-dark .subline-card-sub   { color: rgba(255,255,255,0.85); }
+.subline-card.sq-light .subline-card-sub  { color: var(--sq-light-text); }
+
+/* Collection card cycling background */
+/* Cycling bg fills the entire card (no img-wrap needed any more) */
+.collection-card-cycling-bg {
+  position: absolute;
+  inset: 0;
+  background-size: 100%;
+  background-position: center 30%;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Static image for coming-soon cards */
+.collection-card-img-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.collection-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center 40%;
+}
+
+/* Palette swatches on chessboard cards */
+.product-card-palette {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 0.25rem 0;
+}
+
+.palette-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.75);
+  display: inline-block;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+/* Colorway swatch circles in Pieces modification panel */
+.cb-colorway-swatch {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.75);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.cb-colorway-swatch:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+.cb-colorway-swatch.selected {
+  box-shadow: 0 0 0 2px var(--rank-accent, var(--gold)), 0 0 0 4px var(--rank-accent-15, rgba(91,184,212,0.3));
+  transform: scale(1.08);
+}
+
+/* ════════════════════════════════════════════════════════
+   WISHLIST BUTTON
+   ════════════════════════════════════════════════════════ */
+.btn-wishlist {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  color: var(--ui-text-dark, var(--sq-dark-text));
+  border: 1px solid currentColor;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity var(--t-fast), background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.btn-wishlist:hover {
+  opacity: 1;
+  background: rgba(91,184,212,0.18);
+  border-color: #5BB8D4;
+  color: #5BB8D4;
+}
+
+/* ── Rank-6 modification color overrides (set via CSS vars by JS) ── */
+#rank-6 .btn-wishlist {
+  color: var(--mod-wishlist-text, var(--ui-text-dark, var(--sq-dark-text)));
+  border-color: var(--mod-wishlist-border, currentColor);
+}
+#rank-6 .btn-wishlist:hover {
+  opacity: 1;
+  background: var(--mod-wishlist-hover-bg, rgba(91,184,212,0.18));
+  border-color: var(--mod-wishlist-hover-border, #5BB8D4);
+  color: var(--mod-wishlist-hover-text, #5BB8D4);
+}
+#rank-6 .btn-primary {
+  background: var(--mod-cart-bg, var(--rank-accent, var(--gold)));
+  color: var(--mod-cart-text, var(--rank-accent-text, var(--sq-dark)));
+  border-color: var(--mod-cart-border, var(--rank-accent, var(--gold)));
+}
+#rank-6 .btn-primary:hover {
+  background: var(--mod-cart-hover-bg, var(--rank-accent, var(--gold-bright)));
+  color: var(--mod-cart-hover-text, var(--rank-accent-text, var(--sq-dark)));
+  border-color: var(--mod-cart-hover-bg, var(--rank-accent, var(--gold-bright)));
+  filter: brightness(1.05);
+}
+#rank-6 .btn-primary.btn-confirmed {
+  background: var(--mod-confirm-bg, #2d5a3d) !important;
+  color: var(--mod-confirm-text, #FFFFFF) !important;
+  border-color: var(--mod-confirm-bg, #2d5a3d) !important;
+  filter: none !important;
+}
+#rank-6 .size-btn.selected,
+#rank-6 .size-btn:hover {
+  background: var(--mod-sel-bg, var(--rank-accent, var(--gold)));
+  border-color: var(--mod-sel-border, var(--rank-accent, var(--gold)));
+  color: var(--mod-sel-text, var(--rank-accent-text, var(--sq-dark)));
+}
+
+/* ════════════════════════════════════════════════════════
+   WISHLIST POPUP OVERLAY + MODAL
+   ════════════════════════════════════════════════════════ */
+.wishlist-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(10, 7, 4, 0.82);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.wishlist-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.wishlist-modal {
+  position: relative;
+  background: #0D1B2A;
+  border: 1px solid #162840;
+  border-top: 3px solid var(--gold);
+  width: 100%;
+  max-width: 480px;
+  padding: 2.5rem 2rem 2rem;
+  transform: translateY(16px);
+  transition: transform 0.3s ease;
+}
+.wishlist-overlay.is-open .wishlist-modal {
+  transform: translateY(0);
+}
+
+.wishlist-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--sq-dark-text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity var(--t-fast);
+  padding: 0.25rem 0.5rem;
+}
+.wishlist-close:hover { opacity: 1; }
+
+.wishlist-eyebrow {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.wishlist-title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sq-dark-text);
+}
+
+.wishlist-subtitle {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: rgba(240, 217, 181, 0.65);
+}
+
+.wishlist-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.wishlist-label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(240, 217, 181, 0.6);
+}
+
+.wishlist-input {
+  background: #0E0B08;
+  border: 1px solid #1A3050;
+  color: var(--sq-dark-text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  outline: none;
+  transition: border-color var(--t-fast);
+  width: 100%;
+  box-sizing: border-box;
+}
+.wishlist-input:focus { border-color: var(--gold); }
+.wishlist-input::placeholder { color: rgba(240, 217, 181, 0.25); }
+
+.wishlist-field-error {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: #E07070;
+  min-height: 1em;
+}
+
+.wishlist-submit {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+/* Success state */
+.wishlist-success {
+  text-align: center;
+  padding: 1rem 0;
+}
+.wishlist-success-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  font-size: 1.4rem;
+}
+.wishlist-success-heading {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.12em;
+  color: var(--sq-dark-text);
+  text-transform: uppercase;
+}
+.wishlist-success-body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: rgba(240, 217, 181, 0.65);
+}
+
+.wishlist-fine-print {
+  margin: 1.25rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: rgba(240, 217, 181, 0.3);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* Pieces selector row in rank-6 */
+.pieces-selector-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 0.5rem;
+}
+
+/* ════════════════════════════════════════════════════════
+   LEGAL MODALS (Privacy Policy + Terms of Service)
+   ════════════════════════════════════════════════════════ */
+.legal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 13, 20, 0.88);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.legal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.legal-modal {
+  position: relative;
+  background: #0D1B2A;
+  border: 1px solid var(--border-gold);
+  max-width: 680px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--sq-dark-text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 1;
+  opacity: 0.6;
+  transition: opacity var(--t-fast);
+}
+.legal-close:hover { opacity: 1; }
+
+.legal-content {
+  overflow-y: auto;
+  padding: 2rem 2rem 2.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-muted) transparent;
+}
+.legal-content::-webkit-scrollbar { width: 4px; }
+.legal-content::-webkit-scrollbar-thumb { background: var(--gold-muted); border-radius: 2px; }
+
+.legal-eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 0.4rem;
+}
+
+.legal-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: 0.1em;
+  color: var(--sq-dark-text);
+  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+}
+
+.legal-effective {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--gold-muted);
+  margin: 0 0 1.75rem;
+}
+
+.legal-content h3 {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.legal-content p,
+.legal-content li {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.75;
+  color: rgba(184, 205, 216, 0.75);
+  margin: 0 0 0.6rem;
+}
+
+.legal-content ul {
+  padding-left: 1.25rem;
+  margin: 0 0 0.6rem;
+}
+
+.legal-content a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.legal-content a:hover { color: var(--gold-bright); }
+
+.legal-disclaimer {
+  margin-top: 1.5rem !important;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  font-style: italic;
+  opacity: 0.45 !important;
+}
+
+/* Inline legal link (wishlist fine print, etc.) */
+.legal-inline-link {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: inherit;
+}
+.legal-inline-link:hover { color: var(--gold-bright); }
+
+/* ════════════════════════════════════════════════════════
+   COOKIE CONSENT BANNER
+   ════════════════════════════════════════════════════════ */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  background: #0D1B2A;
+  border-top: 1px solid var(--border-gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.9rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cookie-text {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: rgba(184, 205, 216, 0.7);
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+.cookie-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.btn-cookie-accept {
+  background: var(--gold);
+  color: var(--sq-dark);
+  border: none;
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.btn-cookie-accept:hover { background: var(--gold-bright); }
+
+.btn-cookie-decline {
+  background: transparent;
+  color: rgba(184, 205, 216, 0.5);
+  border: 1px solid var(--border-light);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.btn-cookie-decline:hover {
+  color: var(--sq-dark-text);
+  border-color: var(--border-gold);
+}
+
+@media (max-width: 480px) {
+  .cookie-banner { flex-direction: column; align-items: flex-start; }
+  .cookie-actions { width: 100%; }
+  .btn-cookie-accept, .btn-cookie-decline { flex: 1; text-align: center; }
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE OVERRIDES — late cascade block
+   Must come AFTER base element definitions so these rules
+   win over same-specificity base styles.
+   ════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── Chess board scroll container: less aggressive snap on mobile ──
+     "mandatory" forces every scroll gesture to end at a snap point,
+     causing jumps/fighting on iOS when sections are taller than 100vh.
+     "mandatory" gives clean jumps between sections in default mode (hidden
+     ranks 4-6 take no layout space so snap skips directly rank-3 → rank-7).
+     JS (sectionObserver) disables snap temporarily when on rank-7/rank-8
+     so tall sections remain freely scrollable.
+     scroll-padding-top is zeroed here because iOS Safari is more reliable
+     with scroll-margin-top on the element itself (set below on .rank-full). */
+  .chess-board {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: auto; /* Let native momentum scroll handle itself;
+                              smoothScrollTo rAF handles programmatic scrolls */
+    scroll-padding-top: 0;
+  }
+
+  /* iOS Safari snap offset: element-level margin is more reliable than
+     container scroll-padding-top in a non-root scroll container on iOS. */
+  .rank-full {
+    scroll-margin-top: var(--header-h);
+  }
+
+  /* ── Landing: larger, more prominent content in 33vw × 50vh squares ──
+     Previous values were desktop-ratio (vw-based), totally undersized on
+     mobile (e.g. sq-tagline at 1.8vw = ~7px). All sizes below are
+     viewport-width relative to a 1/3-width square. */
+
+  /* Letter "7" and "R": base size up, "7" gets its own 1.25× boost from base CSS */
+  :root {
+    --sq-letter-size: clamp(5rem, 24vw, 8rem);
+    --sq-piece-size:  clamp(4.5rem, 21vw, 7.5rem);
+  }
+
+  /* Queen / King icons — bigger and centered in their wider squares */
+  .rank-2 [data-file="d"] .sq-piece,
+  .rank-2 [data-file="e"] .sq-piece {
+    font-size: clamp(4.5rem, 21vw, 7.5rem);
+  }
+
+  /* "Collections" / "Contact" button labels */
+  .rank-2 .sq-action-label { font-size: clamp(1.6rem, 7.5vw, 2.8rem); }
+
+  /* Cycling-bg decorative rook in the left square */
+  .rank-2 [data-file="a"] .sq-piece-deco { font-size: clamp(4rem, 18vw, 8rem); opacity: 0.14; }
+
+  /* Logo square: nearly fill the square */
+  .rank-1 .sq-logo-img { width: 80%; }
+
+  /* Taglines: readable on mobile, allow two lines (per user request) */
+  .rank-1 .sq-tagline {
+    font-size: clamp(0.62rem, 3.2vw, 0.95rem);
+    white-space: normal;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* Rank-1 squares: shift content upward to compensate for iOS Safari's
+     bottom nav bar (~85px) which shrinks the visible area of the bottom row.
+     Content is geometrically centered in 50vh but visually appears bottom-heavy
+     because the nav bar hides ~10vh of the row's lower edge. Padding-bottom
+     re-biases the center toward the visible mid-point.
+     env(safe-area-inset-bottom) handles the home indicator on notch devices. */
+  .rank-1 [data-file="a"],
+  .rank-1 [data-file="d"],
+  .rank-1 [data-file="e"] {
+    padding-bottom: calc(8vh + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Sub-line selector (rank-4): full-height split screen ── */
+  .rank-4 .rank-dynamic-content {
+    display: block;
+    overflow: hidden;
+    height: calc(100vh - var(--header-h));
+    scroll-snap-type: none;
+    touch-action: auto;
+    padding-bottom: 0;
+  }
+  .subline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - var(--header-h));
+  }
+  .subline-card {
+    height: 100%;
+    min-height: unset;
+  }
+
+  /* ── Variant / line cards: fill full rank height ── */
+  .rank-dynamic-content .product-card {
+    flex: 0 0 85vw;
+    scroll-snap-align: start;
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* ── Garment customization (rank-6): stacked single column ── */
+  /* Restore rank-6 to a fixed snap-height so .chess-board sees it as one viewport.
+     Without this, height:auto from the tablet breakpoint makes the section 2-3vh
+     tall and the snap container scrolls through it, bypassing the inner scroller.
+     Full-width: hide the 12.5% file-label column so the customization panel
+     spans the entire viewport width for a more immersive vertical layout. */
+  #rank-6 {
+    grid-template-columns: 1fr;
+    height: calc(100vh - var(--header-h));
+    overflow: hidden;
+  }
+  #rank-6 .sq-file-label { display: none; }
+  .cb-customization {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 58vw 1fr;
+    height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Contain overscroll so bottom rubber-band doesn't propagate to .chess-board
+       and accidentally snap to rank-7 (Contact). Up-swipe back-navigation is
+       handled explicitly by the JS touchend handler when scrollTop === 0. */
+    overscroll-behavior-y: none;
+    /* Android/default: enough clearance for browser chrome + button */
+    padding-bottom: 5rem;
+  }
+  /* iOS Safari only: extra clearance for floating toolbar */
+  @supports (-webkit-touch-callout: none) {
+    .cb-customization {
+      padding-bottom: max(7rem, calc(env(safe-area-inset-bottom) + 5rem));
+    }
+  }
+  .cb-image-col {
+    height: 62vw;
+  }
+  .cb-controls-col {
+    height: auto;
+    overflow: visible;
+    border-left: none;
+    border-top: 3px solid var(--sq-light-override, var(--gold));
+    /* Explicit contrast-safe color so labels are always legible regardless of
+       palette — overrides the desktop 'color: inherit' chain that relies solely
+       on --ui-text-dark being set correctly by JS.  On mobile the JS value is
+       still the primary source; this rgba is the ultimate fallback. */
+    color: var(--ui-text-dark, rgba(184,205,216,1));
+  }
+  .cb-control-groups-wrap {
+    flex: unset;
+    height: auto;
+    overflow: visible;
+    min-height: unset;
+    padding: 1rem 1rem 0.5rem;
+  }
+  /* Section labels (PIECE / PLACEMENT / COLORWAY): remove opacity so they
+     are always fully readable on dark palette backgrounds (e.g. Stoic black). */
+  .cb-control-label {
+    opacity: 1;
+    color: var(--ui-text-dark, rgba(184,205,216,0.9));
+  }
+  .cb-piece-btn { padding: 0.7rem 0.4rem; }
+  .cb-piece-btn-icon { font-size: 1.8rem; }
+  .cb-location-btn {
+    padding: 0.65rem 0.5rem;
+    font-size: 0.72rem;
+  }
+
+  /* ── Checkout: mobile stacked layout ──────────────────────────────────
+     The 8-column horizontal grid collapses to a single scrollable column.
+     Squares that add noise on mobile (label, wishlist) are hidden.
+     Each section gets a natural height so the user scrolls through the
+     form top-to-bottom rather than swiping horizontally. */
+  .rank-7-checkout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    overflow-y: visible;
+  }
+  /* Hide: label column (a), wishlist (g) */
+  .rank-7-checkout .sq-file-label  { display: none; }
+  .rank-7-checkout [data-file="g"] { display: none; }
+
+  /* Product image: tall portrait view */
+  .rank-7-checkout .sq-checkout-product {
+    height: 72vw;
+  }
+  /* All form/content squares: auto height, generous padding */
+  .rank-7-checkout .sq-checkout-section,
+  .rank-7-checkout .sq-checkout-cta,
+  .rank-7-checkout .sq-checkout-trust {
+    height: auto;
+    min-height: 0;
+    padding: 1.5rem 1.25rem;
+  }
+  /* Trust badges: horizontal row on mobile to save vertical space */
+  .rank-7-checkout .trust-badges {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  /* Ensure promo + breakdown fill full width inside the CTA square */
+  .rank-7-checkout .promo-code-wrap,
+  .rank-7-checkout .checkout-total-breakdown { width: 100%; }
+
+  /* ── Rank-5 garment cards: mobile bottom-strip layout ──────────────────
+     Image fills the top of the card; the bottom strip exposes the card's
+     chess-square background so name/swatches sit on a solid color.
+     Desktop uses the gradient + full-height cycling-bg approach above. */
+  .rank-5 .product-card              { padding: 1.5rem 1.5rem 3rem; }
+  .rank-5 .product-card[data-variant-id] { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
+  .rank-5 .product-card[data-line-id]    { padding-bottom: 6rem; }
+  .rank-5 .product-card-cycling-bg   { top: 0; left: 0; right: 0; bottom: auto; height: calc(100% - 10rem); }
+  /* Chessboards: cover so the garment fills the image area edge-to-edge */
+  .rank-5 .product-card[data-variant-id] .product-card-cycling-bg { background-size: cover; background-position: center top; }
+  .rank-5 .product-card::after                   { display: none; }
+  .rank-5 .product-card[data-variant-id]::after  { display: none; }
+
+  /* ── Rank-6: CLO iframe fills the image column ── */
+  .cb-preview-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 58vw;
+    border: none;
+    display: block;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   iOS SAFARI SPECIFIC — scoped with @supports to avoid
+   affecting Android/desktop where env() = 0 and touch-
+   callout is not the detection signal.
+   ═══════════════════════════════════════════════════════════ */
+@supports (-webkit-touch-callout: none) {
+  /* Contact page: extra bottom clearance so "Make Your Move" CTA
+     is not obscured by the Safari floating toolbar. */
+  @media (max-width: 767px) {
+    .rank-7-contact .sq-contact-form-wrap {
+      padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5.5rem));
+    }
+  }
+}

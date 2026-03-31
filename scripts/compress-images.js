@@ -1,6 +1,7 @@
 /**
  * 7th Rank — Image Compression Script
- * Re-compresses JPEGs over 200KB to quality 82 in-place.
+ * - Re-compresses JPEGs over 200KB to quality 82 in-place.
+ * - Re-compresses CLO viewer PNGs (0.png) to quality 85 in-place.
  * Run: node scripts/compress-images.js
  */
 
@@ -8,9 +9,10 @@ const sharp  = require('sharp');
 const fs     = require('fs');
 const path   = require('path');
 
-const IMAGE_DIR  = path.join(__dirname, '../website/images');
-const TARGET_KB  = 200;
-const QUALITY    = 82;
+const IMAGE_DIR    = path.join(__dirname, '../website/images');
+const JPEG_MIN_KB  = 200;
+const JPEG_QUALITY = 82;
+const PNG_QUALITY  = 85;  // CLO resource PNGs avg ~937KB — target ~150-200KB
 
 function walk(dir, results = []) {
   for (const name of fs.readdirSync(dir)) {
@@ -18,32 +20,36 @@ function walk(dir, results = []) {
     if (fs.statSync(full).isDirectory()) {
       walk(full, results);
     } else if (/\.(jpe?g)$/i.test(name)) {
-      results.push(full);
+      results.push({ file: full, type: 'jpeg' });
+    } else if (name === '0.png') {
+      results.push({ file: full, type: 'png' });
     }
   }
   return results;
 }
 
 async function main() {
-  const files = walk(IMAGE_DIR);
-  const over  = files.filter(f => fs.statSync(f).size > TARGET_KB * 1024);
+  const all   = walk(IMAGE_DIR);
+  const jpegs = all.filter(f => f.type === 'jpeg' && fs.statSync(f.file).size > JPEG_MIN_KB * 1024);
+  const pngs  = all.filter(f => f.type === 'png');
 
-  console.log(`Found ${files.length} JPEGs — ${over.length} exceed ${TARGET_KB}KB\n`);
+  console.log(`Found ${jpegs.length} JPEGs over ${JPEG_MIN_KB}KB and ${pngs.length} CLO PNGs to compress\n`);
 
   let savedTotal = 0;
 
-  for (const file of over) {
+  for (const { file, type } of [...jpegs, ...pngs]) {
     const before = fs.statSync(file).size;
     const tmp    = file + '.tmp';
 
     try {
-      await sharp(file)
-        .jpeg({ quality: QUALITY, mozjpeg: true })
-        .toFile(tmp);
+      if (type === 'jpeg') {
+        await sharp(file).jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toFile(tmp);
+      } else {
+        await sharp(file).png({ quality: PNG_QUALITY, compressionLevel: 9 }).toFile(tmp);
+      }
 
       const after = fs.statSync(tmp).size;
 
-      // Only replace if the result is actually smaller
       if (after < before) {
         fs.renameSync(tmp, file);
         const saved = before - after;

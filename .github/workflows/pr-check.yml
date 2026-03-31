@@ -1,0 +1,28 @@
+name: PR Quality Check
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for large files
+        run: |
+          find website/images -name "*.jpg" -size +500k -exec echo "WARNING: Large image: {}" \;
+          find website/images -name "*.png" -size +500k -exec echo "WARNING: Large image: {}" \;
+
+      - name: Validate HTML
+        uses: Cyb3r-Jak3/html5validator-action@v7.2.0
+        with:
+          target: website/index.html
+
+      - name: Check for console.log in JS
+        run: |
+          if grep -r "console\.log" website/js/; then
+            echo "ERROR: console.log found in production JS"
+            exit 1
+          fi

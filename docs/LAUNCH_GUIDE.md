@@ -50,7 +50,7 @@
 - [ ] Create [Google Search Console](https://search.google.com/search-console) account, verify domain
 - [ ] Create [Google Analytics 4](https://analytics.google.com/) property, add tracking snippet to `index.html`
 - [ ] Submit `sitemap.xml` — create a minimal one (single-page site)
-- [ ] Verify JSON-LD structured data at [schema.org validator](https://validator.schema.org/)
+- [x] Verify JSON-LD structured data at [schema.org validator](https://validator.schema.org/)
 
 ### Legal
 - [x] Add Privacy Policy page or modal — 9-section modal in `index.html`, opened via footer link or inline `data-open="privacy"` links

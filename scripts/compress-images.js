@@ -12,7 +12,6 @@ const path   = require('path');
 const IMAGE_DIR    = path.join(__dirname, '../website/images');
 const JPEG_MIN_KB  = 200;
 const JPEG_QUALITY = 82;
-const PNG_QUALITY  = 85;  // CLO resource PNGs avg ~937KB — target ~150-200KB
 
 function walk(dir, results = []) {
   for (const name of fs.readdirSync(dir)) {
@@ -45,7 +44,7 @@ async function main() {
       if (type === 'jpeg') {
         await sharp(file).jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toFile(tmp);
       } else {
-        await sharp(file).png({ quality: PNG_QUALITY, compressionLevel: 9 }).toFile(tmp);
+        await sharp(file).png({ compressionLevel: 9 }).toFile(tmp);
       }
 
       const after = fs.statSync(tmp).size;

@@ -445,7 +445,7 @@ function sendConfirmationEmail(email, code, items) {
 
   var htmlBody = template.evaluate().getContent();
 
-  GmailApp.sendEmail(email, 'FIRST MOVERS DISCOUNT!! Wishlist Confirmation', '', {
+  GmailApp.sendEmail(email, 'Your 15% off code is here — Welcome to 7th Rank', '', {
     name:     SENDER_NAME,
     htmlBody: htmlBody
   });

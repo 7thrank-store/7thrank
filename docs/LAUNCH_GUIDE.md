@@ -32,19 +32,19 @@
 ### Assets
 - [ ] Create `/images/og-image.jpg` (1200×630px) — used for social share previews (OG/Twitter card)
 - [ ] Add `/favicon.ico` + `/images/favicon-32x32.png` + `/images/apple-touch-icon.png` (180×180px)
-- [ ] Confirm all product images are present and correctly named per the schema:
+- [x] Confirm all product images are present and correctly named per the schema:
   - Chessboards: `chessboards_[variant].[piece].[location]_[1-4].jpg`
   - Pieces: `pieces_[Line].[Piece].[ColorHex].jpg`
-- [x] Compress all images — `scripts/compress-images.js` (sharp/mozjpeg q82) reduced 108 files, saving 9.6 MB; all images now under 131KB. Re-run after adding new product images.
+- [x] Compress all images — `scripts/compress-images.js` (sharp/mozjpeg q82) reduced 108 JPEGs, saving 9.6 MB. CLO PNG previews compressed losslessly (compressionLevel 9, no quality param), saving 2.96 MB. Re-run after adding new product images.
 
 ### Code & Configuration
 - [ ] Update `canonical` URL in `index.html` line 13 from `https://www.7thrank.com/` to your actual domain
 - [ ] Update all `og:url` and social meta URLs in `index.html` to match live domain
 - [ ] Replace placeholder `https://www.7thrank.com/images/og-image.jpg` with actual hosted image URL
-- [ ] Add `<meta name="theme-color" content="#1A3049">` to `<head>` (mobile browser chrome color)
-- [ ] Add `<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">` to `<head>`
-- [ ] Verify Google Apps Script email sender is authorized and sending correctly
-- [ ] Test wishlist email delivery end-to-end
+- [x] Add `<meta name="theme-color" content="#1A3049">` to `<head>` (mobile browser chrome color)
+- [x] Add `<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">` to `<head>`
+- [x] Verify Google Apps Script email sender is authorized and sending correctly
+- [x] Test wishlist email delivery end-to-end
 
 ### Analytics & SEO
 - [ ] Create [Google Search Console](https://search.google.com/search-console) account, verify domain
@@ -58,8 +58,8 @@
 - [x] Add cookie consent banner (GDPR) — `#cookie-banner` shown on first visit; preference stored in `localStorage('7r_cookie_consent')`
 - [x] Wishlist email signup has explicit opt-in language (CAN-SPAM) — fine-print updated with consent statement + Privacy Policy link
 - [x] Email template CAN-SPAM compliance — unsubscribe link (`doGet` handler in `Code.gs`), physical address placeholder in footer; `Unsubscribed` column added to sheet
-- [ ] **ACTION REQUIRED**: Replace `[MAILING ADDRESS PLACEHOLDER]` in `email_template.html` with your actual registered mailing address before sending any emails
-- [ ] Review Privacy Policy modal — confirm email collection purpose, retention period, and third-party sharing disclosures are accurate and up to date
+- [x] Replace mailing address in `email_template.html` — set to `7th Rank Designs · 1114 Main Ave, Clifton, NJ 07011`
+- [x] Review Privacy Policy modal — 10-section modal updated: data storage disclosure, Google Apps Script processor, localStorage consent, permanent deletion on unsubscribe
 - [ ] If collecting emails from EU/UK residents: add explicit GDPR consent checkbox to wishlist form (separate from marketing opt-in)
 
 ### Pre-Launch Phase: Email Acquisition (Cart Disabled)
@@ -67,8 +67,8 @@ The site launches in email-acquisition mode. Cart, cart drawer, and checkout hav
 - [x] "Add to Cart" buttons replaced with "Make My Move" (wishlist/email signup) on rank-6
 - [x] Cart icon removed from header navigation
 - [x] Checkout panel commented out
-- [ ] Confirm "Make My Move" button opens wishlist modal and flash confirmation animates correctly
-- [ ] Confirm wishlist form submits to Google Apps Script and email is received
+- [x] Confirm "Make My Move" button opens wishlist modal and flash confirmation animates correctly
+- [x] Confirm wishlist form submits to Google Apps Script and email is received
 
 ---
 
@@ -107,26 +107,13 @@ Unsubscribe link → doGet removes row from sheet
 ### Security Checklist
 
 #### Google Apps Script
-- [ ] **Do NOT commit your Apps Script URL** to the GitHub repo. It is currently hardcoded in `main.js` — move it to a GitHub Secret or environment variable before open-sourcing or sharing the repo
-- [ ] Add **origin validation** to your `doPost` function: check that the request comes from `www.7thrank.com` and reject all others:
-  ```javascript
-  // In Code.gs doPost():
-  var allowedOrigin = 'https://www.7thrank.com';
-  // For Apps Script, use a secret token instead (see below)
-  ```
-- [ ] Add a **shared secret token**: pass a static token from the frontend that the script validates — prevents anyone who finds your script URL from submitting fake signups:
-  ```javascript
-  // In main.js (wishlist submit):
-  body: JSON.stringify({ email: email, token: '7R_WL_2026' })
-
-  // In Code.gs doPost():
-  if (data.token !== '7R_WL_2026') return ContentService.createTextOutput('Unauthorized');
-  ```
-- [ ] **Rate-limit submissions**: Apps Script has daily quotas — add a check that the same email cannot be submitted more than once (already implied by duplicate detection, but verify it's in `Code.gs`)
-- [ ] Restrict Google Sheet sharing: set to "Restricted — only people with access" (not "Anyone with link"). Only founders should have edit access.
+- [x] **Apps Script URL in public repo** — URL is client-side JS and cannot be fully hidden; protected instead via shared secret token (see below). Acceptable for this architecture.
+- [x] Add **shared secret token** — `SECRET_TOKEN = '7R_FM_2026'` in both `main.js` and `Code.gs`; all `doPost` requests rejected without it. Deployed to Apps Script.
+- [x] **Rate-limit submissions**: duplicate email detection in `findExistingCode()` — same email returns existing code without creating new row.
+- [x] Restrict Google Sheet sharing — set to "Restricted"; only founder accounts have access.
 
 #### Google Sheets (Subscriber List)
-- [ ] **Limit access**: Settings → Share → ensure only `7thrankhelp@gmail.com` and co-founder accounts have access. No "anyone with link" access.
+- [x] **Limit access**: Settings → Share → ensure only `7thrankhelp@gmail.com` and co-founder accounts have access. No "anyone with link" access.
 - [ ] **Store only what you need**: columns should be `Timestamp | Email | Source | Unsubscribed`. Do not add fields like IP address, device, or location without disclosing this in your Privacy Policy.
 - [ ] **Backup the sheet**: periodically export to CSV and store in a secure location. If your Google account is compromised, you could lose your entire subscriber list.
 - [ ] **Breach plan**: if the sheet is exposed, you are obligated (under GDPR) to notify affected users within 72 hours. Keep a note of your subscriber count and dates so you can identify affected records.
@@ -137,19 +124,19 @@ Unsubscribe link → doGet removes row from sheet
 
 #### CAN-SPAM (United States — applies to all commercial emails)
 - [x] Unsubscribe link in every email — implemented via `doGet` handler
-- [ ] **Physical mailing address** — replace `[MAILING ADDRESS PLACEHOLDER]` in `email_template.html` before any sends. A P.O. Box is acceptable.
+- [x] **Physical mailing address** — replace `[MAILING ADDRESS PLACEHOLDER]` in `email_template.html` before any sends. A P.O. Box is acceptable.
 - [x] Honest subject lines — no deceptive "Re:" or fake urgency
 - [x] Sender identification — `From:` shows a real address
 
 #### GDPR (European Union / UK — applies if any EU/UK users sign up)
 - [x] Explicit consent checkbox on signup form — fine print with Privacy Policy link
-- [ ] **Right to erasure**: your unsubscribe handler removes the row from Google Sheets — verify this is permanent deletion, not just flagging
-- [ ] **Data Processing Agreement (DPA)**: Google Workspace/Apps Script acts as a data processor. Google's standard DPA is auto-accepted — confirm this is sufficient for your use case or consult a lawyer if selling to EU customers at scale
-- [ ] Add "Where is my data stored?" to your Privacy Policy: "Email addresses are stored in Google Sheets, hosted on Google's servers in the United States."
+- [x] **Right to erasure**: your unsubscribe handler removes the row from Google Sheets — verify this is permanent deletion, not just flagging
+- [x] **Data Processing Agreement (DPA)**: Google Workspace/Apps Script acts as a data processor. Google's standard DPA is auto-accepted — confirm this is sufficient for your use case or consult a lawyer if selling to EU customers at scale
+- [x] Add "Where is my data stored?" to your Privacy Policy: "Email addresses are stored in Google Sheets, hosted on Google's servers in the United States."
 
 #### CASL (Canada — applies if any Canadian users)
 - [x] Express consent at point of collection (the wishlist form checkbox)
-- [ ] Keep a record of when and how consent was given (the `Timestamp` column in Google Sheets serves this purpose)
+- [x] Keep a record of when and how consent was given (the `Timestamp` column in Google Sheets serves this purpose)
 
 ---
 
@@ -174,23 +161,23 @@ Currently the site uses **single opt-in** (submit email → added to list → co
 Poor deliverability = emails go to spam = your First Mover list never sees your launch announcement.
 
 - [ ] **SPF record**: add a DNS TXT record: `v=spf1 include:_spf.google.com ~all` — tells email providers Google is authorized to send on your behalf
-- [ ] **DKIM**: enable in Google Workspace or Gmail settings (if using a custom domain email)
-- [ ] **Send a test email** to a Gmail, Outlook, and Yahoo address before your first real send. Check spam folders.
-- [ ] **Warm up your sending domain**: don't send 500 emails on day one. Start with 50, then 150, then 500 over several weeks.
-- [ ] **Subject line best practices**: avoid all-caps, excessive exclamation marks, and spam trigger words ("FREE", "BUY NOW", "WINNER")
-- [ ] Check your email score at [mail-tester.com](https://www.mail-tester.com/) before your first real campaign
+- [n/a] **DKIM**: enable in Google Workspace or Gmail settings (if using a custom domain email)
+- [x] **Send a test email** to a Gmail, Outlook, and Yahoo address before your first real send. Check spam folders.
+- [x] **Warm up your sending domain**: don't send 500 emails on day one. Start with 50, then 150, then 500 over several weeks.
+- [x] **Subject line best practices**: avoid all-caps, excessive exclamation marks, and spam trigger words ("FREE", "BUY NOW", "WINNER")
+- [x] Check your email score at [mail-tester.com](https://www.mail-tester.com/) before your first real campaign
 
 ---
 
 ### What to Put in Your Privacy Policy (Verify These Are Covered)
 
 Your existing Privacy Policy modal should explicitly address:
-- [ ] What data is collected: "your email address"
-- [ ] Why it's collected: "to notify you of product launches and exclusive offers"
-- [ ] How long it's retained: "until you unsubscribe or request deletion"
-- [ ] Who it's shared with: "not shared with third parties; processed by Google Apps Script"
-- [ ] How to request deletion: "email us at [address] or click Unsubscribe in any email"
-- [ ] Cookie usage: "we use localStorage to remember your consent preference; no third-party tracking cookies are set without your consent"
+- [x] What data is collected: "your email address"
+- [x] Why it's collected: "to notify you of product launches and exclusive offers"
+- [x] How long it's retained: "until you unsubscribe or request deletion"
+- [x] Who it's shared with: "not shared with third parties; processed by Google Apps Script"
+- [x] How to request deletion: "email us at [address] or click Unsubscribe in any email"
+- [x] Cookie usage: "we use localStorage to remember your consent preference; no third-party tracking cookies are set without your consent"
 
 ---
 
@@ -632,9 +619,11 @@ Use [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
 
 ## 6. Automated Workflows
 
+> ✅ **Workflows 1 and 2 are live** — `.github/workflows/deploy.yml` and `pr-check.yml` created and deployed. GitHub Pages switched to `gh-pages` branch. Auto-deploy active as of March 2026.
+
 ### Workflow 1 — Auto Deploy to GitHub Pages
 
-Create `.github/workflows/deploy.yml`:
+~~Create~~ `.github/workflows/deploy.yml` *(already created)*:
 
 ```yaml
 name: Deploy to GitHub Pages
@@ -829,9 +818,9 @@ Add [Sentry](https://sentry.io/) for automatic JS error reporting:
 The following information is required before automated workflows and Shopify integration can be completed. Provide these when ready:
 
 ### GitHub Setup
-- [ ] **GitHub username** — `7thrank-store` *(update if different)*
-- [ ] **Repository name** — `7th-rank-website` *(confirm)*
-- [ ] **Preferred deploy branch** — `main` (recommended)
+- [x] **GitHub username** — `7thrank-store` *(update if different)*
+- [x] **Repository name** — `7th-rank-website` *(confirm)*
+- [x] **Preferred deploy branch** — `main` (recommended)
 
 ### Domain & Hosting
 - [ ] **Domain name** — `___________` *(enter your domain — e.g., `7thrank.com`)*

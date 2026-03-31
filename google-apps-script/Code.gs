@@ -28,7 +28,7 @@ var SPREADSHEET_ID = '14efRw0OvfBn7er-j1eR1Ifu44RAO_i8M47yUWkJNNZM';
 var SHEET_NAME     = 'Wishlist Signups';
 var SENDER_NAME    = '7th Rank';
 var DISCOUNT_PCT   = 15;
-var SITE_URL       = 'https://7thrank-store.github.io/7thrank/';
+var SITE_URL       = 'https://www.7th-rank.com/';
 var SECRET_TOKEN   = '7R_FM_2026';
 // ─────────────────────────────────────────────────────────────────────────────
 

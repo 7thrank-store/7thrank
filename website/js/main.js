@@ -1696,7 +1696,7 @@
           '<div class="cb-cart-section">' +
             '<div class="size-selector"><p class="size-label">Size</p>' +
             '<div class="size-options">' +
-            ['XS','S','M','L','XL'].map(function(s) {
+            ['XS','S','M','L','XL','XXL'].map(function(s) {
               return '<button class="size-btn" data-size="' + s + '">' + s + '</button>';
             }).join('') +
             '</div></div>' +
@@ -1824,7 +1824,7 @@
           '<div class="cb-cart-section">' +
             '<div class="size-selector"><p class="size-label">Size</p>' +
             '<div class="size-options">' +
-            ['XS','S','M','L','XL'].map(function(s) {
+            ['XS','S','M','L','XL','XXL'].map(function(s) {
               return '<button class="size-btn" data-size="' + s + '">' + s + '</button>';
             }).join('') +
             '</div></div>' +

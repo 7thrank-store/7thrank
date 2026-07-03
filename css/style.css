@@ -2867,7 +2867,8 @@ ul, ol {
   padding: 0 1.25rem 0.75rem;
   font-family: var(--font-body);
   font-style: italic;
-  font-size: 0.85rem;
+  font-weight: 700;
+  font-size: 1.3rem;
   line-height: 1.6;
   opacity: 0.8;
 }

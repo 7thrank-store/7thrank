@@ -77,14 +77,19 @@
   ══════════════════════════════════════════════════ */
   var CHESSBOARD_VARIANTS = {
     ww: { id: 'ww', name: 'Weathered Walnut', lightColor: '#F0D9B5', darkColor: '#B58863',
-          caption: 'Reserved, aged, and contemplative. A thinker that stands the test of time.' },
+          caption: 'Reserved, aged, and contemplative. A thinker that stands the test of time.',
+          captionColor: '#F0D9B5' },
     ic: { id: 'ic', name: 'Ice Castle',       lightColor: '#BFEFFF', darkColor: '#FFFEEF',
           caption: 'Piercing fluidity. Sharper than the eye perceives.' },
     s:  { id: 's',  name: 'Stone',            lightColor: '#FFFFFF', darkColor: '#535353',
           caption: 'An impenetrable force and immovable object. Paradoxically mastered.' },
     pp: { id: 'pp', name: 'Princess Pink',    lightColor: '#FBD9E1', darkColor: '#FFFFFF',
-          caption: 'Elegance mistified in a rosy collidescope.' }
+          caption: 'Elegance mistified in a rosy collidescope.',
+          captionColor: '#FBD9E1' }
   };
+
+  // Fixed material/craft line shown under every chessboard variant's caption
+  var CHESSBOARD_FABRIC_NOTE = '100% wool. 7th Rank logo and all pieces are embroidered.';
 
   var CHESSBOARD_VARIANTS_LIST = ['ww', 'ic', 's', 'pp'];
 
@@ -186,17 +191,20 @@
   /* Pieces (crewneck) line data — now under Pieces sub-line */
   var PIECES_LINE_DATA = {
     stoic:   { id: 'stoic',   name: 'Stoic',    colors: ['#FFFFFF','#000000'], colorways: ['FFFFFF','F0D9B5','B58863','D4AF37','FBD9E1'],
-               caption: 'A patient hand prevails.' },
+               caption: 'The truest one.' },
     grain:   { id: 'grain',   name: 'Grain',    colors: ['#F0D9B5','#B58863'], colorways: ['FFFFFF','B58863','D4AF37','FBD9E1'],
-               caption: 'Details between the lines.' },
+               caption: 'Details between the lines.', captionColor: '#F0D9B5' },
     ti:      { id: 'ti',      name: 'Thin Ice', colors: ['#BFEFFF','#FFFEEF'], colorways: ['FFFFFF','F0D9B5','B58863','D4AF37','FBD9E1'],
                caption: 'Cool, calm, collected, whilst your opponent shivers.' },
     pasture: { id: 'pasture', name: 'Pasture',  colors: ['#255525','#F0D9B5'], colorways: ['FFFFFF','F0D9B5','B58863','D4AF37','FBD9E1'],
-               caption: 'Open space leads to clearer minds.' },
+               caption: 'Open space leads to clearer minds.', captionColor: '#255525' },
     harmony: { id: 'harmony', name: 'Harmony',  colors: ['#000000','#FFFFFF'], colorways: ['F0D9B5','B58863','D4AF37','FBD9E1'],
                caption: 'Ebb and flow; effortlessly natural.' }
   };
   var PIECES_LINE_KEYS = ['stoic','grain','ti','pasture','harmony'];
+
+  // Fixed material/craft line shown under every pieces line's caption
+  var PIECES_FABRIC_NOTE = '100% Cotton. 7th Rank logo and all pieces are embroidered.';
 
   var COLLECTIONS = [
     {
@@ -336,6 +344,15 @@
     var d = document.createElement('div');
     d.textContent = str;
     return d.innerHTML;
+  }
+
+  // Renders a rank-6 line/variant description line. `color`, if given, overrides
+  // the inherited default text color (used for the handful of lines/variants
+  // whose distinctive palette color is used for the caption instead).
+  function captionParagraph(text, color) {
+    if (!text) return '';
+    return '<p class="cb-line-caption"' + (color ? ' style="color:' + color + '"' : '') + '>' +
+           sanitize(text) + '</p>';
   }
 
   /* ══════════════════════════════════════════════════
@@ -1702,7 +1719,8 @@
               '<div class="cb-location-grid">' + locationGrid + '</div>' +
             '</div>' +
           '</div>' +
-          (v.caption ? '<p class="cb-line-caption">' + sanitize(v.caption) + '</p>' : '') +
+          captionParagraph(v.caption, v.captionColor) +
+          captionParagraph(CHESSBOARD_FABRIC_NOTE, v.captionColor) +
           '<div class="cb-cart-section">' +
             '<div class="size-selector"><p class="size-label">Size</p>' +
             '<div class="size-options">' +
@@ -1831,7 +1849,8 @@
               '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center">' + swatches + '</div>' +
             '</div>' +
           '</div>' +
-          (lineData.caption ? '<p class="cb-line-caption">' + sanitize(lineData.caption) + '</p>' : '') +
+          captionParagraph(lineData.caption, lineData.captionColor) +
+          captionParagraph(PIECES_FABRIC_NOTE, lineData.captionColor) +
           '<div class="cb-cart-section">' +
             '<div class="size-selector"><p class="size-label">Size</p>' +
             '<div class="size-options">' +

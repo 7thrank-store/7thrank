@@ -2919,6 +2919,12 @@
     // GSAP is loaded with defer, so wait a tick
     setTimeout(initGSAP, 100);
 
+    // Landing email-signup popup — fires once the entrance animation
+    // sequence has finished (last tween: .scroll-cue, delay 1.4s + duration
+    // 0.6s after initGSAP runs at +100ms = ~2.1s). Timed independently of
+    // GSAP itself so it still fires if GSAP fails to load.
+    setTimeout(maybeShowLandingWishlist, 2200);
+
     // Mark body as loaded for CSS transitions
     document.body.classList.add('loaded');
   }
@@ -2932,6 +2938,56 @@
   var CONTACT_ENDPOINT  = 'https://script.google.com/macros/s/AKfycbz197ippeRAkzRLuBuktihwt4t8Ksra9oarj0-A5qTBHzzbfGGXlQwKj1XfUYQ_eTU/exec';
   var SECRET_TOKEN      = '7R_FM_2026';
 
+  // Remembers the visitor's email across visits (same browser/device only)
+  // so repeat "Make My Move" clicks don't need to re-ask for it.
+  var WISHLIST_EMAIL_KEY      = '7r_wishlist_email';
+  var LANDING_POPUP_SEEN_KEY  = '7r_landing_popup_seen';
+  var wishlistSource           = 'wishlist'; // which trigger opened the modal this time
+
+  var WISHLIST_COPY = {
+    wishlist: {
+      eyebrow:  'Shape What We Build',
+      title:    'Help Us Design the First Drop',
+      subtitle: 'We’re in early development — sampling garments and finalizing colorways and sizing. ' +
+                 'Join the list to share your preferences and lock in your First Mover discount when we launch.'
+    },
+    landing: {
+      eyebrow:  '',
+      title:    'First Movers Get 15% Off!',
+      subtitle: 'Become a First Mover, Gain Early Access, and Exclusive Pieces.'
+    }
+  };
+
+  function getRememberedEmail() {
+    try { return localStorage.getItem(WISHLIST_EMAIL_KEY) || ''; }
+    catch (e) { return ''; }
+  }
+  function rememberEmail(email) {
+    try { localStorage.setItem(WISHLIST_EMAIL_KEY, email); }
+    catch (e) {}
+  }
+  function hasSeenLandingPopup() {
+    try { return !!(localStorage.getItem(LANDING_POPUP_SEEN_KEY) || getRememberedEmail()); }
+    catch (e) { return false; }
+  }
+  function markLandingPopupSeen() {
+    try { localStorage.setItem(LANDING_POPUP_SEEN_KEY, '1'); }
+    catch (e) {}
+  }
+
+  // Shared POST helper used by both the full form and the quick-save button
+  function submitWishlistRequest(email, source) {
+    return fetch(WISHLIST_ENDPOINT, {
+      method: 'POST',
+      body:   JSON.stringify({
+        token:  SECRET_TOKEN,
+        email:  email,
+        source: source,
+        items:  buildWishlistItems()
+      })
+    }).then(function(res) { return res.json(); });
+  }
+
   function initWishlist() {
     var overlay   = document.getElementById('wishlist-overlay');
     var closeBtn  = document.getElementById('wishlist-close');
@@ -2943,6 +2999,10 @@
     var submitBtn     = document.getElementById('wishlist-submit');
     var successEl     = document.getElementById('wishlist-success');
     var successMsg    = document.getElementById('wishlist-success-body');
+    var quicksave         = document.getElementById('wishlist-quicksave');
+    var quicksaveEmailEl  = document.getElementById('wishlist-quicksave-email');
+    var quicksaveBtn      = document.getElementById('wishlist-quicksave-submit');
+    var quicksaveSwitch   = document.getElementById('wishlist-quicksave-switch');
     if (!overlay) return;
 
     // Open wishlist popup when any wishlist button is clicked.
@@ -2950,7 +3010,7 @@
     document.addEventListener('click', function(e) {
       if (e.target && e.target.id === 'add-to-wishlist-btn') {
         flashAddToWishlist();
-        openWishlist();
+        openWishlist('wishlist');
       }
     });
 
@@ -2963,7 +3023,7 @@
       if (e.key === 'Escape') closeWishlist();
     });
 
-    // Form submit
+    // Form submit (first-time visitor \u2014 no remembered email yet)
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       var email = (emailInput.value || '').trim();
@@ -2985,55 +3045,116 @@
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Sending\u2026';
 
-      var payload = {
-        token: SECRET_TOKEN,
-        email: email,
-        items: buildWishlistItems()
-      };
-
-      fetch(WISHLIST_ENDPOINT, {
-        method:  'POST',
-        body:    JSON.stringify(payload)
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (data.success) {
-          form.hidden        = true;
-          successEl.hidden   = false;
-          successMsg.textContent = data.isNew
-            ? 'Check your inbox \u2014 your exclusive discount code is on its way.'
-            : 'You\'re already a First Mover! Check your original confirmation email for your code.';
-        } else {
-          emailError.textContent = data.error || 'Something went wrong. Please try again.';
+      submitWishlistRequest(email, wishlistSource)
+        .then(function(data) {
+          if (data.success) {
+            rememberEmail(email);
+            form.hidden             = true;
+            successEl.hidden        = false;
+            successMsg.textContent  = data.message;
+          } else {
+            emailError.textContent = data.error || 'Something went wrong. Please try again.';
+            submitBtn.disabled    = false;
+            submitBtn.textContent = 'Become a First Mover';
+          }
+        })
+        .catch(function() {
+          emailError.textContent = 'Network error. Please check your connection and try again.';
           submitBtn.disabled    = false;
           submitBtn.textContent = 'Become a First Mover';
-        }
-      })
-      .catch(function() {
-        emailError.textContent = 'Network error. Please check your connection and try again.';
-        submitBtn.disabled    = false;
-        submitBtn.textContent = 'Become a First Mover';
-      });
+        });
+    });
+
+    // Quick-save submit (returning visitor \u2014 email already remembered)
+    quicksaveBtn.addEventListener('click', function() {
+      var email = getRememberedEmail();
+      if (!email) { // safety fallback \u2014 shouldn't happen since quicksave only shows when remembered
+        quicksave.hidden = true;
+        form.hidden      = false;
+        return;
+      }
+      quicksaveBtn.disabled    = true;
+      quicksaveBtn.textContent = 'Saving\u2026';
+
+      submitWishlistRequest(email, wishlistSource)
+        .then(function(data) {
+          quicksaveBtn.disabled    = false;
+          quicksaveBtn.textContent = 'Save This Item';
+          if (data.success) {
+            quicksave.hidden        = true;
+            successEl.hidden        = false;
+            successMsg.textContent  = data.message;
+          } else {
+            // Fall back to the full form (e.g. they unsubscribed since)
+            quicksave.hidden  = true;
+            form.hidden       = false;
+            emailInput.value  = email;
+          }
+        })
+        .catch(function() {
+          quicksaveBtn.disabled    = false;
+          quicksaveBtn.textContent = 'Save This Item';
+        });
+    });
+
+    quicksaveSwitch.addEventListener('click', function() {
+      quicksave.hidden = true;
+      form.hidden      = false;
+      emailInput.value = '';
+      setTimeout(function() { emailInput.focus(); }, 50);
     });
   }
 
-  function openWishlist() {
-    var overlay = document.getElementById('wishlist-overlay');
-    var form    = document.getElementById('wishlist-form');
-    var success = document.getElementById('wishlist-success');
-    var submitBtn = document.getElementById('wishlist-submit');
+  function openWishlist(source) {
+    source = source || 'wishlist';
+    wishlistSource = source;
+
+    var overlay          = document.getElementById('wishlist-overlay');
+    var form             = document.getElementById('wishlist-form');
+    var success          = document.getElementById('wishlist-success');
+    var quicksave        = document.getElementById('wishlist-quicksave');
+    var quicksaveEmailEl = document.getElementById('wishlist-quicksave-email');
+    var submitBtn        = document.getElementById('wishlist-submit');
+    var eyebrowEl        = document.getElementById('wishlist-eyebrow');
+    var titleEl          = document.getElementById('wishlist-title');
+    var subtitleEl       = document.getElementById('wishlist-subtitle');
     if (!overlay) return;
-    // Reset to form state each open (so re-opening after success is clean)
-    form.hidden    = false;
+
+    // Copy swap per entry point
+    var copy = WISHLIST_COPY[source] || WISHLIST_COPY.wishlist;
+    if (eyebrowEl) {
+      eyebrowEl.textContent = copy.eyebrow;
+      eyebrowEl.hidden      = !copy.eyebrow;
+    }
+    if (titleEl)    titleEl.textContent    = copy.title;
+    if (subtitleEl) subtitleEl.textContent = copy.subtitle;
+
+    // Bottom-anchored slide-up treatment for the landing trigger only
+    overlay.classList.toggle('from-bottom', source === 'landing');
+
+    // Decide form vs. quick-save state
     success.hidden = true;
-    submitBtn.disabled    = false;
-    submitBtn.textContent = 'Become a First Mover';
-    document.getElementById('wishlist-email').value = '';
-    document.getElementById('wishlist-email-error').textContent = '';
+    var remembered = getRememberedEmail();
+    if (remembered) {
+      form.hidden      = true;
+      quicksave.hidden = false;
+      quicksaveEmailEl.textContent = remembered;
+    } else {
+      form.hidden      = false;
+      quicksave.hidden = true;
+      submitBtn.disabled    = false;
+      submitBtn.textContent = 'Become a First Mover';
+      document.getElementById('wishlist-email').value = '';
+      document.getElementById('wishlist-email-error').textContent = '';
+    }
+
     overlay.removeAttribute('aria-hidden');
     overlay.classList.add('is-open');
     document.body.style.overflow = 'hidden';
-    setTimeout(function() { document.getElementById('wishlist-email').focus(); }, 100);
+
+    if (!remembered) {
+      setTimeout(function() { document.getElementById('wishlist-email').focus(); }, 100);
+    }
   }
 
   function closeWishlist() {
@@ -3041,7 +3162,15 @@
     if (!overlay) return;
     overlay.setAttribute('aria-hidden', 'true');
     overlay.classList.remove('is-open');
+    overlay.classList.remove('from-bottom');
     document.body.style.overflow = '';
+    if (wishlistSource === 'landing') markLandingPopupSeen();
+  }
+
+  function maybeShowLandingWishlist() {
+    if (hasSeenLandingPopup()) return;
+    if (STATE.mode !== 'default') return; // don't interrupt if already deep-linked into shopping
+    openWishlist('landing');
   }
 
   /* ══════════════════════════════════════════════════

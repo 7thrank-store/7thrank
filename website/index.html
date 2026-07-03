@@ -758,9 +758,9 @@
       <button class="wishlist-close" id="wishlist-close" aria-label="Close">&times;</button>
 
       <!-- Header -->
-      <p class="wishlist-eyebrow">Shape What We Build</p>
+      <p class="wishlist-eyebrow" id="wishlist-eyebrow">Shape What We Build</p>
       <h2 class="wishlist-title" id="wishlist-title">Help Us Design the First Drop</h2>
-      <p class="wishlist-subtitle">
+      <p class="wishlist-subtitle" id="wishlist-subtitle">
         We're in early development — sampling garments and finalizing colorways and sizing.
         Join the list to share your preferences and lock in your First Mover discount when we launch.
       </p>
@@ -786,6 +786,20 @@
           Join the First Movers
         </button>
       </form>
+
+      <!-- Quick-save state: shown instead of the form when we already have
+           this visitor's email on file (see WISHLIST_EMAIL_KEY in main.js) -->
+      <div class="wishlist-quicksave" id="wishlist-quicksave" hidden>
+        <p class="wishlist-subtitle">
+          Saving to your wishlist as <strong id="wishlist-quicksave-email"></strong>.
+        </p>
+        <button type="button" class="btn btn-primary wishlist-submit" id="wishlist-quicksave-submit">
+          Save This Item
+        </button>
+        <button type="button" class="wishlist-quicksave-switch" id="wishlist-quicksave-switch">
+          Not you? Use a different email
+        </button>
+      </div>
 
       <!-- Success state (hidden initially) -->
       <div class="wishlist-success" id="wishlist-success" hidden>

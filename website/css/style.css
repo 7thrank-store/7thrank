@@ -3103,6 +3103,17 @@ ul, ol {
   transform: translateY(0);
 }
 
+/* Landing-triggered variant: rests vertically centered like the other
+   wishlist modals, but travels further with a slower ease for a more
+   pronounced "fade up from the bottom" entrance. */
+.wishlist-overlay.from-bottom .wishlist-modal {
+  transform: translateY(60px);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+}
+.wishlist-overlay.from-bottom.is-open .wishlist-modal {
+  transform: translateY(0);
+}
+
 .wishlist-close {
   position: absolute;
   top: 1rem;
@@ -3213,6 +3224,24 @@ ul, ol {
   width: 100%;
   margin-top: 0.25rem;
 }
+
+/* Quick-save state: shown instead of the full form when the visitor's
+   email is already remembered from a previous signup on this browser. */
+.wishlist-quicksave-switch {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: rgba(240, 217, 181, 0.55);
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+}
+.wishlist-quicksave-switch:hover { color: var(--gold); }
 
 /* Success state */
 .wishlist-success {

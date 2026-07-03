@@ -17,7 +17,7 @@
  *  I  Placement / Colorway
  *  J  Size
  *  K  Code Used     (FALSE on signup)
- *  L  Source
+ *  L  Source         ('landing' | 'wishlist')
  *  M  Unsubscribed
  *  N  Login Token   (temporary, cleared after use)
  *  O  Token Expiry  (ISO string, 24h TTL)
@@ -119,41 +119,54 @@ function doPost(e) {
 
     // ── WISHLIST SIGNUP ────────────────────────────────────────────────────
     var items      = payload.items || [];
+    var source     = (payload.source || 'wishlist').toString();
     var sheet      = getOrCreateSheet();
     var existCode  = findExistingCode(sheet, email);
     var code       = existCode || generateCode();
     var isNew      = !existCode;
     var now        = new Date();
+    var itemAdded  = false;
+    var message;
 
     if (isNew) {
+      // Brand-new subscriber: always write at least one row (blank if no
+      // item was selected yet, e.g. a landing-page signup) and send the
+      // welcome email with their discount code.
       var rows = items.length > 0 ? items : [{}];
       rows.forEach(function(item) {
-        sheet.appendRow([
-          now,                                          // A  Timestamp
-          email,                                        // B  Email
-          code,                                         // C  Discount Code
-          item.collection  || '',                       // D  Collection
-          item.line        || '',                       // E  Line
-          item.garmentType || '',                       // F  Garment Type
-          item.variant     || '',                       // G  Variant / Style
-          item.piece       || '',                       // H  Piece
-          item.placement   || item.colorway || '',      // I  Placement / Colorway
-          item.size        || '',                       // J  Size
-          false,                                        // K  Code Used
-          'wishlist'                                    // L  Source
-        ]);
+        appendWishlistRow(sheet, now, email, code, item, source);
       });
-
+      itemAdded = true;
       sendConfirmationEmail(email, code, items);
+      message = 'Check your email for your discount code!';
+    } else if (items.length > 0) {
+      // Returning subscriber adding (potentially) new items — reuse their
+      // existing code, skip the welcome email, but don't lose the item.
+      // Skip any item that's an exact duplicate of one already on file.
+      var newItems = items.filter(function(item) {
+        return !itemExistsForEmail(sheet, email, item);
+      });
+      newItems.forEach(function(item) {
+        appendWishlistRow(sheet, now, email, code, item, source);
+      });
+      if (newItems.length > 0) {
+        itemAdded = true;
+        message = 'Saved to your wishlist!';
+      } else {
+        message = 'This piece is already on your wishlist.';
+      }
+    } else {
+      // Returning subscriber, no item in this request (e.g. re-submitting
+      // the landing signup after already being on the list).
+      message = 'You\'re already a First Mover! Check your original confirmation email.';
     }
 
     return jsonResponse({
-      success:  true,
-      isNew:    isNew,
-      code:     code,
-      message:  isNew
-        ? 'Check your email for your discount code!'
-        : 'You\'re already a First Mover! Check your original confirmation email.'
+      success:   true,
+      isNew:     isNew,
+      itemAdded: itemAdded,
+      code:      code,
+      message:   message
     });
 
   } catch (err) {
@@ -373,6 +386,48 @@ function findExistingCode(sheet, email) {
     }
   }
   return null;
+}
+
+function appendWishlistRow(sheet, timestamp, email, code, item, source) {
+  sheet.appendRow([
+    timestamp,                                     // A  Timestamp
+    email,                                         // B  Email
+    code,                                          // C  Discount Code
+    item.collection  || '',                       // D  Collection
+    item.line        || '',                       // E  Line
+    item.garmentType || '',                       // F  Garment Type
+    item.variant     || '',                       // G  Variant / Style
+    item.piece       || '',                       // H  Piece
+    item.placement   || item.colorway || '',      // I  Placement / Colorway
+    item.size        || '',                       // J  Size
+    false,                                        // K  Code Used
+    source                                        // L  Source
+  ]);
+}
+
+// True if this email already has a row on file matching every item field
+// (used to avoid appending exact-duplicate wishlist entries on repeat submits).
+function itemExistsForEmail(sheet, email, item) {
+  var data = sheet.getDataRange().getValues();
+  var norm = function(v) { return (v || '').toString().trim().toLowerCase(); };
+  var target = {
+    garmentType: norm(item.garmentType),
+    variant:     norm(item.variant),
+    piece:       norm(item.piece),
+    placement:   norm(item.placement || item.colorway),
+    size:        norm(item.size)
+  };
+  for (var i = 1; i < data.length; i++) {
+    if (norm(data[i][1]) !== email) continue;
+    if (norm(data[i][5]) === target.garmentType &&
+        norm(data[i][6]) === target.variant &&
+        norm(data[i][7]) === target.piece &&
+        norm(data[i][8]) === target.placement &&
+        norm(data[i][9]) === target.size) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function jsonResponse(obj) {

@@ -2856,6 +2856,22 @@ ul, ol {
   border-top: 1px solid var(--sq-light-override, rgba(255,255,255,0.1));
 }
 
+/* Line/variant description — a direct sibling of .cb-control-groups-wrap and
+   .cb-cart-section inside .cb-controls-col (a flex column), so its position
+   can differ by breakpoint via `order` without touching the DOM:
+   desktop = between the location/colorway controls and the size selector
+   (default source order); mobile = moved above the controls (see override). */
+.cb-line-caption {
+  order: 0;
+  margin: 0;
+  padding: 0 1.25rem 0.75rem;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
 /* ════════════════════════════════════════════════════════
    SUB-LINE SELECTOR (rank-4: Chessboards vs Pieces)
    ════════════════════════════════════════════════════════ */
@@ -3651,6 +3667,15 @@ ul, ol {
     overflow: visible;
     min-height: unset;
     padding: 1rem 1rem 0.5rem;
+  }
+  /* Mobile: show the description above the controls instead of between
+     them and the size selector — reordered visually only, DOM unchanged. */
+  .cb-line-caption {
+    order: -1;
+    padding: 1rem 1rem 0;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ui-text-dark, rgba(184,205,216,0.9));
   }
   /* Section labels (PIECE / PLACEMENT / COLORWAY): remove opacity so they
      are always fully readable on dark palette backgrounds (e.g. Stoic black). */

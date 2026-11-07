@@ -21,7 +21,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Generate route pages and sitemap
         run: node scripts/build-routes.js
@@ -33,12 +33,12 @@ jobs:
         run: find website/images/products -type f \( -name 'bundle.*' -o -name '*.html' \) -delete
 
       - name: Package the website folder
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./website
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
         with:
-          timeout: 1200000
+          timeout: 600000

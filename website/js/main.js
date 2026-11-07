@@ -114,7 +114,7 @@
   var PRODUCT_HERO = {
     ww:      { field: '#B58863', on: '#3A2615', sel: '#B58863', onSel: '#2B2B2B' },
     ic:      { field: '#BFEFFF', on: '#2B2B2B', sel: '#BFEFFF', onSel: '#2B2B2B' },
-    s:       { field: '#535353', on: '#F4F1EA', sel: '#535353', onSel: '#F4F1EA' },
+    s:       { field: '#333333', on: '#F4F1EA', sel: '#535353', onSel: '#F4F1EA' },
     stoic:   { field: '#FFFFFF', on: '#000000', sel: '#000000', onSel: '#FFFFFF' },
     grain:   { field: '#B58863', on: '#3A2615', sel: '#B58863', onSel: '#2B2B2B' },
     ti:      { field: '#BFEFFF', on: '#2B2B2B', sel: '#BFEFFF', onSel: '#2B2B2B' },
@@ -377,14 +377,16 @@
      left edge. Flood-filling inward from the frame removes the background without
      touching garment interiors. Any failure falls back to the original image.
   ══════════════════════════════════════════════════ */
-  var CUTOUT_WIDTH = 760;
+  var CUTOUT_WIDTH_HERO = 1080;
+  var CUTOUT_WIDTH_CARD = 760;
+  var CUTOUT_WIDTH_LANDING = 480;
   var CUTOUT_TOLERANCE_PNG = 2;
   var CUTOUT_TOLERANCE_JPG = 7;
   var cutoutCache = {};
 
-  function keyOutBackground(im) {
+  function keyOutBackground(im, maxWidth) {
     return new Promise(function(resolve, reject) {
-      var w = Math.min(CUTOUT_WIDTH, im.naturalWidth);
+      var w = Math.min(maxWidth, im.naturalWidth);
       var h = Math.round(im.naturalHeight * (w / im.naturalWidth));
       var canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
@@ -435,23 +437,31 @@
           if (y > maxY) maxY = y;
         }
       }
-      // Trim the anti-aliased ring that still carries background color, then soften
-      // the next ring so the cut edge doesn't look jagged.
-      var EDGE_RING = 2;
-      var ring = isBg.slice();
-      for (var pass = 0; pass < EDGE_RING; pass++) {
-        var next = ring.slice();
-        for (y = 1; y < h - 1; y++) {
-          for (x = 1; x < w - 1; x++) {
-            var e = y * w + x;
-            if (ring[e]) continue;
-            if (ring[e - 1] || ring[e + 1] || ring[e - w] || ring[e + w]) {
-              next[e] = 1;
-              d[e * 4 + 3] = pass === 0 ? 0 : 150;
-            }
+      // Smooth the cut edge: blur the mask, then remap it. Stair-steps round off and
+      // the background-tinted fringe lands in the transparent part of the ramp.
+      var radius = Math.max(1, Math.round(w / 400));
+      var mask = new Float32Array(total);
+      var buf = new Float32Array(total);
+      for (var m = 0; m < total; m++) mask[m] = isBg[m] ? 0 : 1;
+      function boxPass(src, dst, len, lines, step, lineStep) {
+        var norm = 1 / (radius * 2 + 1);
+        for (var l = 0; l < lines; l++) {
+          var base = l * lineStep, sum = 0, k;
+          for (k = -radius; k <= radius; k++) sum += src[base + Math.min(len - 1, Math.max(0, k)) * step];
+          for (k = 0; k < len; k++) {
+            dst[base + k * step] = sum * norm;
+            sum += src[base + Math.min(len - 1, k + radius + 1) * step] - src[base + Math.max(0, k - radius) * step];
           }
         }
-        ring = next;
+      }
+      for (var round = 0; round < 2; round++) {
+        boxPass(mask, buf, w, h, 1, w);
+        boxPass(buf, mask, h, w, w, 1);
+      }
+      for (var q = 0; q < total; q++) {
+        if (mask[q] >= 0.999) continue;
+        var t = Math.min(1, Math.max(0, (mask[q] - 0.5) / 0.4));
+        d[q * 4 + 3] = Math.round(255 * t * t * (3 - 2 * t));
       }
       if (kept < total * 0.02 || kept > total * 0.85) { reject(new Error('cutout out of range')); return; }
 
@@ -467,18 +477,20 @@
 
   // Resolves to a cutout URL, or the original src if keying fails. Rejects only
   // when the image itself cannot be loaded.
-  function cutoutGarment(src) {
-    if (cutoutCache[src]) return cutoutCache[src];
+  function cutoutGarment(src, maxWidth) {
+    var width = maxWidth || CUTOUT_WIDTH_CARD;
+    var key = width + '|' + src;
+    if (cutoutCache[key]) return cutoutCache[key];
     var result = new Promise(function(resolve, reject) {
       var im = new Image();
       im.onload = function() {
-        keyOutBackground(im).then(resolve, function() { resolve(src); });
+        keyOutBackground(im, width).then(resolve, function() { resolve(src); });
       };
       im.onerror = reject;
       im.src = src;
     });
-    result.catch(function() { delete cutoutCache[src]; });
-    cutoutCache[src] = result;
+    result.catch(function() { delete cutoutCache[key]; });
+    cutoutCache[key] = result;
     return result;
   }
 
@@ -486,8 +498,8 @@
     if (!img) return;
     var token = img._garmentToken = (img._garmentToken || 0) + 1;
     img.classList.add('is-loading');
-    cutoutGarment(src).catch(function() {
-      if (fallback) return cutoutGarment(fallback);
+    cutoutGarment(src, CUTOUT_WIDTH_HERO).catch(function() {
+      if (fallback) return cutoutGarment(fallback, CUTOUT_WIDTH_HERO);
       throw new Error('image missing');
     }).then(function(url) {
       if (img._garmentToken !== token) return;
@@ -509,7 +521,7 @@
     CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
       CHESSBOARD_PIECES_CB.forEach(function(piece) {
         CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
-          pool.push(getChessboardJPGPath(variant, piece, loc, '1'));
+          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
         });
       });
     });
@@ -564,7 +576,7 @@
     CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
       CHESSBOARD_PIECES_CB.forEach(function(piece) {
         CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
-          pool.push(getChessboardJPGPath(variant, piece, loc, '1'));
+          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
         });
       });
     });
@@ -594,19 +606,17 @@
     function loadAndShow(bgEl, retries) {
       retries = retries || 0;
       if (retries > 4) return; // stop after 4 failed attempts
-      var src = pickRandom(pool);
-      var img = new Image();
-      img.onload = function() {
+      var rect = bgEl.getBoundingClientRect();
+      if (rect.bottom <= 0 || rect.width === 0) return; // scrolled away or hidden on this screen size
+      cutoutGarment(pickRandom(pool), CUTOUT_WIDTH_LANDING).then(function(url) {
         bgEl.classList.remove('visible');
         setTimeout(function() {
-          bgEl.style.backgroundImage = 'url(' + src + ')';
+          bgEl.style.backgroundImage = 'url(' + url + ')';
           bgEl.classList.add('visible');
         }, 300);
-      };
-      img.onerror = function() {
+      }, function() {
         loadAndShow(bgEl, retries + 1);
-      };
-      img.src = src;
+      });
     }
 
     // Initial load with staggered start
@@ -808,7 +818,8 @@
     // Cancel any previously running loop on this container to prevent speed accumulation
     if (container._scrollStop) { container._scrollStop(); }
 
-    var speed = 0.5;
+    var CARD_STEP_MS = 5000;
+    var lastStep = Date.now();
     var paused = false;
     var stopped = false;
     var rafId = null;
@@ -874,15 +885,14 @@
     // ── Ticker RAF loop ──────────────────────────────────────────────
     function tick() {
       if (stopped) return;
-      if (!paused && window.innerWidth > 767) {
+      if (!paused && window.innerWidth > 767 && Date.now() - lastStep > CARD_STEP_MS) {
+        lastStep = Date.now();
         var maxLeft = container.scrollWidth - container.clientWidth;
-        if (maxLeft > 0) {
-          if (container.scrollLeft >= maxLeft - 1) {
-            container.scrollLeft = 0;
-            resume(5000); // 5s pause at the wrap point before looping again
-          } else {
-            container.scrollLeft += speed;
-          }
+        var card = container.firstElementChild;
+        if (maxLeft > 0 && card) {
+          var cardWidth = card.offsetWidth;
+          var nextLeft = (Math.round(container.scrollLeft / cardWidth) + 1) * cardWidth;
+          container.scrollTo({ left: container.scrollLeft >= maxLeft - 1 ? 0 : Math.min(nextLeft, maxLeft), behavior: 'smooth' });
         }
       }
       updateThumb();
@@ -923,6 +933,8 @@
     // Touch swipe
     container.addEventListener('touchstart', pause, { passive: true });
     container.addEventListener('touchend', function() { resume(2000); });
+    container.addEventListener('mouseenter', pause);
+    container.addEventListener('mouseleave', function() { resume(500); });
   }
 
   /* ══════════════════════════════════════════════════
@@ -1920,7 +1932,9 @@
       if (!img) return;
       var shot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
       img.alt = v.name + ' turtleneck with ' + CHESSBOARD_PIECE_NAMES_CB[STATE.selectedCBPiece] + ' embroidery, ' + CHESSBOARD_LOCATIONS[STATE.selectedCBLocation];
-      setGarmentImage(img, getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot));
+      setGarmentImage(img,
+        getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot),
+        getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot));
       if (STATE.currentSection === 'rank-6') syncUrl('rank-6', false);
     }
     updatePreview();

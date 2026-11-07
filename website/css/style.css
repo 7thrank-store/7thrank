@@ -3775,7 +3775,7 @@ ul, ol {
 .subline-card,
 .cb-image-col {
   container-type: inline-size;
-  --name-size: min(calc(94cqw / (var(--name-len, 8) * 0.42)), 34cqw);
+  --name-size: min(calc(78cqw / (var(--name-len, 8) * 0.42)), 27cqw);
 }
 
 /* ── Shared giant name ── */
@@ -4039,11 +4039,22 @@ ul, ol {
 }
 #rank-6 #add-to-wishlist-btn:hover { background: var(--sq-dark); border-color: var(--sq-dark); }
 
+/* ── Home page: garment cutouts on the board's own square colors ── */
+.site-header { background: rgba(43,43,43,0.92); }
+.rank-2 .sq-cycling-bg { top: calc(var(--header-h) + 2%); }
+.sq-cycling-bg {
+  inset: 4%;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.sq-cycling-bg.visible { opacity: 1; }
+
 /* ── Line / variant cards ── */
 .rank-5 .product-card.hero-card {
   justify-content: flex-start;
   padding: 2rem 0 1.5rem;
-  background: linear-gradient(to bottom, var(--pdp-field) 0 78%, var(--sq-light) 78% 100%) !important;
+  background: var(--pdp-field) !important;
   transform: none;
 }
 .rank-5 .product-card.hero-card .product-card-name { color: var(--pdp-on) !important; }
@@ -4051,7 +4062,7 @@ ul, ol {
 
 .rank-5 .product-card.hero-card .product-card-cycling-bg {
   position: absolute;
-  inset: calc(2rem + var(--name-size) * 0.8) 6% 4.5rem 6%;
+  inset: calc(2rem + var(--name-size) * 0.8) 6% 1.5rem 6%;
   width: auto;
   height: auto;
   z-index: 2;
@@ -4062,11 +4073,17 @@ ul, ol {
 
 .rank-5 .product-card.hero-card .product-card-palette {
   position: absolute;
-  bottom: 1.5rem;
+  bottom: 0.6rem;
   left: 0;
   right: 0;
   z-index: 3;
   margin: 0;
+}
+
+/* Desktop: cards rest aligned as they step across */
+@media (min-width: 768px) {
+  .rank-5 .rank-dynamic-content { scroll-snap-type: x proximity; }
+  .rank-5 .product-card.hero-card { scroll-snap-align: start; }
 }
 
 /* ── Chessboards / Pieces chooser ── */
@@ -4077,7 +4094,7 @@ ul, ol {
 }
 .subline-card::after,
 .sq-light.subline-card::after { display: none; }
-.subline-card.sq-dark { background: var(--sq-dark); }
+.subline-card.sq-dark { background: #333333; }
 .subline-card.sq-light { background: var(--sq-light); }
 
 .subline-card .subline-card-sub {
@@ -4161,15 +4178,20 @@ ul, ol {
   .subline-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
 
   /* Line cards fill the screen, with a sliver of the next one as a swipe hint */
+  .rank-5 .rank-dynamic-content {
+    padding-inline: 6vw;
+    scroll-padding-inline: 6vw;
+  }
   .rank-5 .rank-dynamic-content .product-card.hero-card {
-    flex: 0 0 90vw;
+    flex: 0 0 88vw;
     padding: 1.25rem 0 1rem;
+    scroll-snap-align: center;
   }
   .rank-5 .product-card.hero-card .product-card-cycling-bg {
     top: calc(1.25rem + var(--name-size) * 0.8);
     left: 4%;
     right: 4%;
-    bottom: 3.5rem;
+    bottom: 1.75rem;
     height: auto;
     background-size: contain;
     background-position: center center;
@@ -4178,7 +4200,12 @@ ul, ol {
   .rank-5 .product-card[data-line-id].hero-card { padding-bottom: 1rem; }
 
   /* First Move: name above the garment */
+  .collections-track {
+    padding-inline: 7.5vw;
+    scroll-padding-inline: 7.5vw;
+  }
   .collections-track .collection-card {
+    scroll-snap-align: center;
     justify-content: flex-start;
     padding: 1.25rem 1rem;
     --name-len: 10;
@@ -4189,7 +4216,7 @@ ul, ol {
     position: relative;
     z-index: 1;
     width: 100%;
-    font-size: min(calc(94cqw / 4.2), 34cqw);
+    font-size: min(calc(78cqw / 4.2), 27cqw);
     line-height: 0.92;
     letter-spacing: 0;
     text-align: center;

@@ -3275,10 +3275,10 @@
 
   var WISHLIST_COPY = {
     wishlist: {
-      eyebrow:  'Shape What We Build',
-      title:    'Help Us Design the First Drop',
-      subtitle: 'We’re in early development — sampling garments and finalizing colorways and sizing. ' +
-                 'Join the list to share your preferences and lock in your First Mover discount when we launch.'
+      eyebrow:  'First Move',
+      title:    'Our First Drop Is Coming',
+      subtitle: 'Samples are in and we’re preparing our first drop. Join the list to save this piece, ' +
+                 'get early access, and lock in your 15% First Mover discount when we launch.'
     },
     landing: {
       eyebrow:  '',

@@ -16,6 +16,8 @@
 (function () {
   'use strict';
 
+  var ROUTES = window.SEVENTH_RANK_ROUTES;
+
   /* ══════════════════════════════════════════════════
      APP STATE
   ══════════════════════════════════════════════════ */
@@ -35,7 +37,7 @@
     isBypassing:         false,
     isAnimating:         false,  // true during any programmatic smoothScrollTo
     selectedSubLine:     null,  // 'chessboards' | 'pieces'
-    selectedCBVariant:   null,  // 'ww' | 'ic' | 's' | 'pp'
+    selectedCBVariant:   null,  // 'ww' | 'ic' | 's'
     selectedCBPiece:     null,  // 'pawn' | 'rook' | etc.
     selectedCBLocation:  null,  // 'l' | 'r' | 'hl' | 'hr' | 'sl' | 'sr'
     appliedPromo:        null   // { code, discountPct } or null
@@ -60,10 +62,6 @@
     P: '♟\uFE0E', B: '♝\uFE0E', N: '♞\uFE0E', R: '♜\uFE0E', Q: '♛\uFE0E', K: '♚\uFE0E'
   };
 
-  var PIECE_PRICES = {
-    P: 65, B: 89, N: 110, R: 130, Q: 175, K: 220
-  };
-
   var COLORWAYS = [
     { id: 'FFFFFF', name: 'White',     hex: '#FFFFFF', textColor: '#1C1410' },
     { id: 'F0D9B5', name: 'Ivory',     hex: '#F0D9B5', textColor: '#1C1410' },
@@ -82,16 +80,13 @@
     ic: { id: 'ic', name: 'Ice Castle',       lightColor: '#BFEFFF', darkColor: '#FFFEEF',
           caption: 'Piercing fluidity. Sharper than the eye perceives.' },
     s:  { id: 's',  name: 'Stone',            lightColor: '#FFFFFF', darkColor: '#535353',
-          caption: 'An impenetrable force and immovable object. Paradoxically mastered.' },
-    pp: { id: 'pp', name: 'Princess Pink',    lightColor: '#FBD9E1', darkColor: '#FFFFFF',
-          caption: 'Elegance mistified in a rosy collidescope.',
-          captionColor: '#FBD9E1' }
+          caption: 'An impenetrable force and immovable object. Paradoxically mastered.' }
   };
 
   // Fixed material/craft line shown under every chessboard variant's caption
-  var CHESSBOARD_FABRIC_NOTE = '100% wool. 7th Rank logo and all pieces are embroidered.';
+  var CHESSBOARD_FABRIC_NOTE = '100% Baby Alpaca. 7th Rank logo and all pieces are embroidered.';
 
-  var CHESSBOARD_VARIANTS_LIST = ['ww', 'ic', 's', 'pp'];
+  var CHESSBOARD_VARIANTS_LIST = ['ww', 'ic', 's'];
 
   var CHESSBOARD_PIECES_CB = ['pawn','rook','knight','bishop','queen','king'];
   var CHESSBOARD_PIECE_ICONS_CB = {
@@ -111,20 +106,47 @@
   };
   var CHESSBOARD_LOCATION_KEYS = ['l','r','hl','hr','sl','sr'];
 
-  var CHESSBOARD_PRICE = 99;
-  var PIECES_PRICE     = 69;
+  var CHESSBOARD_PRICE = ROUTES.PRICES.chessboards;
+  var PIECES_PRICE     = ROUTES.PRICES.pieces;
+
+  /* Product hero colors: `field` sits behind the garment, `on` is the giant name,
+     `sel`/`onSel` drive selected controls on the cream panel. */
+  var PRODUCT_HERO = {
+    ww:      { field: '#B58863', on: '#3A2615', sel: '#B58863', onSel: '#2B2B2B' },
+    ic:      { field: '#BFEFFF', on: '#2B2B2B', sel: '#BFEFFF', onSel: '#2B2B2B' },
+    s:       { field: '#333333', on: '#F4F1EA', sel: '#535353', onSel: '#F4F1EA' },
+    stoic:   { field: '#FFFFFF', on: '#000000', sel: '#000000', onSel: '#FFFFFF' },
+    grain:   { field: '#B58863', on: '#3A2615', sel: '#B58863', onSel: '#2B2B2B' },
+    ti:      { field: '#BFEFFF', on: '#2B2B2B', sel: '#BFEFFF', onSel: '#2B2B2B' },
+    pasture: { field: '#F0D9B5', on: '#255525', sel: '#255525', onSel: '#FFFFFF' },
+    harmony: { field: '#000000', on: '#FFFFFF', sel: '#000000', onSel: '#FFFFFF' }
+  };
+
+  function heroStyle(id) {
+    var h = PRODUCT_HERO[id];
+    return h ? '--pdp-field:' + h.field + ';--pdp-on:' + h.on + ';--pdp-sel:' + h.sel + ';--pdp-on-sel:' + h.onSel + ';' : '';
+  }
+
+  function applyHeroVars(el, id) {
+    var h = PRODUCT_HERO[id];
+    if (!el || !h) return;
+    el.style.setProperty('--pdp-field', h.field);
+    el.style.setProperty('--pdp-on', h.on);
+    el.style.setProperty('--pdp-sel', h.sel);
+    el.style.setProperty('--pdp-on-sel', h.onSel);
+  }
 
   /* Rank-6 modification color schemes — per variant/line */
   var CB_MOD_COLORS = {
     ww: {
-      selBg: '#F0D9B5', selText: null, selBorder: '#0D1B2A',
+      selBg: '#F0D9B5', selText: null, selBorder: '#2B2B2B',
       hoverBg: 'rgba(240,217,181,0.22)',
-      cartBg: '#F0D9B5', cartText: '#0D1B2A', cartBorder: '#0D1B2A',
+      cartBg: '#F0D9B5', cartText: '#2B2B2B', cartBorder: '#2B2B2B',
       cartHoverBg: '#B58863', cartHoverText: '#F0D9B5',
       confirmBg: '#B58863', confirmText: '#F0D9B5',
       wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
     },
-    ic: { confirmBg: '#BFEFFF', confirmText: '#0D1B2A' },
+    ic: { selBg: '#BFEFFF', selText: '#2B2B2B', selBorder: '#2B2B2B', hoverBg: 'rgba(191,239,255,0.35)', confirmBg: '#BFEFFF', confirmText: '#2B2B2B' },
     s: {
       unselText: '#FFFFFF', unselBorder: '#FFFFFF',
       selBg: '#FFFFFF', selText: '#535353', selBorder: '#535353',
@@ -134,12 +156,6 @@
       confirmBg: '#535353', confirmText: '#FFFFFF',
       wishlistText: '#FFFFFF', wishlistBorder: '#FFFFFF',
       wishlistHoverBg: '#FFFFFF', wishlistHoverText: '#535353', wishlistHoverBorder: '#535353'
-    },
-    pp: {
-      selBg: '#FBD9E1', selText: null, selBorder: null,
-      hoverBg: 'rgba(251,217,225,0.22)',
-      confirmBg: '#FBD9E1', confirmText: null,
-      wishlistHoverBg: '#FBD9E1', wishlistHoverText: null, wishlistHoverBorder: null
     }
   };
 
@@ -151,14 +167,14 @@
       wishlistHoverBg: '#000000', wishlistHoverText: '#FFFFFF', wishlistHoverBorder: '#FFFFFF'
     },
     grain: {
-      selBg: '#F0D9B5', selText: null, selBorder: '#0D1B2A',
+      selBg: '#F0D9B5', selText: null, selBorder: '#2B2B2B',
       hoverBg: 'rgba(240,217,181,0.22)',
-      cartBg: '#F0D9B5', cartText: '#0D1B2A', cartBorder: '#0D1B2A',
+      cartBg: '#F0D9B5', cartText: '#2B2B2B', cartBorder: '#2B2B2B',
       cartHoverBg: '#B58863', cartHoverText: '#F0D9B5',
       confirmBg: '#B58863', confirmText: '#F0D9B5',
       wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
     },
-    ti: { confirmBg: '#BFEFFF', confirmText: '#0D1B2A' },
+    ti: { selBg: '#BFEFFF', selText: '#2B2B2B', selBorder: '#2B2B2B', hoverBg: 'rgba(191,239,255,0.35)', confirmBg: '#BFEFFF', confirmText: '#2B2B2B' },
     pasture: {
       selBg: '#255525', selText: '#FFFFFF', selBorder: '#FFFFFF',
       hoverBg: 'rgba(37,85,37,0.22)',
@@ -174,10 +190,9 @@
 
   /* Rank-5 hover name colors — per hovered variant, what color each card name becomes */
   var CB_HOVER_COLORS = {
-    ww: { scrollbar: '#B58863', names: { ww: '#B58863', ic: '#F0D9B5', s: '#B58863', pp: '#F0D9B5' } },
-    ic: { scrollbar: '#BFEFFF', names: { ww: '#FFFEEF', ic: '#BFEFFF', s: '#FFFEEF', pp: '#BFEFFF' } },
-    s:  { scrollbar: '#535353', names: { ww: '#535353', ic: '#FFFFFF', s: '#535353', pp: '#FFFFFF' } },
-    pp: { scrollbar: '#FBD9E1', names: { ww: '#FFFFFF', ic: '#FBD9E1', s: '#FFFFFF', pp: '#FBD9E1' } }
+    ww: { scrollbar: '#B58863', names: { ww: '#B58863', ic: '#F0D9B5', s: '#B58863' } },
+    ic: { scrollbar: '#BFEFFF', names: { ww: '#FFFEEF', ic: '#BFEFFF', s: '#FFFEEF' } },
+    s:  { scrollbar: '#535353', names: { ww: '#535353', ic: '#FFFFFF', s: '#535353' } }
   };
 
   var PC_HOVER_COLORS = {
@@ -288,31 +303,31 @@
 
   function getProductImagePath(line, piece, colorway) {
     var lineId = LINE_IMAGE_PREFIX[line] || (line.charAt(0).toUpperCase() + line.slice(1));
-    return 'images/products/first_move/pieces/pieces_' + lineId + '.' + piece + '.' + colorway + '.jpg';
+    return '/images/products/first_move/pieces/pieces_' + lineId + '.' + piece + '.' + colorway + '.jpg';
   }
 
   function getProductPNGPath(line, piece, colorway) {
     var lineId = LINE_IMAGE_PREFIX[line] || (line.charAt(0).toUpperCase() + line.slice(1));
     var base = 'pieces_' + lineId + '.' + piece + '.' + colorway;
-    return 'images/products/first_move/pieces/' + base + '/resource/0.png';
+    return '/images/products/first_move/pieces/' + base + '/resource/0.png';
   }
 
   function getChessboardImagePath(variant, piece, location) {
     var shot = (location === 'sl') ? '3' : (location === 'sr') ? '2' : '1';
     // Knight on left/right chest uses all-underscore filename (chessboards_ww_knight_l_1.jpg)
     if (piece === 'knight' && (location === 'l' || location === 'r')) {
-      return 'images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
+      return '/images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
     }
-    return 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
+    return '/images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
   }
 
   // Direct JPG at chessboards root — works on all platforms including mobile
   function getChessboardJPGPath(variant, piece, location, shot) {
     shot = shot || '1';
     if (piece === 'knight' && (location === 'l' || location === 'r')) {
-      return 'images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
+      return '/images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
     }
-    return 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
+    return '/images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
   }
 
   // Path to PNG inside CLO viewer folder (desktop cycler only)
@@ -326,7 +341,7 @@
       folder   = 'chessboards_' + variant + '.' + piece + '.' + location;
       filename = variant + '.' + piece + '.' + location + '_' + shot + '.png';
     }
-    return 'images/products/first_move/chessboards/' + folder + '/resource/' + filename;
+    return '/images/products/first_move/chessboards/' + folder + '/resource/' + filename;
   }
 
   // Path to CLO interactive HTML viewer
@@ -337,7 +352,7 @@
     } else {
       folder = 'chessboards_' + variant + '.' + piece + '.' + location;
     }
-    return 'images/products/first_move/chessboards/' + folder + '/' + folder + '.html';
+    return '/images/products/first_move/chessboards/' + folder + '/' + folder + '.html';
   }
 
   function sanitize(str) {
@@ -356,6 +371,147 @@
   }
 
   /* ══════════════════════════════════════════════════
+     GARMENT CUTOUTS
+     Stopgap until transparent product imagery exists. The CLO renders have a
+     smooth vertical background gradient, so each row's color is known from its
+     left edge. Flood-filling inward from the frame removes the background without
+     touching garment interiors. Any failure falls back to the original image.
+  ══════════════════════════════════════════════════ */
+  var CUTOUT_WIDTH_HERO = 1080;
+  var CUTOUT_WIDTH_CARD = 760;
+  var CUTOUT_WIDTH_LANDING = 480;
+  var CUTOUT_TOLERANCE_PNG = 2;
+  var CUTOUT_TOLERANCE_JPG = 7;
+  var cutoutCache = {};
+
+  function keyOutBackground(im, maxWidth) {
+    return new Promise(function(resolve, reject) {
+      var w = Math.min(maxWidth, im.naturalWidth);
+      var h = Math.round(im.naturalHeight * (w / im.naturalWidth));
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(im, 0, 0, w, h);
+      var data = ctx.getImageData(0, 0, w, h);
+      var d = data.data;
+      var total = w * h;
+      var isBg = new Uint8Array(total);
+      var seen = new Uint8Array(total);
+      var stack = new Int32Array(total);
+      var top = 0;
+
+      var tolerance = /\.png$/i.test(im.src) ? CUTOUT_TOLERANCE_PNG : CUTOUT_TOLERANCE_JPG;
+      function matches(i, y) {
+        var p = i * 4, r = (y * w + 1) * 4;
+        return Math.abs(d[p] - d[r]) <= tolerance &&
+               Math.abs(d[p + 1] - d[r + 1]) <= tolerance &&
+               Math.abs(d[p + 2] - d[r + 2]) <= tolerance;
+      }
+      function push(i) {
+        if (!seen[i]) { seen[i] = 1; stack[top++] = i; }
+      }
+
+      var x, y;
+      for (x = 0; x < w; x++) { push(x); push((h - 1) * w + x); }
+      for (y = 0; y < h; y++) { push(y * w); push(y * w + w - 1); }
+      while (top) {
+        var i = stack[--top];
+        var iy = Math.floor(i / w), ix = i - iy * w;
+        if (!matches(i, iy)) continue;
+        isBg[i] = 1;
+        if (ix > 0) push(i - 1);
+        if (ix < w - 1) push(i + 1);
+        if (iy > 0) push(i - w);
+        if (iy < h - 1) push(i + w);
+      }
+
+      var minX = w, minY = h, maxX = -1, maxY = -1, kept = 0;
+      for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+          var idx = y * w + x;
+          if (isBg[idx]) { d[idx * 4 + 3] = 0; continue; }
+          kept++;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+      // Smooth the cut edge: blur the mask, then remap it. Stair-steps round off and
+      // the background-tinted fringe lands in the transparent part of the ramp.
+      var radius = Math.max(1, Math.round(w / 400));
+      var mask = new Float32Array(total);
+      var buf = new Float32Array(total);
+      for (var m = 0; m < total; m++) mask[m] = isBg[m] ? 0 : 1;
+      function boxPass(src, dst, len, lines, step, lineStep) {
+        var norm = 1 / (radius * 2 + 1);
+        for (var l = 0; l < lines; l++) {
+          var base = l * lineStep, sum = 0, k;
+          for (k = -radius; k <= radius; k++) sum += src[base + Math.min(len - 1, Math.max(0, k)) * step];
+          for (k = 0; k < len; k++) {
+            dst[base + k * step] = sum * norm;
+            sum += src[base + Math.min(len - 1, k + radius + 1) * step] - src[base + Math.max(0, k - radius) * step];
+          }
+        }
+      }
+      for (var round = 0; round < 2; round++) {
+        boxPass(mask, buf, w, h, 1, w);
+        boxPass(buf, mask, h, w, w, 1);
+      }
+      for (var q = 0; q < total; q++) {
+        if (mask[q] >= 0.999) continue;
+        var t = Math.min(1, Math.max(0, (mask[q] - 0.5) / 0.4));
+        d[q * 4 + 3] = Math.round(255 * t * t * (3 - 2 * t));
+      }
+      if (kept < total * 0.02 || kept > total * 0.85) { reject(new Error('cutout out of range')); return; }
+
+      ctx.putImageData(data, 0, 0);
+      var out = document.createElement('canvas');
+      out.width = maxX - minX + 1; out.height = maxY - minY + 1;
+      out.getContext('2d').drawImage(canvas, -minX, -minY);
+      out.toBlob(function(blob) {
+        if (blob) resolve(URL.createObjectURL(blob)); else reject(new Error('no blob'));
+      }, 'image/webp', 0.9);
+    });
+  }
+
+  // Resolves to a cutout URL, or the original src if keying fails. Rejects only
+  // when the image itself cannot be loaded.
+  function cutoutGarment(src, maxWidth) {
+    var width = maxWidth || CUTOUT_WIDTH_CARD;
+    var key = width + '|' + src;
+    if (cutoutCache[key]) return cutoutCache[key];
+    var result = new Promise(function(resolve, reject) {
+      var im = new Image();
+      im.onload = function() {
+        keyOutBackground(im, width).then(resolve, function() { resolve(src); });
+      };
+      im.onerror = reject;
+      im.src = src;
+    });
+    result.catch(function() { delete cutoutCache[key]; });
+    cutoutCache[key] = result;
+    return result;
+  }
+
+  function setGarmentImage(img, src, fallback) {
+    if (!img) return;
+    var token = img._garmentToken = (img._garmentToken || 0) + 1;
+    img.classList.add('is-loading');
+    cutoutGarment(src, CUTOUT_WIDTH_HERO).catch(function() {
+      if (fallback) return cutoutGarment(fallback, CUTOUT_WIDTH_HERO);
+      throw new Error('image missing');
+    }).then(function(url) {
+      if (img._garmentToken !== token) return;
+      img.src = url;
+      img.style.visibility = 'visible';
+      img.classList.remove('is-loading');
+    }).catch(function() {
+      if (img._garmentToken === token) img.style.visibility = 'hidden';
+    });
+  }
+
+  /* ══════════════════════════════════════════════════
      IMAGE POOL (all product images for cycling)
   ══════════════════════════════════════════════════ */
   function buildImagePool() {
@@ -365,7 +521,7 @@
     CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
       CHESSBOARD_PIECES_CB.forEach(function(piece) {
         CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
-          pool.push(getChessboardJPGPath(variant, piece, loc, '1'));
+          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
         });
       });
     });
@@ -377,7 +533,7 @@
       ['P','B','N','R','Q','K'].forEach(function(piece) {
         lineData.colorways.forEach(function(cw) {
           var base = 'pieces_' + linePrefix + '.' + piece + '.' + cw;
-          pool.push('images/products/first_move/pieces/' + base + '/resource/0.png');
+          pool.push('/images/products/first_move/pieces/' + base + '/resource/0.png');
         });
       });
     });
@@ -400,7 +556,7 @@
       ['P','B','N','R','Q','K'].forEach(function(piece) {
         lineData.colorways.forEach(function(cw) {
           var base = 'pieces_' + linePrefix + '.' + piece + '.' + cw;
-          pool.push('images/products/first_move/pieces/' + base + '/resource/0.png');
+          pool.push('/images/products/first_move/pieces/' + base + '/resource/0.png');
         });
       });
     });
@@ -420,7 +576,7 @@
     CHESSBOARD_VARIANTS_LIST.forEach(function(variant) {
       CHESSBOARD_PIECES_CB.forEach(function(piece) {
         CHESSBOARD_LOCATION_KEYS.forEach(function(loc) {
-          pool.push(getChessboardJPGPath(variant, piece, loc, '1'));
+          pool.push(getChessboardPNGPath(variant, piece, loc, '1'));
         });
       });
     });
@@ -450,19 +606,17 @@
     function loadAndShow(bgEl, retries) {
       retries = retries || 0;
       if (retries > 4) return; // stop after 4 failed attempts
-      var src = pickRandom(pool);
-      var img = new Image();
-      img.onload = function() {
+      var rect = bgEl.getBoundingClientRect();
+      if (rect.bottom <= 0 || rect.width === 0) return; // scrolled away or hidden on this screen size
+      cutoutGarment(pickRandom(pool), CUTOUT_WIDTH_LANDING).then(function(url) {
         bgEl.classList.remove('visible');
         setTimeout(function() {
-          bgEl.style.backgroundImage = 'url(' + src + ')';
+          bgEl.style.backgroundImage = 'url(' + url + ')';
           bgEl.classList.add('visible');
         }, 300);
-      };
-      img.onerror = function() {
+      }, function() {
         loadAndShow(bgEl, retries + 1);
-      };
-      img.src = src;
+      });
     }
 
     // Initial load with staggered start
@@ -499,7 +653,13 @@
       return a;
     }
 
+    function isOnScreen() {
+      var r = bgEl.getBoundingClientRect();
+      return r.bottom > 0 && r.right > 0 && r.top < window.innerHeight && r.left < window.innerWidth;
+    }
+
     function loadAndShow() {
+      if (!firstCycle && !isOnScreen()) return;
       // On first cycle, prefer initialPool candidates (e.g. front-facing shots)
       var candidates = (firstCycle && initialPool && initialPool.length)
         ? shuffled(initialPool).concat(shuffled(pool)).slice(0, 12)
@@ -510,16 +670,13 @@
       function tryNext() {
         if (attempt >= candidates.length) return;
         var src = candidates[attempt++];
-        var img = new Image();
-        img.onload = function() {
+        cutoutGarment(src).then(function(url) {
           bgEl.classList.remove('visible');
           setTimeout(function() {
-            bgEl.style.backgroundImage = 'url(' + src + ')';
+            bgEl.style.backgroundImage = 'url(' + url + ')';
             bgEl.classList.add('visible');
           }, 300);
-        };
-        img.onerror = tryNext;
-        img.src = src;
+        }, tryNext);
       }
       tryNext();
     }
@@ -661,7 +818,8 @@
     // Cancel any previously running loop on this container to prevent speed accumulation
     if (container._scrollStop) { container._scrollStop(); }
 
-    var speed = 0.5;
+    var CARD_STEP_MS = 5000;
+    var lastStep = Date.now();
     var paused = false;
     var stopped = false;
     var rafId = null;
@@ -727,15 +885,14 @@
     // ── Ticker RAF loop ──────────────────────────────────────────────
     function tick() {
       if (stopped) return;
-      if (!paused) {
+      if (!paused && window.innerWidth > 767 && Date.now() - lastStep > CARD_STEP_MS) {
+        lastStep = Date.now();
         var maxLeft = container.scrollWidth - container.clientWidth;
-        if (maxLeft > 0) {
-          if (container.scrollLeft >= maxLeft - 1) {
-            container.scrollLeft = 0;
-            resume(5000); // 5s pause at the wrap point before looping again
-          } else {
-            container.scrollLeft += speed;
-          }
+        var card = container.firstElementChild;
+        if (maxLeft > 0 && card) {
+          var cardWidth = card.offsetWidth;
+          var nextLeft = (Math.round(container.scrollLeft / cardWidth) + 1) * cardWidth;
+          container.scrollTo({ left: container.scrollLeft >= maxLeft - 1 ? 0 : Math.min(nextLeft, maxLeft), behavior: 'smooth' });
         }
       }
       updateThumb();
@@ -776,6 +933,8 @@
     // Touch swipe
     container.addEventListener('touchstart', pause, { passive: true });
     container.addEventListener('touchend', function() { resume(2000); });
+    container.addEventListener('mouseenter', pause);
+    container.addEventListener('mouseleave', function() { resume(500); });
   }
 
   /* ══════════════════════════════════════════════════
@@ -795,11 +954,11 @@
   function safeUiColor(bgHex, paletteHex) {
     var r  = parseInt(bgHex.slice(1,3),16)/255, g  = parseInt(bgHex.slice(3,5),16)/255, b  = parseInt(bgHex.slice(5,7),16)/255;
     var bgLum = 0.2126*r + 0.7152*g + 0.0722*b;
-    if (bgLum > 0.5) return '#0D1B2A';
+    if (bgLum > 0.5) return '#2B2B2B';
     var pr = parseInt(paletteHex.slice(1,3),16)/255, pg = parseInt(paletteHex.slice(3,5),16)/255, pb = parseInt(paletteHex.slice(5,7),16)/255;
     var pLum  = 0.2126*pr + 0.7152*pg + 0.0722*pb;
     var ratio = (Math.max(bgLum,pLum)+0.05) / (Math.min(bgLum,pLum)+0.05);
-    return ratio >= 3 ? paletteHex : '#B8CDD8';
+    return ratio >= 3 ? paletteHex : '#F4F1EA';
   }
 
   // Pick the most "characteristic" palette color for use as a UI accent (buttons, selections).
@@ -901,9 +1060,10 @@
   /* ══════════════════════════════════════════════════
      SCROLL NAVIGATION
   ══════════════════════════════════════════════════ */
-  function scrollToSection(id, behavior, callback) {
+  function scrollToSection(id, behavior, callback, urlOpts) {
     var el = document.getElementById(id);
     if (!el) return;
+    if (behavior !== 'instant') syncUrl(id, !(urlOpts && urlOpts.replace));
     // Calculate the true snap target position.
     // Desktop uses scroll-padding-top on the container; mobile uses scroll-margin-top
     // on the element. Both shift the effective snap point up by header-h. Reading
@@ -1021,6 +1181,7 @@
       STATE.currentSection = targetSection;
       updateNavDots(targetSection);
       updateHeader(targetSection);
+      syncUrl(targetSection, false);
       if (window.innerWidth <= 767) {
         applyMobileSnap();
       } else {
@@ -1093,7 +1254,7 @@
     if (nextIdx < 0 || nextIdx >= DEFAULT_SECTIONS.length) return;
     e.preventDefault();
     lastWheelTime = now;
-    scrollToSection(DEFAULT_SECTIONS[nextIdx], 'smooth');
+    scrollToSection(DEFAULT_SECTIONS[nextIdx], 'smooth', null, { replace: true });
   }
 
   /* ══════════════════════════════════════════════════
@@ -1110,6 +1271,7 @@
       STATE.currentSection = id;
       updateNavDots(id);
       updateHeader(id);
+      syncUrl(id, false);
 
       // Trigger entrance animations
       triggerEntranceAnims(entry.target);
@@ -1279,7 +1441,7 @@
   function getAnimatedLogoHtml(cls) {
     var targetClass = cls || 'collection-card-logo-svg';
     var src = document.querySelector('.sq-logo-img');
-    if (!src) return '<img src="images/logo.svg" class="' + targetClass + '" aria-hidden="true">';
+    if (!src) return '<img src="/images/logo.svg" class="' + targetClass + '" aria-hidden="true">';
     var html = src.outerHTML
       .replace(/<defs>[\s\S]*?<\/defs>/i, '')
       .replace(/filter="url\(#streak-glow\)"/g, '')
@@ -1332,10 +1494,9 @@
         var pool = (useCB && cbPool.length) ? cbPool : (pcPool.length ? pcPool : cbPool);
         useCB = !useCB;
         var src = pool[Math.floor(Math.random() * pool.length)];
-        var img = new Image();
-        img.onload = function() { cyclingBgEl.style.backgroundImage = 'url(' + src + ')'; };
-        img.onerror = function() { useCB = !useCB; cycleCollectionThumb(); };
-        img.src = src;
+        cutoutGarment(src).then(function(url) {
+          cyclingBgEl.style.backgroundImage = 'url(' + url + ')';
+        }, function() { useCB = !useCB; cycleCollectionThumb(); });
       }
       cycleCollectionThumb();
       setInterval(cycleCollectionThumb, 5000);
@@ -1406,20 +1567,17 @@
     if (!rank4Content) return;
     showNavDot('rank-4');
 
-    var cbImg = getChessboardJPGPath('ic', 'pawn', 'l', '1');
-    var pcImg = getProductPNGPath('stoic', 'P', 'FFFFFF');
-
     rank4Content.innerHTML =
       '<div class="subline-grid">' +
-        '<div class="subline-card sq-dark" data-subline="chessboards" role="button" tabindex="0" aria-label="Chessboards — Turtlenecks">' +
-          '<div class="subline-card-bg" style="background-image:url(' + cbImg + ')"></div>' +
+        '<div class="subline-card sq-dark" data-subline="chessboards" role="button" tabindex="0" aria-label="Chessboards — Turtlenecks" style="--name-len:11">' +
+          '<span class="subline-card-sub">Turtlenecks · $' + CHESSBOARD_PRICE + '</span>' +
           '<span class="subline-card-label">Chessboards</span>' +
-          '<span class="subline-card-sub">Turtlenecks · $99</span>' +
+          '<div class="subline-card-bg"></div>' +
         '</div>' +
-        '<div class="subline-card sq-light" data-subline="pieces" role="button" tabindex="0" aria-label="Pieces — Crewnecks">' +
-          '<div class="subline-card-bg" style="background-image:url(' + pcImg + ')"></div>' +
+        '<div class="subline-card sq-light" data-subline="pieces" role="button" tabindex="0" aria-label="Pieces — Crewnecks" style="--name-len:6">' +
+          '<span class="subline-card-sub">Crewnecks · $' + PIECES_PRICE + '</span>' +
           '<span class="subline-card-label">Pieces</span>' +
-          '<span class="subline-card-sub">Crewnecks · $69</span>' +
+          '<div class="subline-card-bg"></div>' +
         '</div>' +
       '</div>';
 
@@ -1441,7 +1599,7 @@
     });
   }
 
-  function selectSubLine(type) {
+  function selectSubLine(type, opts) {
     STATE.selectedSubLine = type;
     showNavDot('rank-5');
     // Reset palette theming from any previous selection
@@ -1455,13 +1613,13 @@
     var rank5Label = document.getElementById('rank-5-label');
     if (rank5Label) rank5Label.textContent = type === 'chessboards' ? 'Chessboards' : 'Pieces';
     renderGarmentLines();
-    scrollToSection('rank-5', 'smooth');
+    if (!(opts && opts.noScroll)) scrollToSection('rank-5', 'smooth');
   }
 
   /* ══════════════════════════════════════════════════
      RANK 4: GARMENT LINES
   ══════════════════════════════════════════════════ */
-  function selectCollection(collection) {
+  function selectCollection(collection, opts) {
     var isSameCollection = STATE.selectedCollection && STATE.selectedCollection.id === collection.id;
     STATE.selectedCollection = collection;
     STATE.mode = 'shopping';
@@ -1496,7 +1654,7 @@
       if (rank4Label) rank4Label.textContent = collection.name;
     }
 
-    scrollToSection('rank-4', 'smooth');
+    if (!(opts && opts.noScroll)) scrollToSection('rank-4', 'smooth');
   }
 
   function renderGarmentLines() {
@@ -1504,12 +1662,13 @@
     var html = '';
 
     if (STATE.selectedSubLine === 'chessboards') {
-      // Show 4 chessboard variant cards — explicit sq-light/sq-dark so clones stay correct
+      // Show chessboard variant cards — explicit sq-light/sq-dark so clones stay correct
       html = CHESSBOARD_VARIANTS_LIST.map(function(varId, i) {
         var v = CHESSBOARD_VARIANTS[varId];
         var sqClass = i % 2 === 0 ? 'sq-light' : 'sq-dark';
-        return '<div class="product-card ' + sqClass + ' anim-ready" ' +
+        return '<div class="product-card hero-card ' + sqClass + ' anim-ready" ' +
                'data-variant-id="' + varId + '" ' +
+               'style="' + heroStyle(varId) + '--name-len:' + v.name.length + '" ' +
                'role="button" tabindex="0" ' +
                'aria-label="' + sanitize(v.name) + '">' +
                '<div class="product-card-cycling-bg"></div>' +
@@ -1526,8 +1685,9 @@
       html = PIECES_LINE_KEYS.map(function(lineKey, i) {
         var lineData = PIECES_LINE_DATA[lineKey];
         var sqClass = i % 2 === 0 ? 'sq-light' : 'sq-dark';
-        return '<div class="product-card ' + sqClass + ' anim-ready" ' +
+        return '<div class="product-card hero-card ' + sqClass + ' anim-ready" ' +
                'data-line-id="' + lineKey + '" ' +
+               'style="' + heroStyle(lineKey) + '--name-len:' + lineData.name.length + '" ' +
                'role="button" tabindex="0" ' +
                'aria-label="' + sanitize(lineData.name) + ' line">' +
                '<div class="product-card-cycling-bg"></div>' +
@@ -1618,11 +1778,9 @@
     rank5Content.querySelectorAll('.product-card[data-variant-id]').forEach(function(card) {
       card.addEventListener('click', function() {
         var varId = card.dataset.variantId;
-        STATE.selectedCBVariant = varId;
         var v = CHESSBOARD_VARIANTS[varId];
         updateRankColors(rank5El, v.lightColor, v.darkColor);
-        updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Chessboards', v.name]);
-        renderChessboardCustomization(varId);
+        selectChessboardVariant(varId);
         scrollToSection('rank-6', 'smooth');
       });
       card.addEventListener('mouseenter', function() { applyRank5HoverCB(card.dataset.variantId); });
@@ -1658,6 +1816,71 @@
   }
 
   /* ══════════════════════════════════════════════════
+     RANK 6: GARMENT PAGE (shared layout)
+  ══════════════════════════════════════════════════ */
+  var SIZES = ['XS','S','M','L','XL','XXL'];
+
+  function buildGarmentHtml(o) {
+    var sizes = SIZES.map(function(s) {
+      return '<button class="size-btn" data-size="' + s + '">' + s + '</button>';
+    }).join('');
+    return '<div class="cb-customization">' +
+      '<div class="cb-image-col" id="cb-image-col" style="--name-len:' + o.name.length + '">' +
+        '<div class="pdp-eyebrow"><span>First Move · ' + sanitize(o.subline) + '</span><span>' + sanitize(o.material) + '</span></div>' +
+        '<h2 class="pdp-name">' + sanitize(o.name) + '</h2>' +
+        '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
+          '<img class="cb-preview-img" id="cb-preview-img" alt="">' +
+        '</div>' +
+        '<div class="cb-zoom-controls">' +
+          '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
+          '<button class="cb-zoom-btn cb-zoom-out" aria-label="Zoom out">−</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cb-controls-col">' +
+        '<div class="pdp-summary">' +
+          '<div class="pdp-price-wrap"><span class="pdp-price-label">Price</span>' +
+            '<p class="product-card-price">$' + o.price + '</p></div>' +
+          '<div class="pdp-swatches" role="group" aria-label="' + sanitize(o.swatchLabel) + '">' + o.swatches + '</div>' +
+        '</div>' +
+        '<div class="cb-control-groups-wrap">' +
+          '<div class="cb-control-group">' +
+            '<p class="cb-control-label">PIECE</p>' +
+            '<div class="cb-piece-grid">' + o.pieceGrid + '</div>' +
+          '</div>' +
+          (o.locationGrid ? '<div class="cb-control-group">' +
+            '<p class="cb-control-label">PLACEMENT</p>' +
+            '<div class="cb-location-grid">' + o.locationGrid + '</div>' +
+          '</div>' : '') +
+          '<div class="cb-control-group">' +
+            '<p class="cb-control-label">SIZE</p>' +
+            '<div class="size-options">' + sizes + '</div>' +
+          '</div>' +
+        '</div>' +
+        captionParagraph(o.caption) +
+        captionParagraph(o.fabricNote) +
+        '<div class="pdp-cta">' +
+          /* CART_ENABLED: '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' + */
+          '<button class="btn btn-primary" id="add-to-wishlist-btn" data-price="$' + o.price + '">Make My Move</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function swatchHtml(attr, id, hex, label, selected) {
+    return '<button class="pdp-swatch' + (selected ? ' selected' : '') + '" ' + attr + '="' + id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+           '<span class="pdp-swatch-dot" style="background:' + hex + '"></span>' +
+           '<span class="pdp-swatch-label">' + sanitize(label) + '</span>' +
+           '</button>';
+  }
+
+  function selectChessboardVariant(varId) {
+    var v = CHESSBOARD_VARIANTS[varId];
+    STATE.selectedCBVariant = varId;
+    updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Chessboards', v.name]);
+    renderChessboardCustomization(varId);
+  }
+
+  /* ══════════════════════════════════════════════════
      RANK 6: CHESSBOARD CUSTOMIZATION
   ══════════════════════════════════════════════════ */
   function renderChessboardCustomization(varId) {
@@ -1667,86 +1890,54 @@
     if (r6) r6.removeAttribute('hidden');
     var r6Label = document.getElementById('rank-6-label');
     var v = CHESSBOARD_VARIANTS[varId];
-    if (r6Label) r6Label.textContent = v.name;
+    if (r6Label) r6Label.textContent = 'Chessboards';
 
     if (!STATE.selectedCBPiece)    STATE.selectedCBPiece    = 'pawn';
     if (!STATE.selectedCBLocation) STATE.selectedCBLocation = 'l';
 
-    var r6El = document.getElementById('rank-6');
-    updateRankColors(r6El, v.lightColor, v.darkColor);
-    applyModColors(r6El, CB_MOD_COLORS[varId] || null);
+    updateRankColors(r6, v.lightColor, v.darkColor);
+    applyModColors(r6, null);
+    applyHeroVars(r6, varId);
 
-    // Use direct JPG images on all devices — CLO iframe had rendering issues in
-    // deployed environments (wrong camera framing, grey background). JPG + zoom
-    // works reliably everywhere. getChessboardViewerPath() preserved for future use.
-    function buildHtml() {
-      var initShot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
-      var jpgSrc = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, initShot);
-      var previewEl = '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
-                  '<img class="cb-preview-img" id="cb-preview-img" src="' + jpgSrc + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
-                  '</div>' +
-                  '<div class="cb-zoom-controls">' +
-                  '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
-                  '<button class="cb-zoom-btn cb-zoom-out" aria-label="Zoom out">\u2212</button>' +
-                  '</div>';
+    var pieceGrid = CHESSBOARD_PIECES_CB.map(function(p) {
+      var sel = STATE.selectedCBPiece === p ? ' selected' : '';
+      return '<button class="cb-piece-btn' + sel + '" data-piece="' + p + '">' +
+             '<span class="cb-piece-btn-icon">' + CHESSBOARD_PIECE_ICONS_CB[p] + '</span>' +
+             '<span>' + CHESSBOARD_PIECE_NAMES_CB[p] + '</span>' +
+             '</button>';
+    }).join('');
 
-      var pieceGrid = CHESSBOARD_PIECES_CB.map(function(p) {
-        var sel = STATE.selectedCBPiece === p ? ' selected' : '';
-        return '<button class="cb-piece-btn' + sel + '" data-piece="' + p + '">' +
-               '<span class="cb-piece-btn-icon">' + CHESSBOARD_PIECE_ICONS_CB[p] + '</span>' +
-               '<span>' + CHESSBOARD_PIECE_NAMES_CB[p] + '</span>' +
-               '</button>';
-      }).join('');
+    var locationGrid = CHESSBOARD_LOCATION_KEYS.map(function(loc) {
+      var sel = STATE.selectedCBLocation === loc ? ' selected' : '';
+      return '<button class="cb-location-btn' + sel + '" data-location="' + loc + '">' +
+             CHESSBOARD_LOCATIONS[loc] + '</button>';
+    }).join('');
 
-      var locationGrid = CHESSBOARD_LOCATION_KEYS.map(function(loc) {
-        var sel = STATE.selectedCBLocation === loc ? ' selected' : '';
-        return '<button class="cb-location-btn' + sel + '" data-location="' + loc + '">' +
-               CHESSBOARD_LOCATIONS[loc] + '</button>';
-      }).join('');
+    var swatches = CHESSBOARD_VARIANTS_LIST.map(function(id) {
+      var other = CHESSBOARD_VARIANTS[id];
+      return swatchHtml('data-variant-swatch', id, other.darkColor === '#FFFEEF' ? other.lightColor : other.darkColor,
+                        other.name.split(' ')[0], id === varId);
+    }).join('');
 
-      return '<div class="cb-customization">' +
-        '<div class="cb-image-col" id="cb-image-col">' +
-          previewEl +
-        '</div>' +
-        '<div class="cb-controls-col">' +
-          '<div class="cb-control-groups-wrap">' +
-            '<div class="cb-control-group">' +
-              '<p class="cb-control-label">PIECE</p>' +
-              '<div class="cb-piece-grid">' + pieceGrid + '</div>' +
-            '</div>' +
-            '<div class="cb-control-group">' +
-              '<p class="cb-control-label">PLACEMENT</p>' +
-              '<div class="cb-location-grid">' + locationGrid + '</div>' +
-            '</div>' +
-          '</div>' +
-          captionParagraph(v.caption, v.captionColor) +
-          captionParagraph(CHESSBOARD_FABRIC_NOTE, v.captionColor) +
-          '<div class="cb-cart-section">' +
-            '<div class="size-selector"><p class="size-label">Size</p>' +
-            '<div class="size-options">' +
-            ['XS','S','M','L','XL','XXL'].map(function(s) {
-              return '<button class="size-btn" data-size="' + s + '">' + s + '</button>';
-            }).join('') +
-            '</div></div>' +
-            '<p class="product-card-price">$' + CHESSBOARD_PRICE + '</p>' +
-            /* CART_ENABLED: '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' + */
-            '<button class="btn btn-primary" id="add-to-wishlist-btn">Make My Move</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }
-
-    rank6Content.innerHTML = buildHtml();
+    rank6Content.innerHTML = buildGarmentHtml({
+      name: v.name, subline: 'Chessboards', material: 'Baby Alpaca',
+      price: CHESSBOARD_PRICE, swatches: swatches, swatchLabel: 'Chessboards colorway',
+      pieceGrid: pieceGrid, locationGrid: locationGrid,
+      caption: v.caption, fabricNote: CHESSBOARD_FABRIC_NOTE
+    });
     initPreviewZoom();
 
     function updatePreview() {
       var img = document.getElementById('cb-preview-img');
-      if (img) {
-        img.style.visibility = 'visible';
-        var shot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
-        img.src = getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot);
-      }
+      if (!img) return;
+      var shot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
+      img.alt = v.name + ' turtleneck with ' + CHESSBOARD_PIECE_NAMES_CB[STATE.selectedCBPiece] + ' embroidery, ' + CHESSBOARD_LOCATIONS[STATE.selectedCBLocation];
+      setGarmentImage(img,
+        getChessboardPNGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot),
+        getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot));
+      if (STATE.currentSection === 'rank-6') syncUrl('rank-6', false);
     }
+    updatePreview();
 
     var cbPieceBtns   = rank6Content.querySelectorAll('.cb-piece-btn[data-piece]');
     var cbLocationBtns = rank6Content.querySelectorAll('.cb-location-btn');
@@ -1771,10 +1962,17 @@
     });
 
     cbSizeBtns.forEach(function(btn) {
+      if (btn.dataset.size === STATE.selectedSize) btn.classList.add('selected');
       btn.addEventListener('click', function() {
         cbSizeBtns.forEach(function(b) { b.classList.remove('selected'); });
         btn.classList.add('selected');
         STATE.selectedSize = btn.dataset.size;
+      });
+    });
+
+    rank6Content.querySelectorAll('[data-variant-swatch]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        selectChessboardVariant(btn.getAttribute('data-variant-swatch'));
       });
     });
 
@@ -1793,7 +1991,7 @@
     var r6 = document.getElementById('rank-6');
     if (r6) r6.removeAttribute('hidden');
     var r6Label = document.getElementById('rank-6-label');
-    if (r6Label) r6Label.textContent = lineData.name;
+    if (r6Label) r6Label.textContent = 'Pieces';
 
     if (!STATE.selectedPiece) STATE.selectedPiece = 'P';
     // Always validate selectedColorway is valid for this line — reset if stale from a different line
@@ -1801,14 +1999,9 @@
       STATE.selectedColorway = lineData.colorways[0];
     }
 
-    var lightColor = lineData.colors[0];
-    var darkColor  = lineData.colors[1];
-    var r6ElPc = document.getElementById('rank-6');
-    updateRankColors(r6ElPc, lightColor, darkColor);
-    applyModColors(r6ElPc, PC_MOD_COLORS[lineData.id] || null);
-
-    var previewSrc = getProductPNGPath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
-    var previewJpg = getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
+    updateRankColors(r6, lineData.colors[0], lineData.colors[1]);
+    applyModColors(r6, null);
+    applyHeroVars(r6, lineData.id);
 
     var pieceGrid = ['P','B','N','R','Q','K'].map(function(p) {
       var sel = STATE.selectedPiece === p ? ' selected' : '';
@@ -1820,67 +2013,30 @@
 
     var swatches = lineData.colorways.map(function(cwId) {
       var cw = COLORWAYS.find(function(c) { return c.id === cwId; });
-      if (!cw) return '';
-      var sel = STATE.selectedColorway === cwId ? ' selected' : '';
-      return '<button class="cb-colorway-swatch' + sel + '" data-cw="' + cwId + '" ' +
-             'style="background:' + cw.hex + '" ' +
-             'title="' + cw.name + '"></button>';
+      return cw ? swatchHtml('data-cw', cwId, cw.hex, cw.name, STATE.selectedColorway === cwId) : '';
     }).join('');
 
-    rank6Content.innerHTML =
-      '<div class="cb-customization">' +
-        '<div class="cb-image-col" id="cb-image-col">' +
-          '<div class="cb-preview-zoom-wrap" id="cb-preview-zoom-wrap">' +
-            '<img class="cb-preview-img" id="cb-preview-img" src="' + previewSrc + '" data-jpg="' + previewJpg + '" alt="" onerror="if(this.src!==this.dataset.jpg){this.src=this.dataset.jpg}else{this.style.visibility=\'hidden\'}">' +
-          '</div>' +
-          '<div class="cb-zoom-controls">' +
-            '<button class="cb-zoom-btn cb-zoom-in" aria-label="Zoom in">+</button>' +
-            '<button class="cb-zoom-btn cb-zoom-out" aria-label="Zoom out">\u2212</button>' +
-          '</div>' +
-        '</div>' +
-        '<div class="cb-controls-col">' +
-          '<div class="cb-control-groups-wrap">' +
-            '<div class="cb-control-group">' +
-              '<p class="cb-control-label">PIECE</p>' +
-              '<div class="cb-piece-grid">' + pieceGrid + '</div>' +
-            '</div>' +
-            '<div class="cb-control-group">' +
-              '<p class="cb-control-label">COLORWAY</p>' +
-              '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center">' + swatches + '</div>' +
-            '</div>' +
-          '</div>' +
-          captionParagraph(lineData.caption, lineData.captionColor) +
-          captionParagraph(PIECES_FABRIC_NOTE, lineData.captionColor) +
-          '<div class="cb-cart-section">' +
-            '<div class="size-selector"><p class="size-label">Size</p>' +
-            '<div class="size-options">' +
-            ['XS','S','M','L','XL','XXL'].map(function(s) {
-              return '<button class="size-btn" data-size="' + s + '">' + s + '</button>';
-            }).join('') +
-            '</div></div>' +
-            '<p class="product-card-price">$' + PIECES_PRICE + '</p>' +
-            /* CART_ENABLED: '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' + */
-            '<button class="btn btn-primary" id="add-to-wishlist-btn">Make My Move</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-
+    rank6Content.innerHTML = buildGarmentHtml({
+      name: lineData.name, subline: 'Pieces', material: 'Cotton',
+      price: PIECES_PRICE, swatches: swatches, swatchLabel: 'Embroidery thread color',
+      pieceGrid: pieceGrid, locationGrid: '',
+      caption: lineData.caption, fabricNote: PIECES_FABRIC_NOTE
+    });
     initPreviewZoom();
 
     function updatePreview() {
       var img = document.getElementById('cb-preview-img');
-      if (img) {
-        img.style.visibility = 'visible';
-        var pngSrc = getProductPNGPath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
-        var jpgSrc = getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway);
-        img.dataset.jpg = jpgSrc;
-        img.onerror = function() { img.src = jpgSrc; img.onerror = null; };
-        img.src = pngSrc;
-      }
+      if (!img) return;
+      img.alt = lineData.name + ' crewneck with ' + PIECE_NAMES[STATE.selectedPiece] + ' embroidery';
+      setGarmentImage(img,
+        getProductPNGPath(lineData.id, STATE.selectedPiece, STATE.selectedColorway),
+        getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway));
+      if (STATE.currentSection === 'rank-6') syncUrl('rank-6', false);
     }
+    updatePreview();
 
     var pcPieceBtns  = rank6Content.querySelectorAll('.cb-piece-btn[data-piece]');
-    var pcSwatches   = rank6Content.querySelectorAll('.cb-colorway-swatch[data-cw]');
+    var pcSwatches   = rank6Content.querySelectorAll('.pdp-swatch[data-cw]');
     var pcSizeBtns   = rank6Content.querySelectorAll('.size-btn');
 
     pcPieceBtns.forEach(function(btn) {
@@ -1894,14 +2050,16 @@
 
     pcSwatches.forEach(function(btn) {
       btn.addEventListener('click', function() {
-        pcSwatches.forEach(function(b) { b.classList.remove('selected'); });
+        pcSwatches.forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
         btn.classList.add('selected');
+        btn.setAttribute('aria-pressed', 'true');
         STATE.selectedColorway = btn.dataset.cw;
         updatePreview();
       });
     });
 
     pcSizeBtns.forEach(function(btn) {
+      if (btn.dataset.size === STATE.selectedSize) btn.classList.add('selected');
       btn.addEventListener('click', function() {
         pcSizeBtns.forEach(function(b) { b.classList.remove('selected'); });
         btn.classList.add('selected');
@@ -2025,7 +2183,7 @@
 
     if (cartItemsEl) {
       if (STATE.cart.length === 0) {
-        cartItemsEl.innerHTML = '<p class="cart-empty">Your board is clear. <a href="#rank-3">Start your opening.</a></p>';
+        cartItemsEl.innerHTML = '<p class="cart-empty">Your board is clear. <a href="/collections/">Start your opening.</a></p>';
       } else {
         cartItemsEl.innerHTML = STATE.cart.map(function(item) {
           var itemName, itemDetails;
@@ -2575,29 +2733,16 @@
      HEADER NAV LINKS
   ══════════════════════════════════════════════════ */
   function initHeaderNav() {
-    $$('.nav-link[data-target]').forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        var target = link.dataset.target;
-        if (target === 'rank-7') {
-          showContactRank7();
-        }
-        scrollToSection(target, 'smooth');
-      });
-    });
-
-    $$('a[href^="#rank-"]').forEach(function(a) {
-      a.addEventListener('click', function(e) {
-        e.preventDefault();
-        var targetId = a.getAttribute('href').replace('#', '');
-        scrollToSection(targetId, 'smooth');
-      });
-    });
-
-    $$('a[href="#landing"]').forEach(function(a) {
-      a.addEventListener('click', function(e) {
-        e.preventDefault();
-        scrollToSection('landing', 'smooth');
+    var SECTION_BY_HREF = { '/': 'landing', '/collections/': 'rank-3', '/contact/': 'rank-7' };
+    Object.keys(SECTION_BY_HREF).forEach(function(href) {
+      $$('a[href="' + href + '"]').forEach(function(a) {
+        if (a.id === 'confirm-back-btn' || a.id === 'order-back-btn') return;
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          var target = SECTION_BY_HREF[href];
+          if (target === 'rank-7') showContactRank7();
+          scrollToSection(target, 'smooth');
+        });
       });
     });
   }
@@ -2792,12 +2937,12 @@
             if (backTarget) {
               var innerEl = document.querySelector('.cb-customization, .pieces-customization');
               var innerAtTop = !innerEl || innerEl.scrollTop <= 0;
-              if (innerAtTop) scrollToSection(backTarget, 'smooth');
+              if (innerAtTop) scrollToSection(backTarget, 'smooth', null, { replace: true });
             }
           } else if (direction === 'down' && STATE.currentSection === 'rank-6') {
             var innerEl = document.querySelector('.cb-customization, .pieces-customization');
             var atBottom = !innerEl || (innerEl.scrollTop + innerEl.clientHeight >= innerEl.scrollHeight - 20);
-            if (atBottom) scrollToSection('rank-7', 'smooth');
+            if (atBottom) scrollToSection('rank-7', 'smooth', null, { replace: true });
           }
           return;
         }
@@ -2823,20 +2968,34 @@
   /* ══════════════════════════════════════════════════
      LEGAL MODALS
   ══════════════════════════════════════════════════ */
-  function openLegalModal(id) {
+  var legalUrlPushed = false;
+
+  function openLegalModal(id, fromRoute) {
     var el = document.getElementById(id + '-overlay');
     if (!el) return;
+    if (!fromRoute && routerReady) {
+      history.pushState(null, '', '/' + id + '/');
+      updateHeadForPath('/' + id + '/');
+      legalUrlPushed = true;
+    }
     el.classList.add('is-open');
     el.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   }
 
-  function closeLegalModal(id) {
+  function closeLegalModal(id, fromRoute) {
     var el = document.getElementById(id + '-overlay');
     if (!el) return;
     el.classList.remove('is-open');
     el.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (fromRoute) return;
+    if (legalUrlPushed) {
+      legalUrlPushed = false;
+      history.back();
+    } else {
+      syncUrl(STATE.currentSection, false);
+    }
   }
 
   function initLegalModals() {
@@ -2901,6 +3060,145 @@
   }
 
   /* ══════════════════════════════════════════════════
+     URL ROUTING
+     Paths mirror the shopping flow. See js/routes.js for the table.
+  ══════════════════════════════════════════════════ */
+  var routerReady = false;
+  var routerApplying = false;
+  var PAGE_META = {};
+  ROUTES.pages().forEach(function(p) { PAGE_META[p.path] = p; });
+  var HOME_TITLE = document.title;
+  var HOME_DESCRIPTION = (document.querySelector('meta[name="description"]') || {}).content || '';
+
+  function firstMoveCollection() {
+    return COLLECTIONS.find(function(c) { return c.id === ROUTES.COLLECTION; });
+  }
+
+  function pathForSection(sectionId) {
+    var sub = STATE.selectedSubLine;
+    switch (sectionId) {
+      case 'landing': return '/';
+      case 'rank-3':  return '/collections/';
+      case 'rank-4':  return ROUTES.BASE;
+      case 'rank-5':  return sub ? ROUTES.BASE + sub + '/' : ROUTES.BASE;
+      case 'rank-6':
+        if (sub === 'chessboards' && STATE.selectedCBVariant) {
+          var pieceLetter = Object.keys(PIECE_NAMES).filter(function(k) {
+            return PIECE_NAMES[k].toLowerCase() === STATE.selectedCBPiece;
+          })[0];
+          return ROUTES.garmentPath('chessboards', STATE.selectedCBVariant, { piece: pieceLetter, placement: STATE.selectedCBLocation });
+        }
+        if (sub === 'pieces' && STATE.selectedLine) {
+          return ROUTES.garmentPath('pieces', STATE.selectedLine.id, {
+            piece: STATE.selectedPiece,
+            thread: STATE.selectedColorway,
+            defaultThread: STATE.selectedLine.colorways[0]
+          });
+        }
+        return ROUTES.BASE;
+      case 'rank-7':
+      case 'rank-8':  return '/contact/';
+      default:        return null;
+    }
+  }
+
+  function updateHeadForPath(path) {
+    var page = PAGE_META[path.split('?')[0]];
+    var title = page && page.title ? page.title : HOME_TITLE;
+    var description = page && page.description ? page.description : HOME_DESCRIPTION;
+    document.title = title;
+    var desc = document.querySelector('meta[name="description"]');
+    if (desc) desc.setAttribute('content', description);
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute('href', 'https://www.7th-rank.com' + path.split('?')[0]);
+  }
+
+  function syncUrl(sectionId, push) {
+    if (!routerReady || routerApplying) return;
+    var path = pathForSection(sectionId);
+    if (!path || path === window.location.pathname + window.location.search) return;
+    history[push ? 'pushState' : 'replaceState'](null, '', path);
+    updateHeadForPath(path);
+  }
+
+  function closeAllLegal() {
+    legalUrlPushed = false;
+    ['privacy', 'terms'].forEach(function(id) {
+      var el = document.getElementById(id + '-overlay');
+      if (el && el.classList.contains('is-open')) closeLegalModal(id, true);
+    });
+  }
+
+  function applyRoute(route, behavior) {
+    routerApplying = true;
+    var target = 'landing';
+    var page = route ? route.page : 'landing';
+    if (page !== 'privacy' && page !== 'terms') closeAllLegal();
+
+    if (page === 'collections') {
+      target = 'rank-3';
+    } else if (page === 'contact') {
+      showContactRank7();
+      target = 'rank-7';
+    } else if (page === 'privacy' || page === 'terms') {
+      openLegalModal(page, true);
+      target = STATE.currentSection;
+    } else if (page === 'collection' || page === 'subline' || page === 'item') {
+      selectCollection(firstMoveCollection(), { noScroll: true });
+      target = 'rank-4';
+      if (page === 'subline' || page === 'item') {
+        selectSubLine(route.subline, { noScroll: true });
+        target = 'rank-5';
+      }
+      if (page === 'item') {
+        if (route.subline === 'chessboards') {
+          if (route.piece) STATE.selectedCBPiece = PIECE_NAMES[route.piece].toLowerCase();
+          else STATE.selectedCBPiece = 'pawn';
+          STATE.selectedCBLocation = route.placement || 'l';
+          selectChessboardVariant(route.itemId);
+        } else {
+          var line = PIECES_LINE_DATA[route.itemId];
+          STATE.selectedLine = line;
+          STATE.selectedPiece = route.piece || 'P';
+          STATE.selectedColorway = route.thread && line.colorways.indexOf(route.thread) !== -1 ? route.thread : line.colorways[0];
+          updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Pieces', line.name]);
+          renderPiecesCustomization(line);
+        }
+        target = 'rank-6';
+      }
+    }
+
+    updateHeadForPath(window.location.pathname);
+    function done() {
+      routerApplying = false;
+      STATE.currentSection = target;
+      updateNavDots(target);
+      updateHeader(target);
+    }
+    if (behavior === 'instant') {
+      scrollToSection(target, 'instant');
+      // The snap engine settles a frame later, so hold URL syncing until then.
+      setTimeout(done, 400);
+    } else {
+      scrollToSection(target, 'smooth', done);
+    }
+  }
+
+  function initRouter() {
+    // Older hash links keep working.
+    var legacy = { '#rank-3': '/collections/', '#rank-7': '/contact/', '#landing': '/' }[window.location.hash];
+    if (legacy) history.replaceState(null, '', legacy);
+
+    var route = ROUTES.parse(window.location.pathname, window.location.search);
+    window.addEventListener('popstate', function() {
+      applyRoute(ROUTES.parse(window.location.pathname, window.location.search), 'smooth');
+    });
+    if (route && route.page !== 'landing') applyRoute(route, 'instant');
+    STATE.initialPage = route ? route.page : 'landing';
+    setTimeout(function() { routerReady = true; }, 500);
+  }
+
+  /* ══════════════════════════════════════════════════
      INITIALIZATION
   ══════════════════════════════════════════════════ */
   function init() {
@@ -2941,6 +3239,7 @@
     initContactLogoWatermark();
     initLegalModals();
     initCookieConsent();
+    initRouter();
 
     // Wheel interception for bypass logic
     board.addEventListener('wheel', handleWheel, { passive: false });
@@ -2976,10 +3275,10 @@
 
   var WISHLIST_COPY = {
     wishlist: {
-      eyebrow:  'Shape What We Build',
-      title:    'Help Us Design the First Drop',
-      subtitle: 'We’re in early development — sampling garments and finalizing colorways and sizing. ' +
-                 'Join the list to share your preferences and lock in your First Mover discount when we launch.'
+      eyebrow:  'First Move',
+      title:    'Our First Drop Is Coming',
+      subtitle: 'Samples are in and we’re preparing our first drop. Join the list to save this piece, ' +
+                 'get early access, and lock in your 15% First Mover discount when we launch.'
     },
     landing: {
       eyebrow:  '',
@@ -3199,7 +3498,7 @@
 
   function maybeShowLandingWishlist() {
     if (hasSeenLandingPopup()) return;
-    if (STATE.mode !== 'default') return; // don't interrupt if already deep-linked into shopping
+    if (STATE.initialPage !== 'landing') return; // don't interrupt anyone deep-linked past the landing page
     openWishlist('landing');
   }
 

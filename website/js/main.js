@@ -60,10 +60,6 @@
     P: '♟\uFE0E', B: '♝\uFE0E', N: '♞\uFE0E', R: '♜\uFE0E', Q: '♛\uFE0E', K: '♚\uFE0E'
   };
 
-  var PIECE_PRICES = {
-    P: 65, B: 89, N: 110, R: 130, Q: 175, K: 220
-  };
-
   var COLORWAYS = [
     { id: 'FFFFFF', name: 'White',     hex: '#FFFFFF', textColor: '#1C1410' },
     { id: 'F0D9B5', name: 'Ivory',     hex: '#F0D9B5', textColor: '#1C1410' },
@@ -108,8 +104,8 @@
   };
   var CHESSBOARD_LOCATION_KEYS = ['l','r','hl','hr','sl','sr'];
 
-  var CHESSBOARD_PRICE = 99;
-  var PIECES_PRICE     = 69;
+  var CHESSBOARD_PRICE = 189;
+  var PIECES_PRICE     = 99;
 
   /* Product hero colors: `field` sits behind the garment, `on` is the giant name,
      `sel`/`onSel` drive selected controls on the cream panel. */

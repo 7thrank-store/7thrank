@@ -14,6 +14,8 @@
     chessboards: {
       name: 'Chessboards',
       garment: 'Turtleneck',
+      material: 'Baby Alpaca',
+      fabricNote: '100% Baby Alpaca. 7th Rank logo and all pieces are embroidered.',
       items: {
         'weathered-walnut': { id: 'ww', image: 'chessboards/chessboards_ww.pawn.l/resource/ww.pawn.l_1.png', name: 'Weathered Walnut', caption: 'Reserved, aged, and contemplative. A thinker that stands the test of time.' },
         'ice-castle':       { id: 'ic', image: 'chessboards/chessboards_ic.pawn.l/resource/ic.pawn.l_1.png', name: 'Ice Castle',       caption: 'Piercing fluidity. Sharper than the eye perceives.' },
@@ -23,6 +25,8 @@
     pieces: {
       name: 'Pieces',
       garment: 'Crewneck',
+      material: 'Cotton',
+      fabricNote: '100% Cotton. 7th Rank logo and all pieces are embroidered.',
       items: {
         'stoic':    { id: 'stoic',   image: 'pieces/pieces_Stoic.P.FFFFFF/resource/0.png', name: 'Stoic',    caption: 'The truest one.' },
         'grain':    { id: 'grain',   image: 'pieces/pieces_Grain.P.FFFFFF/resource/0.png', name: 'Grain',    caption: 'Details between the lines.' },
@@ -34,6 +38,12 @@
   };
 
   var COLLECTION = 'first-move';
+  var COLLECTION_NAME = 'First Move';
+  var COLLECTION_TAGLINE = 'Limited and Exclusive. For those bold enough to make the First Move.';
+  var COMING_SOON = ['Engine', 'Promotions', 'Najdorf'];
+  var SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  var PIECE_NAMES = ['Pawn', 'Bishop', 'Knight', 'Rook', 'Queen', 'King'];
+  var PLACEMENTS = { l: 'Left Chest', r: 'Right Chest', hl: 'Hip Left', hr: 'Hip Right', sl: 'Sleeve Left', sr: 'Sleeve Right' };
   var PIECE_SLUGS = { P: 'pawn', R: 'rook', N: 'knight', B: 'bishop', Q: 'queen', K: 'king' };
   var PLACEMENT_SLUGS = { l: 'left-chest', r: 'right-chest', hl: 'hip-left', hr: 'hip-right', sl: 'sleeve-left', sr: 'sleeve-right' };
   var THREAD_SLUGS = { FFFFFF: 'white', F0D9B5: 'ivory', B58863: 'caramel', D4AF37: 'gold', FBD9E1: 'blush' };
@@ -99,7 +109,7 @@
     var list = [
       { path: '/', page: 'landing', priority: '1.0',
         title: 'Premium Chess Apparel & Merchandise | 7th Rank',
-        description: 'Premium chess apparel for those who move with intention. Refined crewnecks from $' + PRICES.pieces + ' — Stoic, Grain, Thin Ice, Pasture & Harmony. Ships worldwide.' },
+        description: 'Premium chess apparel for those who move with intention. Baby Alpaca turtlenecks at $' + PRICES.chessboards + ' and cotton crewnecks at $' + PRICES.pieces + ', embroidered with chess pieces. Ships worldwide.' },
       { path: '/collections/', page: 'collections', priority: '0.9',
         title: 'Chess Apparel Collections | 7th Rank',
         description: 'Explore 7th Rank collections, starting with First Move: refined chess turtlenecks and crewnecks with embroidered pieces.' },
@@ -120,14 +130,14 @@
       var sub = SUBLINES[key];
       var price = PRICES[key];
       list.push({
-        path: BASE + key + '/', page: 'subline', priority: '0.8',
+        path: BASE + key + '/', page: 'subline', subline: key, priority: '0.8',
         title: sub.name + ' ' + sub.garment + 's | 7th Rank',
         description: 'The ' + sub.name + ' line from First Move: ' + sub.garment.toLowerCase() + 's with embroidered chess pieces, $' + price + '.'
       });
       Object.keys(sub.items).forEach(function (slug) {
         var item = sub.items[slug];
         list.push({
-          path: BASE + key + '/' + slug + '/', page: 'item', priority: '0.8',
+          path: BASE + key + '/' + slug + '/', page: 'item', subline: key, slug: slug, priority: '0.8',
           title: item.name + ' ' + sub.name + ' ' + sub.garment + ' | 7th Rank',
           description: item.caption + ' The ' + item.name + ' ' + sub.garment.toLowerCase() + ' with embroidered chess pieces, $' + price + '.',
           product: { name: item.name + ' ' + sub.name + ' ' + sub.garment, description: item.caption, price: price, image: item.image }
@@ -141,6 +151,12 @@
     PRICES: PRICES,
     SUBLINES: SUBLINES,
     COLLECTION: COLLECTION,
+    COLLECTION_NAME: COLLECTION_NAME,
+    COLLECTION_TAGLINE: COLLECTION_TAGLINE,
+    COMING_SOON: COMING_SOON,
+    SIZES: SIZES,
+    PIECE_NAMES: PIECE_NAMES,
+    PLACEMENTS: PLACEMENTS,
     BASE: BASE,
     PIECE_SLUGS: PIECE_SLUGS,
     parse: parse,

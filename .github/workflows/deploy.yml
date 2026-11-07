@@ -25,6 +25,8 @@ jobs:
 
       - name: Generate route pages and sitemap
         run: node scripts/build-routes.js
+        env:
+          BUILD_VERSION: ${{ github.sha }}
 
       # The CLO 3D viewer files stay in the repo, but the site doesn't load them.
       - name: Leave unused 3D viewer files out of the published site

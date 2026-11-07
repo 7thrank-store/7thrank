@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Each page carries its content as plain HTML. The board replaces it when scripts run. -->
+  <script>document.documentElement.classList.add('has-js');</script>
+  <style>
+    .has-js .page-details { display: none; }
+    html:not(.has-js) body { overflow: auto; background: #F4F1EA; }
+    html:not(.has-js) .chess-board { height: auto; overflow: visible; scroll-snap-type: none; }
+    html:not(.has-js) .chess-board > section, html:not(.has-js) .rank-navigator, html:not(.has-js) .menu-toggle { display: none; }
+    .page-details { max-width: 44rem; margin: 0 auto; padding: 6rem 1.5rem 3rem; color: #2B2B2B; background: #F4F1EA; line-height: 1.6; }
+    .page-details * { color: inherit; }
+    .page-details a { text-decoration: underline; }
+    .page-details img { max-width: 100%; height: auto; }
+    .page-details dt { font-weight: 700; margin-top: 0.75rem; }
+    .page-details dd { margin: 0; }
+  </style>
+
   <!-- ═══ GOOGLE ANALYTICS ═══ -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-34MHGVS08R"></script>
   <script>
@@ -14,8 +29,8 @@
   </script>
 
   <!-- ═══ PRIMARY SEO ═══ -->
-  <title>Premium Chess Apparel & Merchandise | 7th Rank</title>
-  <meta name="description" content="Premium chess apparel for those who move with intention. Refined crewnecks from $99 — Stoic, Grain, Thin Ice, Pasture & Harmony. Ships worldwide.">
+  <title>Premium Chess Apparel &amp; Merchandise | 7th Rank</title>
+  <meta name="description" content="Premium chess apparel for those who move with intention. Baby Alpaca turtlenecks at $189 and cotton crewnecks at $99, embroidered with chess pieces. Ships worldwide.">
   <meta name="author" content="7th Rank">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <link rel="canonical" href="https://www.7th-rank.com/">
@@ -34,8 +49,8 @@
   <!-- ═══ OPEN GRAPH ═══ -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="7th Rank">
-  <meta property="og:title" content="Premium Chess Apparel & Merchandise | 7th Rank">
-  <meta property="og:description" content="Premium chess apparel for those who move with intention. Refined crewnecks from $99 — Stoic, Grain, Thin Ice, Pasture & Harmony. Ships worldwide.">
+  <meta property="og:title" content="Premium Chess Apparel &amp; Merchandise | 7th Rank">
+  <meta property="og:description" content="Premium chess apparel for those who move with intention. Baby Alpaca turtlenecks at $189 and cotton crewnecks at $99, embroidered with chess pieces. Ships worldwide.">
   <meta property="og:url" content="https://www.7th-rank.com/">
   <meta property="og:image" content="https://www.7th-rank.com/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -68,7 +83,6 @@
     "paymentAccepted": "Credit Card, Debit Card",
     "areaServed": "Worldwide",
     "foundingDate": "2026-03",
-    "openingHours": "Mo-Su 00:00-23:59",
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "7th Rank Collections",
@@ -76,7 +90,7 @@
         {
           "@type": "OfferCatalog",
           "name": "First Move Collection",
-          "description": "The debut collection — premium chess-inspired apparel featuring the Stoic, Grain, Thin Ice, Pasture, and Harmony lines."
+          "description": "The debut collection: Chessboards turtlenecks in Weathered Walnut, Ice Castle, and Stone, and Pieces crewnecks in Stoic, Grain, Thin Ice, Pasture, and Harmony."
         }
       ]
     },
@@ -107,69 +121,12 @@
     "name": "7th Rank",
     "url": "https://www.7th-rank.com",
     "description": "Premium chess apparel",
-    "inLanguage": "en-US",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://www.7th-rank.com/search?q={search_term_string}"
-      },
-      "query-input": "required name=search_term_string"
-    }
+    "inLanguage": "en-US"
   }
   </script>
 
-  <!-- ═══ JSON-LD: PRODUCTS ═══ -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "First Move Collection",
-    "description": "7th Rank's debut chess apparel collection: crewnecks and turtlenecks with embroidered chess pieces.",
-    "url": "https://www.7th-rank.com/",
-    "numberOfItems": 2,
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "item": {
-          "@type": "Product",
-          "name": "7th Rank Chess Crewneck",
-          "description": "Premium chess-inspired crewneck. Available in Stoic, Grain, Thin Ice, Pasture, and Harmony lines with Pawn, Bishop, Knight, Rook, Queen, and King embroidery.",
-          "brand": { "@type": "Brand", "name": "7th Rank" },
-          "url": "https://www.7th-rank.com/",
-          "image": "https://www.7th-rank.com/images/products/first_move/pieces/pieces_Stoic.P.FFFFFF/resource/0.png",
-          "offers": {
-            "@type": "Offer",
-            "price": "99.00",
-            "priceCurrency": "USD",
-            "availability": "https://schema.org/PreOrder",
-            "url": "https://www.7th-rank.com/"
-          }
-        }
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "item": {
-          "@type": "Product",
-          "name": "7th Rank Chess Turtleneck",
-          "description": "Premium chess-inspired turtleneck. Available in Weathered Walnut, Ice Castle, and Stone with Pawn, Bishop, Knight, Rook, Queen, and King embroidery.",
-          "brand": { "@type": "Brand", "name": "7th Rank" },
-          "url": "https://www.7th-rank.com/",
-          "image": "https://www.7th-rank.com/images/products/first_move/chessboards/chessboards_s.pawn.l/resource/s.pawn.l_1.png",
-          "offers": {
-            "@type": "Offer",
-            "price": "189.00",
-            "priceCurrency": "USD",
-            "availability": "https://schema.org/PreOrder",
-            "url": "https://www.7th-rank.com/"
-          }
-        }
-      }
-    ]
-  }
-  </script>
+  <!-- ═══ JSON-LD: THIS PAGE (written by scripts/build-routes.js) ═══ -->
+  <!-- PAGE_SCHEMA_START --><script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"First Move Collection","numberOfItems":8,"itemListElement":[{"@type":"ListItem","position":1,"name":"Weathered Walnut Chessboards Turtleneck","url":"https://www.7th-rank.com/collections/first-move/chessboards/weathered-walnut/"},{"@type":"ListItem","position":2,"name":"Ice Castle Chessboards Turtleneck","url":"https://www.7th-rank.com/collections/first-move/chessboards/ice-castle/"},{"@type":"ListItem","position":3,"name":"Stone Chessboards Turtleneck","url":"https://www.7th-rank.com/collections/first-move/chessboards/stone/"},{"@type":"ListItem","position":4,"name":"Stoic Pieces Crewneck","url":"https://www.7th-rank.com/collections/first-move/pieces/stoic/"},{"@type":"ListItem","position":5,"name":"Grain Pieces Crewneck","url":"https://www.7th-rank.com/collections/first-move/pieces/grain/"},{"@type":"ListItem","position":6,"name":"Thin Ice Pieces Crewneck","url":"https://www.7th-rank.com/collections/first-move/pieces/thin-ice/"},{"@type":"ListItem","position":7,"name":"Pasture Pieces Crewneck","url":"https://www.7th-rank.com/collections/first-move/pieces/pasture/"},{"@type":"ListItem","position":8,"name":"Harmony Pieces Crewneck","url":"https://www.7th-rank.com/collections/first-move/pieces/harmony/"}]}</script><!-- PAGE_SCHEMA_END -->
 
   <!-- ═══ FONTS ═══ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,6 +217,16 @@
        MAIN CHESS BOARD
   ═══════════════════════════════════════ -->
   <main class="chess-board" id="chess-board" role="main">
+
+    <!-- Written by scripts/build-routes.js -->
+    <!-- PAGE_DETAILS_START --><div class="page-details">
+      <h2>7th Rank: premium chess apparel</h2>
+      <p>7th Rank creates premium chess apparel that celebrates the game's strategy and culture, one piece at a time. We ship worldwide.</p>
+      <h3>First Move, our debut collection</h3>
+      <p>Limited and Exclusive. For those bold enough to make the First Move.</p>
+      <ul><li><a href="/collections/first-move/chessboards/">Chessboards Turtlenecks</a> — Turtlenecks in 100% Baby Alpaca, $189 USD. Each is embroidered with a chess piece of your choice: Pawn, Bishop, Knight, Rook, Queen, King.</li><li><a href="/collections/first-move/pieces/">Pieces Crewnecks</a> — Crewnecks in 100% Cotton, $99 USD. Each is embroidered with a chess piece of your choice: Pawn, Bishop, Knight, Rook, Queen, King.</li></ul>
+      <p><a href="/collections/">All collections</a> · <a href="/contact/">Contact</a></p>
+    </div><!-- PAGE_DETAILS_END -->
 
     <!-- ─────────────────────────────────────
          LANDING VIEW: RANKS 1 + 2 (50vh each)
@@ -903,7 +870,7 @@
         <p>We may update this Privacy Policy from time to time. The effective date at the top will reflect the latest revision. Continued use of the site after changes constitutes acceptance.</p>
 
         <h3>10. Contact</h3>
-        <p>Questions about this policy? Email us at <a href="mailto:7thrankhelp@gmail.com">7thrankhelp@gmail.com</a> or reach out via our <a href="#" data-close="privacy" data-then="contact">Contact page</a>.</p>
+        <p>Questions about this policy? Email us at <a href="mailto:7thrankhelp@gmail.com">7thrankhelp@gmail.com</a> or reach out via our <a href="/contact/">Contact page</a>.</p>
         <p class="legal-disclaimer">This privacy policy was prepared for informational purposes. For full legal compliance, we recommend review by a qualified attorney.</p>
       </div>
     </div>

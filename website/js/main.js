@@ -84,7 +84,7 @@
   };
 
   // Fixed material/craft line shown under every chessboard variant's caption
-  var CHESSBOARD_FABRIC_NOTE = '100% Baby Alpaca. 7th Rank logo and all pieces are embroidered.';
+  var CHESSBOARD_FABRIC_NOTE = ROUTES.SUBLINES.chessboards.fabricNote;
 
   var CHESSBOARD_VARIANTS_LIST = ['ww', 'ic', 's'];
 
@@ -96,14 +96,7 @@
     pawn: 'Pawn', rook: 'Rook', knight: 'Knight', bishop: 'Bishop', queen: 'Queen', king: 'King'
   };
 
-  var CHESSBOARD_LOCATIONS = {
-    l:  'Left Chest',
-    r:  'Right Chest',
-    hl: 'Hip Left',
-    hr: 'Hip Right',
-    sl: 'Sleeve Left',
-    sr: 'Sleeve Right'
-  };
+  var CHESSBOARD_LOCATIONS = ROUTES.PLACEMENTS;
   var CHESSBOARD_LOCATION_KEYS = ['l','r','hl','hr','sl','sr'];
 
   var CHESSBOARD_PRICE = ROUTES.PRICES.chessboards;
@@ -219,7 +212,7 @@
   var PIECES_LINE_KEYS = ['stoic','grain','ti','pasture','harmony'];
 
   // Fixed material/craft line shown under every pieces line's caption
-  var PIECES_FABRIC_NOTE = '100% Cotton. 7th Rank logo and all pieces are embroidered.';
+  var PIECES_FABRIC_NOTE = ROUTES.SUBLINES.pieces.fabricNote;
 
   var COLLECTIONS = [
     {
@@ -1818,7 +1811,7 @@
   /* ══════════════════════════════════════════════════
      RANK 6: GARMENT PAGE (shared layout)
   ══════════════════════════════════════════════════ */
-  var SIZES = ['XS','S','M','L','XL','XXL'];
+  var SIZES = ROUTES.SIZES;
 
   function buildGarmentHtml(o) {
     var sizes = SIZES.map(function(s) {
@@ -1920,7 +1913,7 @@
     }).join('');
 
     rank6Content.innerHTML = buildGarmentHtml({
-      name: v.name, subline: 'Chessboards', material: 'Baby Alpaca',
+      name: v.name, subline: 'Chessboards', material: ROUTES.SUBLINES.chessboards.material,
       price: CHESSBOARD_PRICE, swatches: swatches, swatchLabel: 'Chessboards colorway',
       pieceGrid: pieceGrid, locationGrid: locationGrid,
       caption: v.caption, fabricNote: CHESSBOARD_FABRIC_NOTE
@@ -2017,7 +2010,7 @@
     }).join('');
 
     rank6Content.innerHTML = buildGarmentHtml({
-      name: lineData.name, subline: 'Pieces', material: 'Cotton',
+      name: lineData.name, subline: 'Pieces', material: ROUTES.SUBLINES.pieces.material,
       price: PIECES_PRICE, swatches: swatches, swatchLabel: 'Embroidery thread color',
       pieceGrid: pieceGrid, locationGrid: '',
       caption: lineData.caption, fabricNote: PIECES_FABRIC_NOTE

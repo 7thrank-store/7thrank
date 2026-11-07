@@ -4116,6 +4116,16 @@ ul, ol {
   background-position: center center;
 }
 
+/* ── Coming Soon cards: solid board colors, logo in each card's contrasting color ── */
+.collection-card-coming-soon { opacity: 1; }
+.collection-card-coming-soon .collection-card-name,
+.collection-card-coming-soon .collection-card-badge { opacity: 0.75; }
+.collection-card-logo-svg,
+.collection-card:nth-child(odd) .collection-card-logo-svg { opacity: 0.8; }
+.collection-card:nth-child(odd) .collection-card-logo-svg path:not(.streak-7) {
+  fill: var(--sq-light-text) !important;
+}
+
 /* ── First Move card ── */
 .collection-card-cycling-bg {
   inset: 6% 8% 26% 8%;
@@ -4127,6 +4137,9 @@ ul, ol {
 
 /* ── Tablet and phone: stacked garment page ── */
 @media (max-width: 1023px) {
+  /* Landing rows must total exactly one screen, or the home page shows through below it */
+  .rank-1, .rank-2 { min-height: 0; }
+
   #rank-6 {
     grid-template-columns: 1fr;
     height: calc(100vh - var(--header-h));

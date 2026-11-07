@@ -133,6 +133,7 @@ function bodyFor(page) {
         ${row('Embroidered piece', routes.PIECE_NAMES.join(', '))}
         ${key === 'chessboards' ? row('Placement', Object.values(routes.PLACEMENTS).join(', ')) : ''}
         ${row('Sizes', routes.SIZES.join(', '))}
+        ${row('Care', sub.care.map(c => c.label).join('; '))}
         ${row('Availability', AVAILABILITY)}
       </dl>
       <h3>Also in ${esc(sub.name)}</h3>
@@ -206,6 +207,7 @@ function schemaFor(page) {
       url,
       image: SITE + IMAGE_BASE + page.product.image,
       material: sub.material,
+      countryOfOrigin: { '@type': 'Country', name: 'Peru' },
       color: sub.items[page.slug].name,
       size: routes.SIZES.join(', '),
       offers: {

@@ -15,7 +15,14 @@
       name: 'Chessboards',
       garment: 'Turtleneck',
       material: 'Baby Alpaca',
-      fabricNote: '100% Baby Alpaca. 7th Rank logo and all pieces are embroidered.',
+      fabricNote: '100% Baby Alpaca. Made in Peru. 7th Rank logo and all pieces are embroidered.',
+      care: [
+        { icon: 'hand-wash', label: 'Hand wash' },
+        { icon: 'dry-clean-p', label: 'Any solvent except tetrachloroethylene' },
+        { icon: 'iron-low', label: 'Iron low' },
+        { icon: 'no-bleach', label: 'Do not bleach' },
+        { icon: 'dry-flat-shade', label: 'Dry flat' }
+      ],
       items: {
         'weathered-walnut': { id: 'ww', image: 'chessboards/chessboards_ww.pawn.l/resource/ww.pawn.l_1.png', name: 'Weathered Walnut', caption: 'Reserved, aged, and contemplative. A thinker that stands the test of time.' },
         'ice-castle':       { id: 'ic', image: 'chessboards/chessboards_ic.pawn.l/resource/ic.pawn.l_1.png', name: 'Ice Castle',       caption: 'Piercing fluidity. Sharper than the eye perceives.' },
@@ -25,8 +32,15 @@
     pieces: {
       name: 'Pieces',
       garment: 'Crewneck',
-      material: 'Cotton',
-      fabricNote: '100% Cotton. 7th Rank logo and all pieces are embroidered.',
+      material: 'Tanguis Cotton',
+      fabricNote: '100% Tanguis Cotton. Made in Peru. 7th Rank logo and all pieces are embroidered.',
+      care: [
+        { icon: 'machine-gentle', label: 'Machine wash gentle or delicate' },
+        { icon: 'no-bleach', label: 'Do not bleach' },
+        { icon: 'dry-flat', label: 'Dry flat' },
+        { icon: 'tumble-low', label: 'Do tumble dry' },
+        { icon: 'iron-medium', label: 'Iron medium' }
+      ],
       items: {
         'stoic':    { id: 'stoic',   image: 'pieces/pieces_Stoic.P.FFFFFF/resource/0.png', name: 'Stoic',    caption: 'The truest one.' },
         'grain':    { id: 'grain',   image: 'pieces/pieces_Grain.P.FFFFFF/resource/0.png', name: 'Grain',    caption: 'Details between the lines.' },
@@ -109,7 +123,7 @@
     var list = [
       { path: '/', page: 'landing', priority: '1.0',
         title: 'Premium Chess Apparel & Merchandise | 7th Rank',
-        description: 'Premium chess apparel for those who move with intention. Baby Alpaca turtlenecks at $' + PRICES.chessboards + ' and cotton crewnecks at $' + PRICES.pieces + ', embroidered with chess pieces. Ships worldwide.' },
+        description: 'Premium chess apparel for those who move with intention. Baby Alpaca turtlenecks at $' + PRICES.chessboards + ' and Tanguis cotton crewnecks at $' + PRICES.pieces + ', embroidered with chess pieces. Ships worldwide.' },
       { path: '/collections/', page: 'collections', priority: '0.9',
         title: 'Chess Apparel Collections | 7th Rank',
         description: 'Explore 7th Rank collections, starting with First Move: refined chess turtlenecks and crewnecks with embroidered pieces.' },

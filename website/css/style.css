@@ -4268,3 +4268,111 @@ ul, ol {
     .rank-dynamic-content .product-card { min-height: calc(100dvh - var(--header-h)); }
   }
 }
+
+/* ════════════════════════════════════════════════════════
+   CARE ROW (garment pages)
+   ════════════════════════════════════════════════════════ */
+.care-row {
+  order: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 1.25rem 0.75rem;
+  color: var(--ink, #2B2B2B);
+}
+.care-head {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+.care-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+}
+.care-text {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  opacity: 0.7;
+}
+.care-row.has-label .care-text {
+  opacity: 1;
+  font-weight: 600;
+}
+.care-icons {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.15rem;
+}
+.care-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0.3rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity var(--t-fast), border-color var(--t-fast);
+}
+.care-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.care-icon .care-fill {
+  fill: currentColor;
+  stroke: none;
+}
+.care-icon:hover,
+.care-icon.active {
+  opacity: 1;
+  border-color: currentColor;
+}
+@media (max-width: 1023px) {
+  .care-row { padding: 0.25rem 1.25rem 0.75rem; }
+}
+
+/* ════════════════════════════════════════════════════════
+   CLICK AND TAP FLARE
+   Replaces the browser's default blue with a warm white.
+   ════════════════════════════════════════════════════════ */
+html {
+  -webkit-tap-highlight-color: rgba(255, 254, 248, 0.45);
+}
+::selection {
+  background: #535353;
+  color: #FFFEF8;
+}
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+a:active,
+button:active,
+[role="button"]:active,
+.collection-card:active,
+.product-card:active,
+.sq-interactive:active {
+  box-shadow: 0 0 0 1px rgba(255, 254, 248, 0.95), 0 0 20px 5px rgba(255, 254, 248, 0.8) !important;
+  transition: box-shadow 60ms ease-out;
+}
+/* White glow barely shows on cream, so light options brighten to white as well. */
+#rank-6 .size-btn:active,
+#rank-6 .cb-piece-btn:not(.selected):active,
+#rank-6 .cb-location-btn:not(.selected):active,
+#rank-6 .care-icon:active {
+  background-color: #FFFEF8 !important;
+  box-shadow: 0 0 0 1px rgba(43, 43, 43, 0.12), 0 0 16px 4px rgba(255, 254, 248, 1) !important;
+}

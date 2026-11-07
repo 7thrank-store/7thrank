@@ -1813,6 +1813,57 @@
   ══════════════════════════════════════════════════ */
   var SIZES = ROUTES.SIZES;
 
+  /* Care symbols, drawn to match the garment labels. */
+  var CARE_TUB = '<path d="M3 8c2.200 2.400 4.400 2.400 6.500 0s4.400-2.400 6.500 0 4.400 2.400 6.500 0 4.400-2.400 6.500 0"/><path d="M3 8l3 15h20l3-15"/>';
+  var CARE_IRON = '<path d="M3 24c.4-5 3.400-8 8-8h15"/><path d="M8 9h13c2.800 0 4.400 4.500 6 15H3"/>';
+  var CARE_ICONS = {
+    'machine-gentle': CARE_TUB + '<circle cx="16" cy="15.500" r="1.700" class="care-fill"/><path d="M6 26.500h20M6 30h20"/>',
+    'hand-wash': CARE_TUB + '<path d="M10 20.500v-4.500M13.300 20.500v-6.500M16.600 20.500v-6.500M19.900 20.500v-4.500M10 20.500h9.900M19.900 19l2.800-2.800"/>',
+    'no-bleach': '<path d="M16 5 29 27H3Z"/><path d="M5 5l22 22M27 5 5 27"/>',
+    'dry-flat': '<rect x="4" y="4" width="24" height="24" rx="2.500"/><path d="M9 16h14"/>',
+    'dry-flat-shade': '<rect x="4" y="4" width="24" height="24"/><path d="M4 12l8-8M9 18h14"/>',
+    'tumble-low': '<rect x="4" y="4" width="24" height="24"/><circle cx="16" cy="16" r="9"/><circle cx="16" cy="16" r="1.700" class="care-fill"/>',
+    'iron-medium': '<path d="M9 9h12c3 0 4.700 5 6.500 15h-25c.6-5 3.600-8 8-8h15.500"/><circle cx="12.500" cy="20" r="1.400" class="care-fill"/><circle cx="19" cy="20" r="1.400" class="care-fill"/>',
+    'iron-low': '<path d="M9 9h12c3 0 4.700 5 6.500 15h-25c.6-5 3.600-8 8-8h15.500"/><circle cx="16" cy="20" r="1.400" class="care-fill"/>',
+    'dry-clean-p': '<circle cx="16" cy="16" r="12.500"/><path d="M13 23V9.500h4.300a3.900 3.900 0 0 1 0 7.800H13"/>'
+  };
+
+  function careHtml(care) {
+    var hint = 'Select a symbol for details';
+    var icons = care.map(function(c) {
+      return '<button type="button" class="care-icon" data-label="' + sanitize(c.label) + '" aria-label="' + sanitize(c.label) + '">' +
+             '<svg viewBox="0 0 32 32" aria-hidden="true">' + CARE_ICONS[c.icon] + '</svg></button>';
+    }).join('');
+    return '<div class="care-row" data-hint="' + hint + '">' +
+      '<div class="care-head"><span class="care-title">Care</span><span class="care-text" aria-live="polite">' + hint + '</span></div>' +
+      '<div class="care-icons">' + icons + '</div>' +
+    '</div>';
+  }
+
+  /* Hovering or tapping a symbol shows its words. Tapping the same one again clears them. */
+  function initCareRow(root) {
+    var row = root.querySelector('.care-row');
+    if (!row) return;
+    var text = row.querySelector('.care-text');
+    var buttons = row.querySelectorAll('.care-icon');
+    var pinned = null;
+    function show(btn) {
+      buttons.forEach(function(b) { b.classList.toggle('active', b === btn); });
+      text.textContent = btn ? btn.dataset.label : row.dataset.hint;
+      row.classList.toggle('has-label', !!btn);
+    }
+    buttons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        pinned = pinned === btn ? null : btn;
+        show(pinned);
+      });
+      btn.addEventListener('mouseenter', function() { show(btn); });
+      btn.addEventListener('mouseleave', function() { show(pinned); });
+      btn.addEventListener('focus', function() { show(btn); });
+      btn.addEventListener('blur', function() { show(pinned); });
+    });
+  }
+
   function buildGarmentHtml(o) {
     var sizes = SIZES.map(function(s) {
       return '<button class="size-btn" data-size="' + s + '">' + s + '</button>';
@@ -1851,6 +1902,7 @@
         '</div>' +
         captionParagraph(o.caption) +
         captionParagraph(o.fabricNote) +
+        careHtml(o.care) +
         '<div class="pdp-cta">' +
           /* CART_ENABLED: '<button class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>' + */
           '<button class="btn btn-primary" id="add-to-wishlist-btn" data-price="$' + o.price + '">Make My Move</button>' +
@@ -1916,9 +1968,11 @@
       name: v.name, subline: 'Chessboards', material: ROUTES.SUBLINES.chessboards.material,
       price: CHESSBOARD_PRICE, swatches: swatches, swatchLabel: 'Chessboards colorway',
       pieceGrid: pieceGrid, locationGrid: locationGrid,
-      caption: v.caption, fabricNote: CHESSBOARD_FABRIC_NOTE
+      caption: v.caption, fabricNote: CHESSBOARD_FABRIC_NOTE,
+      care: ROUTES.SUBLINES.chessboards.care
     });
     initPreviewZoom();
+    initCareRow(rank6Content);
 
     function updatePreview() {
       var img = document.getElementById('cb-preview-img');
@@ -2013,9 +2067,11 @@
       name: lineData.name, subline: 'Pieces', material: ROUTES.SUBLINES.pieces.material,
       price: PIECES_PRICE, swatches: swatches, swatchLabel: 'Embroidery thread color',
       pieceGrid: pieceGrid, locationGrid: '',
-      caption: lineData.caption, fabricNote: PIECES_FABRIC_NOTE
+      caption: lineData.caption, fabricNote: PIECES_FABRIC_NOTE,
+      care: ROUTES.SUBLINES.pieces.care
     });
     initPreviewZoom();
+    initCareRow(rank6Content);
 
     function updatePreview() {
       var img = document.getElementById('cb-preview-img');

@@ -42,6 +42,12 @@ npx serve website
 python -m http.server 8080 --directory website
 ```
 
+To test direct links such as `/collections/first-move/`, generate the route pages first:
+
+```bash
+node scripts/build-routes.js
+```
+
 ## Deployment
 
 The site deploys from the `website/` subdirectory. See [DEVELOPER.md](DEVELOPER.md) for full deployment instructions.

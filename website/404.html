@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Page Not Found | 7th Rank</title>
+  <script src="/js/routes.js"></script>
+  <script>
+    // Capitalized links such as /Collections/First-Move redirect to the lowercase URL.
+    (function () {
+      var path = window.location.pathname;
+      var lower = path.toLowerCase();
+      if (lower !== path && window.SEVENTH_RANK_ROUTES && window.SEVENTH_RANK_ROUTES.parse(lower, '')) {
+        window.location.replace(lower.replace(/\/*$/, '/') + window.location.search);
+      }
+    })();
+  </script>
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; background: #F4F1EA; color: #2B2B2B; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    h1 { margin: 0 0 0.5rem; font-size: 2rem; font-weight: 700; }
+    p { margin: 0 0 1.5rem; }
+    a { display: inline-block; padding: 0.85rem 1.5rem; background: #2B2B2B; color: #F4F1EA; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Illegal move.</h1>
+    <p>We couldn't find that page.</p>
+    <a href="/">Back to the board</a>
+  </main>
+</body>
+</html>

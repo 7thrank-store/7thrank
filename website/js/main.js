@@ -16,6 +16,8 @@
 (function () {
   'use strict';
 
+  var ROUTES = window.SEVENTH_RANK_ROUTES;
+
   /* ══════════════════════════════════════════════════
      APP STATE
   ══════════════════════════════════════════════════ */
@@ -104,8 +106,8 @@
   };
   var CHESSBOARD_LOCATION_KEYS = ['l','r','hl','hr','sl','sr'];
 
-  var CHESSBOARD_PRICE = 189;
-  var PIECES_PRICE     = 99;
+  var CHESSBOARD_PRICE = ROUTES.PRICES.chessboards;
+  var PIECES_PRICE     = ROUTES.PRICES.pieces;
 
   /* Product hero colors: `field` sits behind the garment, `on` is the giant name,
      `sel`/`onSel` drive selected controls on the cream panel. */
@@ -301,31 +303,31 @@
 
   function getProductImagePath(line, piece, colorway) {
     var lineId = LINE_IMAGE_PREFIX[line] || (line.charAt(0).toUpperCase() + line.slice(1));
-    return 'images/products/first_move/pieces/pieces_' + lineId + '.' + piece + '.' + colorway + '.jpg';
+    return '/images/products/first_move/pieces/pieces_' + lineId + '.' + piece + '.' + colorway + '.jpg';
   }
 
   function getProductPNGPath(line, piece, colorway) {
     var lineId = LINE_IMAGE_PREFIX[line] || (line.charAt(0).toUpperCase() + line.slice(1));
     var base = 'pieces_' + lineId + '.' + piece + '.' + colorway;
-    return 'images/products/first_move/pieces/' + base + '/resource/0.png';
+    return '/images/products/first_move/pieces/' + base + '/resource/0.png';
   }
 
   function getChessboardImagePath(variant, piece, location) {
     var shot = (location === 'sl') ? '3' : (location === 'sr') ? '2' : '1';
     // Knight on left/right chest uses all-underscore filename (chessboards_ww_knight_l_1.jpg)
     if (piece === 'knight' && (location === 'l' || location === 'r')) {
-      return 'images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
+      return '/images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
     }
-    return 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
+    return '/images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
   }
 
   // Direct JPG at chessboards root — works on all platforms including mobile
   function getChessboardJPGPath(variant, piece, location, shot) {
     shot = shot || '1';
     if (piece === 'knight' && (location === 'l' || location === 'r')) {
-      return 'images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
+      return '/images/products/first_move/chessboards/chessboards_' + variant + '_knight_' + location + '_' + shot + '.jpg';
     }
-    return 'images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
+    return '/images/products/first_move/chessboards/chessboards_' + variant + '.' + piece + '.' + location + '_' + shot + '.jpg';
   }
 
   // Path to PNG inside CLO viewer folder (desktop cycler only)
@@ -339,7 +341,7 @@
       folder   = 'chessboards_' + variant + '.' + piece + '.' + location;
       filename = variant + '.' + piece + '.' + location + '_' + shot + '.png';
     }
-    return 'images/products/first_move/chessboards/' + folder + '/resource/' + filename;
+    return '/images/products/first_move/chessboards/' + folder + '/resource/' + filename;
   }
 
   // Path to CLO interactive HTML viewer
@@ -350,7 +352,7 @@
     } else {
       folder = 'chessboards_' + variant + '.' + piece + '.' + location;
     }
-    return 'images/products/first_move/chessboards/' + folder + '/' + folder + '.html';
+    return '/images/products/first_move/chessboards/' + folder + '/' + folder + '.html';
   }
 
   function sanitize(str) {
@@ -519,7 +521,7 @@
       ['P','B','N','R','Q','K'].forEach(function(piece) {
         lineData.colorways.forEach(function(cw) {
           var base = 'pieces_' + linePrefix + '.' + piece + '.' + cw;
-          pool.push('images/products/first_move/pieces/' + base + '/resource/0.png');
+          pool.push('/images/products/first_move/pieces/' + base + '/resource/0.png');
         });
       });
     });
@@ -542,7 +544,7 @@
       ['P','B','N','R','Q','K'].forEach(function(piece) {
         lineData.colorways.forEach(function(cw) {
           var base = 'pieces_' + linePrefix + '.' + piece + '.' + cw;
-          pool.push('images/products/first_move/pieces/' + base + '/resource/0.png');
+          pool.push('/images/products/first_move/pieces/' + base + '/resource/0.png');
         });
       });
     });
@@ -1046,9 +1048,10 @@
   /* ══════════════════════════════════════════════════
      SCROLL NAVIGATION
   ══════════════════════════════════════════════════ */
-  function scrollToSection(id, behavior, callback) {
+  function scrollToSection(id, behavior, callback, urlOpts) {
     var el = document.getElementById(id);
     if (!el) return;
+    if (behavior !== 'instant') syncUrl(id, !(urlOpts && urlOpts.replace));
     // Calculate the true snap target position.
     // Desktop uses scroll-padding-top on the container; mobile uses scroll-margin-top
     // on the element. Both shift the effective snap point up by header-h. Reading
@@ -1166,6 +1169,7 @@
       STATE.currentSection = targetSection;
       updateNavDots(targetSection);
       updateHeader(targetSection);
+      syncUrl(targetSection, false);
       if (window.innerWidth <= 767) {
         applyMobileSnap();
       } else {
@@ -1238,7 +1242,7 @@
     if (nextIdx < 0 || nextIdx >= DEFAULT_SECTIONS.length) return;
     e.preventDefault();
     lastWheelTime = now;
-    scrollToSection(DEFAULT_SECTIONS[nextIdx], 'smooth');
+    scrollToSection(DEFAULT_SECTIONS[nextIdx], 'smooth', null, { replace: true });
   }
 
   /* ══════════════════════════════════════════════════
@@ -1255,6 +1259,7 @@
       STATE.currentSection = id;
       updateNavDots(id);
       updateHeader(id);
+      syncUrl(id, false);
 
       // Trigger entrance animations
       triggerEntranceAnims(entry.target);
@@ -1424,7 +1429,7 @@
   function getAnimatedLogoHtml(cls) {
     var targetClass = cls || 'collection-card-logo-svg';
     var src = document.querySelector('.sq-logo-img');
-    if (!src) return '<img src="images/logo.svg" class="' + targetClass + '" aria-hidden="true">';
+    if (!src) return '<img src="/images/logo.svg" class="' + targetClass + '" aria-hidden="true">';
     var html = src.outerHTML
       .replace(/<defs>[\s\S]*?<\/defs>/i, '')
       .replace(/filter="url\(#streak-glow\)"/g, '')
@@ -1582,7 +1587,7 @@
     });
   }
 
-  function selectSubLine(type) {
+  function selectSubLine(type, opts) {
     STATE.selectedSubLine = type;
     showNavDot('rank-5');
     // Reset palette theming from any previous selection
@@ -1596,13 +1601,13 @@
     var rank5Label = document.getElementById('rank-5-label');
     if (rank5Label) rank5Label.textContent = type === 'chessboards' ? 'Chessboards' : 'Pieces';
     renderGarmentLines();
-    scrollToSection('rank-5', 'smooth');
+    if (!(opts && opts.noScroll)) scrollToSection('rank-5', 'smooth');
   }
 
   /* ══════════════════════════════════════════════════
      RANK 4: GARMENT LINES
   ══════════════════════════════════════════════════ */
-  function selectCollection(collection) {
+  function selectCollection(collection, opts) {
     var isSameCollection = STATE.selectedCollection && STATE.selectedCollection.id === collection.id;
     STATE.selectedCollection = collection;
     STATE.mode = 'shopping';
@@ -1637,7 +1642,7 @@
       if (rank4Label) rank4Label.textContent = collection.name;
     }
 
-    scrollToSection('rank-4', 'smooth');
+    if (!(opts && opts.noScroll)) scrollToSection('rank-4', 'smooth');
   }
 
   function renderGarmentLines() {
@@ -1916,6 +1921,7 @@
       var shot = STATE.selectedCBLocation === 'sl' ? '3' : STATE.selectedCBLocation === 'sr' ? '2' : '1';
       img.alt = v.name + ' turtleneck with ' + CHESSBOARD_PIECE_NAMES_CB[STATE.selectedCBPiece] + ' embroidery, ' + CHESSBOARD_LOCATIONS[STATE.selectedCBLocation];
       setGarmentImage(img, getChessboardJPGPath(varId, STATE.selectedCBPiece, STATE.selectedCBLocation, shot));
+      if (STATE.currentSection === 'rank-6') syncUrl('rank-6', false);
     }
     updatePreview();
 
@@ -2011,6 +2017,7 @@
       setGarmentImage(img,
         getProductPNGPath(lineData.id, STATE.selectedPiece, STATE.selectedColorway),
         getProductImagePath(lineData.id, STATE.selectedPiece, STATE.selectedColorway));
+      if (STATE.currentSection === 'rank-6') syncUrl('rank-6', false);
     }
     updatePreview();
 
@@ -2162,7 +2169,7 @@
 
     if (cartItemsEl) {
       if (STATE.cart.length === 0) {
-        cartItemsEl.innerHTML = '<p class="cart-empty">Your board is clear. <a href="#rank-3">Start your opening.</a></p>';
+        cartItemsEl.innerHTML = '<p class="cart-empty">Your board is clear. <a href="/collections/">Start your opening.</a></p>';
       } else {
         cartItemsEl.innerHTML = STATE.cart.map(function(item) {
           var itemName, itemDetails;
@@ -2712,29 +2719,16 @@
      HEADER NAV LINKS
   ══════════════════════════════════════════════════ */
   function initHeaderNav() {
-    $$('.nav-link[data-target]').forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        var target = link.dataset.target;
-        if (target === 'rank-7') {
-          showContactRank7();
-        }
-        scrollToSection(target, 'smooth');
-      });
-    });
-
-    $$('a[href^="#rank-"]').forEach(function(a) {
-      a.addEventListener('click', function(e) {
-        e.preventDefault();
-        var targetId = a.getAttribute('href').replace('#', '');
-        scrollToSection(targetId, 'smooth');
-      });
-    });
-
-    $$('a[href="#landing"]').forEach(function(a) {
-      a.addEventListener('click', function(e) {
-        e.preventDefault();
-        scrollToSection('landing', 'smooth');
+    var SECTION_BY_HREF = { '/': 'landing', '/collections/': 'rank-3', '/contact/': 'rank-7' };
+    Object.keys(SECTION_BY_HREF).forEach(function(href) {
+      $$('a[href="' + href + '"]').forEach(function(a) {
+        if (a.id === 'confirm-back-btn' || a.id === 'order-back-btn') return;
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          var target = SECTION_BY_HREF[href];
+          if (target === 'rank-7') showContactRank7();
+          scrollToSection(target, 'smooth');
+        });
       });
     });
   }
@@ -2929,12 +2923,12 @@
             if (backTarget) {
               var innerEl = document.querySelector('.cb-customization, .pieces-customization');
               var innerAtTop = !innerEl || innerEl.scrollTop <= 0;
-              if (innerAtTop) scrollToSection(backTarget, 'smooth');
+              if (innerAtTop) scrollToSection(backTarget, 'smooth', null, { replace: true });
             }
           } else if (direction === 'down' && STATE.currentSection === 'rank-6') {
             var innerEl = document.querySelector('.cb-customization, .pieces-customization');
             var atBottom = !innerEl || (innerEl.scrollTop + innerEl.clientHeight >= innerEl.scrollHeight - 20);
-            if (atBottom) scrollToSection('rank-7', 'smooth');
+            if (atBottom) scrollToSection('rank-7', 'smooth', null, { replace: true });
           }
           return;
         }
@@ -2960,20 +2954,34 @@
   /* ══════════════════════════════════════════════════
      LEGAL MODALS
   ══════════════════════════════════════════════════ */
-  function openLegalModal(id) {
+  var legalUrlPushed = false;
+
+  function openLegalModal(id, fromRoute) {
     var el = document.getElementById(id + '-overlay');
     if (!el) return;
+    if (!fromRoute && routerReady) {
+      history.pushState(null, '', '/' + id + '/');
+      updateHeadForPath('/' + id + '/');
+      legalUrlPushed = true;
+    }
     el.classList.add('is-open');
     el.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   }
 
-  function closeLegalModal(id) {
+  function closeLegalModal(id, fromRoute) {
     var el = document.getElementById(id + '-overlay');
     if (!el) return;
     el.classList.remove('is-open');
     el.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (fromRoute) return;
+    if (legalUrlPushed) {
+      legalUrlPushed = false;
+      history.back();
+    } else {
+      syncUrl(STATE.currentSection, false);
+    }
   }
 
   function initLegalModals() {
@@ -3038,6 +3046,145 @@
   }
 
   /* ══════════════════════════════════════════════════
+     URL ROUTING
+     Paths mirror the shopping flow. See js/routes.js for the table.
+  ══════════════════════════════════════════════════ */
+  var routerReady = false;
+  var routerApplying = false;
+  var PAGE_META = {};
+  ROUTES.pages().forEach(function(p) { PAGE_META[p.path] = p; });
+  var HOME_TITLE = document.title;
+  var HOME_DESCRIPTION = (document.querySelector('meta[name="description"]') || {}).content || '';
+
+  function firstMoveCollection() {
+    return COLLECTIONS.find(function(c) { return c.id === ROUTES.COLLECTION; });
+  }
+
+  function pathForSection(sectionId) {
+    var sub = STATE.selectedSubLine;
+    switch (sectionId) {
+      case 'landing': return '/';
+      case 'rank-3':  return '/collections/';
+      case 'rank-4':  return ROUTES.BASE;
+      case 'rank-5':  return sub ? ROUTES.BASE + sub + '/' : ROUTES.BASE;
+      case 'rank-6':
+        if (sub === 'chessboards' && STATE.selectedCBVariant) {
+          var pieceLetter = Object.keys(PIECE_NAMES).filter(function(k) {
+            return PIECE_NAMES[k].toLowerCase() === STATE.selectedCBPiece;
+          })[0];
+          return ROUTES.garmentPath('chessboards', STATE.selectedCBVariant, { piece: pieceLetter, placement: STATE.selectedCBLocation });
+        }
+        if (sub === 'pieces' && STATE.selectedLine) {
+          return ROUTES.garmentPath('pieces', STATE.selectedLine.id, {
+            piece: STATE.selectedPiece,
+            thread: STATE.selectedColorway,
+            defaultThread: STATE.selectedLine.colorways[0]
+          });
+        }
+        return ROUTES.BASE;
+      case 'rank-7':
+      case 'rank-8':  return '/contact/';
+      default:        return null;
+    }
+  }
+
+  function updateHeadForPath(path) {
+    var page = PAGE_META[path.split('?')[0]];
+    var title = page && page.title ? page.title : HOME_TITLE;
+    var description = page && page.description ? page.description : HOME_DESCRIPTION;
+    document.title = title;
+    var desc = document.querySelector('meta[name="description"]');
+    if (desc) desc.setAttribute('content', description);
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute('href', 'https://www.7th-rank.com' + path.split('?')[0]);
+  }
+
+  function syncUrl(sectionId, push) {
+    if (!routerReady || routerApplying) return;
+    var path = pathForSection(sectionId);
+    if (!path || path === window.location.pathname + window.location.search) return;
+    history[push ? 'pushState' : 'replaceState'](null, '', path);
+    updateHeadForPath(path);
+  }
+
+  function closeAllLegal() {
+    legalUrlPushed = false;
+    ['privacy', 'terms'].forEach(function(id) {
+      var el = document.getElementById(id + '-overlay');
+      if (el && el.classList.contains('is-open')) closeLegalModal(id, true);
+    });
+  }
+
+  function applyRoute(route, behavior) {
+    routerApplying = true;
+    var target = 'landing';
+    var page = route ? route.page : 'landing';
+    if (page !== 'privacy' && page !== 'terms') closeAllLegal();
+
+    if (page === 'collections') {
+      target = 'rank-3';
+    } else if (page === 'contact') {
+      showContactRank7();
+      target = 'rank-7';
+    } else if (page === 'privacy' || page === 'terms') {
+      openLegalModal(page, true);
+      target = STATE.currentSection;
+    } else if (page === 'collection' || page === 'subline' || page === 'item') {
+      selectCollection(firstMoveCollection(), { noScroll: true });
+      target = 'rank-4';
+      if (page === 'subline' || page === 'item') {
+        selectSubLine(route.subline, { noScroll: true });
+        target = 'rank-5';
+      }
+      if (page === 'item') {
+        if (route.subline === 'chessboards') {
+          if (route.piece) STATE.selectedCBPiece = PIECE_NAMES[route.piece].toLowerCase();
+          else STATE.selectedCBPiece = 'pawn';
+          STATE.selectedCBLocation = route.placement || 'l';
+          selectChessboardVariant(route.itemId);
+        } else {
+          var line = PIECES_LINE_DATA[route.itemId];
+          STATE.selectedLine = line;
+          STATE.selectedPiece = route.piece || 'P';
+          STATE.selectedColorway = route.thread && line.colorways.indexOf(route.thread) !== -1 ? route.thread : line.colorways[0];
+          updateBreadcrumb(bc6, [STATE.selectedCollection.name, 'Pieces', line.name]);
+          renderPiecesCustomization(line);
+        }
+        target = 'rank-6';
+      }
+    }
+
+    updateHeadForPath(window.location.pathname);
+    function done() {
+      routerApplying = false;
+      STATE.currentSection = target;
+      updateNavDots(target);
+      updateHeader(target);
+    }
+    if (behavior === 'instant') {
+      scrollToSection(target, 'instant');
+      // The snap engine settles a frame later, so hold URL syncing until then.
+      setTimeout(done, 400);
+    } else {
+      scrollToSection(target, 'smooth', done);
+    }
+  }
+
+  function initRouter() {
+    // Older hash links keep working.
+    var legacy = { '#rank-3': '/collections/', '#rank-7': '/contact/', '#landing': '/' }[window.location.hash];
+    if (legacy) history.replaceState(null, '', legacy);
+
+    var route = ROUTES.parse(window.location.pathname, window.location.search);
+    window.addEventListener('popstate', function() {
+      applyRoute(ROUTES.parse(window.location.pathname, window.location.search), 'smooth');
+    });
+    if (route && route.page !== 'landing') applyRoute(route, 'instant');
+    STATE.initialPage = route ? route.page : 'landing';
+    setTimeout(function() { routerReady = true; }, 500);
+  }
+
+  /* ══════════════════════════════════════════════════
      INITIALIZATION
   ══════════════════════════════════════════════════ */
   function init() {
@@ -3078,6 +3225,7 @@
     initContactLogoWatermark();
     initLegalModals();
     initCookieConsent();
+    initRouter();
 
     // Wheel interception for bypass logic
     board.addEventListener('wheel', handleWheel, { passive: false });
@@ -3336,7 +3484,7 @@
 
   function maybeShowLandingWishlist() {
     if (hasSeenLandingPopup()) return;
-    if (STATE.mode !== 'default') return; // don't interrupt if already deep-linked into shopping
+    if (STATE.initialPage !== 'landing') return; // don't interrupt anyone deep-linked past the landing page
     openWishlist('landing');
   }
 

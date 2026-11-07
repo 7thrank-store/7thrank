@@ -181,7 +181,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
   <!-- ═══ STYLES ═══ -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
@@ -191,12 +191,12 @@
        FLOATING HEADER
   ═══════════════════════════════════════ -->
   <header class="site-header" id="site-header" role="banner">
-    <a href="#landing" class="header-logo" aria-label="7th Rank — Home">
-      <img src="images/logo.svg" alt="7th Rank Chess Apparel" width="140" height="37" loading="eager">
+    <a href="/" class="header-logo" aria-label="7th Rank — Home">
+      <img src="/images/logo.svg" alt="7th Rank Chess Apparel" width="140" height="37" loading="eager">
     </a>
     <nav class="header-nav" aria-label="Primary navigation">
-      <a href="#rank-3" class="nav-link" data-target="rank-3">Collections</a>
-      <a href="#rank-7" class="nav-link" data-target="rank-7">Contact</a>
+      <a href="/collections/" class="nav-link" data-target="rank-3">Collections</a>
+      <a href="/contact/" class="nav-link" data-target="rank-7">Contact</a>
       <button class="nav-link nav-link--ghost" id="view-wishlist-trigger" aria-label="View my wishlist">My Wishlist</button>
       <!-- CART_ENABLED: cart icon — uncomment when ready to take orders
       <button class="cart-trigger" aria-label="View cart" id="cart-trigger">
@@ -216,9 +216,9 @@
   <div class="mobile-overlay" id="mobile-overlay" aria-hidden="true">
     <button class="mobile-overlay-close" id="mobile-close" aria-label="Close menu">&times;</button>
     <nav class="mobile-nav" aria-label="Mobile navigation">
-      <a href="#landing" class="mobile-nav-link">Home</a>
-      <a href="#rank-3" class="mobile-nav-link">Collections</a>
-      <a href="#rank-7" class="mobile-nav-link">Contact</a>
+      <a href="/" class="mobile-nav-link">Home</a>
+      <a href="/collections/" class="mobile-nav-link">Collections</a>
+      <a href="/contact/" class="mobile-nav-link">Contact</a>
       <!-- CART_ENABLED: <button class="mobile-nav-link mobile-nav-btn" id="mobile-cart-btn">Cart</button> END CART_ENABLED -->
       <button class="mobile-nav-link mobile-nav-btn" id="mobile-wishlist-btn">My Wishlist</button>
     </nav>
@@ -697,7 +697,7 @@
           <h2 class="confirm-title">Message Sent</h2>
           <p class="confirm-desc">Your move has been received. We'll respond as quickly as possible.</p>
           <p class="confirm-sub">In the meantime, explore our collections.</p>
-          <a href="#rank-3" class="btn btn-primary" id="confirm-back-btn">Explore Collections</a>
+          <a href="/collections/" class="btn btn-primary" id="confirm-back-btn">Explore Collections</a>
           <div class="social-links">
             <a href="https://www.instagram.com/7thrank" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">Instagram</a>
             <a href="https://www.tiktok.com/@7thrank" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="TikTok">TikTok</a>
@@ -719,7 +719,7 @@
             <!-- JS populates order number -->
           </div>
           <p class="confirm-sub">Your game is about to change.</p>
-          <a href="#landing" class="btn btn-primary" id="order-back-btn">Back to Opening</a>
+          <a href="/" class="btn btn-primary" id="order-back-btn">Back to Opening</a>
           <p class="newsletter-opt" id="order-newsletter-prompt" hidden>
             <label>
               <input type="checkbox" id="post-order-newsletter" checked>
@@ -734,11 +734,11 @@
         <div class="footer-inner">
           <p class="footer-copy">&copy; <span id="footer-year">2026</span> 7th Rank. All rights reserved.</p>
           <nav class="footer-nav" aria-label="Footer navigation">
-            <a href="#landing">Home</a>
-            <a href="#rank-3">Collections</a>
-            <a href="#rank-7">Contact</a>
-            <a href="#" id="open-privacy" role="button">Privacy Policy</a>
-            <a href="#" id="open-terms" role="button">Terms of Service</a>
+            <a href="/">Home</a>
+            <a href="/collections/">Collections</a>
+            <a href="/contact/">Contact</a>
+            <a href="/privacy/" id="open-privacy">Privacy Policy</a>
+            <a href="/terms/" id="open-terms">Terms of Service</a>
           </nav>
           <p class="footer-seo">
             Chess apparel &bull; Chess streetwear &bull; Chess merchandise &bull; Chess fashion &bull; Chess gifts &bull; Premium chess clothing
@@ -778,7 +778,7 @@
           <input type="checkbox" id="wishlist-consent" class="wishlist-consent-check" required>
           <label for="wishlist-consent" class="wishlist-consent-label">
             I agree to receive marketing emails from 7th Rank Designs and confirm I am 16 or older.
-            See our <a href="#" class="legal-inline-link" data-open="privacy">Privacy Policy</a>.
+            See our <a href="/privacy/" class="legal-inline-link" data-open="privacy">Privacy Policy</a>.
           </label>
         </div>
         <span class="wishlist-field-error" id="wishlist-consent-error" aria-live="polite"></span>
@@ -965,7 +965,7 @@
   <div class="cookie-banner" id="cookie-banner" aria-live="polite" hidden>
     <p class="cookie-text">
       We use cookies to analyze site traffic and improve your experience.
-      See our <a href="#" class="legal-inline-link" data-open="privacy">Privacy Policy</a>.
+      See our <a href="/privacy/" class="legal-inline-link" data-open="privacy">Privacy Policy</a>.
     </p>
     <div class="cookie-actions">
       <button class="btn-cookie-accept" id="cookie-accept">Accept</button>
@@ -974,7 +974,8 @@
   </div>
 
   <!-- ═══ SCRIPTS ═══ -->
-  <script src="js/main.js" defer></script>
+  <script src="/js/routes.js" defer></script>
+  <script src="/js/main.js" defer></script>
 
 </body>
 </html>

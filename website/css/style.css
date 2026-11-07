@@ -287,7 +287,7 @@ ul, ol {
   0%       { stroke: #E8B87A; }   /* Weathered Walnut — brighter amber  */
   16.667%  { stroke: #A8DFFF; }   /* Ice Castle — vivid sky blue        */
   33.333%  { stroke: #AAAAAA; }   /* Stone — lighter gray               */
-  50%      { stroke: #FFB8CC; }   /* Princess Pink — more saturated     */
+  50%      { stroke: #FFB8CC; }   /* Rose — more saturated              */
   66.667%  { stroke: #4DB84D; }   /* Pasture — brighter green           */
   83.333%  { stroke: #F0CC44; }   /* Gold accent — brighter gold        */
   100%     { stroke: #E8B87A; }
@@ -865,7 +865,7 @@ ul, ol {
   letter-spacing: 0.08em;
   text-align: center;
   /* Use contrast-safe ui-text vars so names stay legible when variant palette
-     overrides make a "dark" square actually light (e.g. Ice Castle, Princess Pink) */
+     overrides make a "dark" square actually light (e.g. Ice Castle) */
   color: var(--ui-text-light, var(--sq-light-text));
 }
 /* Dark cards — explicit classes (rank-5 row) and nth-child patterns (rank-6 grid) */

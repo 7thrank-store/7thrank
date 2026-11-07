@@ -35,7 +35,7 @@
     isBypassing:         false,
     isAnimating:         false,  // true during any programmatic smoothScrollTo
     selectedSubLine:     null,  // 'chessboards' | 'pieces'
-    selectedCBVariant:   null,  // 'ww' | 'ic' | 's' | 'pp'
+    selectedCBVariant:   null,  // 'ww' | 'ic' | 's'
     selectedCBPiece:     null,  // 'pawn' | 'rook' | etc.
     selectedCBLocation:  null,  // 'l' | 'r' | 'hl' | 'hr' | 'sl' | 'sr'
     appliedPromo:        null   // { code, discountPct } or null
@@ -82,16 +82,13 @@
     ic: { id: 'ic', name: 'Ice Castle',       lightColor: '#BFEFFF', darkColor: '#FFFEEF',
           caption: 'Piercing fluidity. Sharper than the eye perceives.' },
     s:  { id: 's',  name: 'Stone',            lightColor: '#FFFFFF', darkColor: '#535353',
-          caption: 'An impenetrable force and immovable object. Paradoxically mastered.' },
-    pp: { id: 'pp', name: 'Princess Pink',    lightColor: '#FBD9E1', darkColor: '#FFFFFF',
-          caption: 'Elegance mistified in a rosy collidescope.',
-          captionColor: '#FBD9E1' }
+          caption: 'An impenetrable force and immovable object. Paradoxically mastered.' }
   };
 
   // Fixed material/craft line shown under every chessboard variant's caption
-  var CHESSBOARD_FABRIC_NOTE = '100% wool. 7th Rank logo and all pieces are embroidered.';
+  var CHESSBOARD_FABRIC_NOTE = '100% Baby Alpaca. 7th Rank logo and all pieces are embroidered.';
 
-  var CHESSBOARD_VARIANTS_LIST = ['ww', 'ic', 's', 'pp'];
+  var CHESSBOARD_VARIANTS_LIST = ['ww', 'ic', 's'];
 
   var CHESSBOARD_PIECES_CB = ['pawn','rook','knight','bishop','queen','king'];
   var CHESSBOARD_PIECE_ICONS_CB = {
@@ -134,12 +131,6 @@
       confirmBg: '#535353', confirmText: '#FFFFFF',
       wishlistText: '#FFFFFF', wishlistBorder: '#FFFFFF',
       wishlistHoverBg: '#FFFFFF', wishlistHoverText: '#535353', wishlistHoverBorder: '#535353'
-    },
-    pp: {
-      selBg: '#FBD9E1', selText: null, selBorder: null,
-      hoverBg: 'rgba(251,217,225,0.22)',
-      confirmBg: '#FBD9E1', confirmText: null,
-      wishlistHoverBg: '#FBD9E1', wishlistHoverText: null, wishlistHoverBorder: null
     }
   };
 
@@ -174,10 +165,9 @@
 
   /* Rank-5 hover name colors — per hovered variant, what color each card name becomes */
   var CB_HOVER_COLORS = {
-    ww: { scrollbar: '#B58863', names: { ww: '#B58863', ic: '#F0D9B5', s: '#B58863', pp: '#F0D9B5' } },
-    ic: { scrollbar: '#BFEFFF', names: { ww: '#FFFEEF', ic: '#BFEFFF', s: '#FFFEEF', pp: '#BFEFFF' } },
-    s:  { scrollbar: '#535353', names: { ww: '#535353', ic: '#FFFFFF', s: '#535353', pp: '#FFFFFF' } },
-    pp: { scrollbar: '#FBD9E1', names: { ww: '#FFFFFF', ic: '#FBD9E1', s: '#FFFFFF', pp: '#FBD9E1' } }
+    ww: { scrollbar: '#B58863', names: { ww: '#B58863', ic: '#F0D9B5', s: '#B58863' } },
+    ic: { scrollbar: '#BFEFFF', names: { ww: '#FFFEEF', ic: '#BFEFFF', s: '#FFFEEF' } },
+    s:  { scrollbar: '#535353', names: { ww: '#535353', ic: '#FFFFFF', s: '#535353' } }
   };
 
   var PC_HOVER_COLORS = {
@@ -1504,7 +1494,7 @@
     var html = '';
 
     if (STATE.selectedSubLine === 'chessboards') {
-      // Show 4 chessboard variant cards — explicit sq-light/sq-dark so clones stay correct
+      // Show chessboard variant cards — explicit sq-light/sq-dark so clones stay correct
       html = CHESSBOARD_VARIANTS_LIST.map(function(varId, i) {
         var v = CHESSBOARD_VARIANTS[varId];
         var sqClass = i % 2 === 0 ? 'sq-light' : 'sq-dark';

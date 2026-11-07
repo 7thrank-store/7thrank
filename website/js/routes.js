@@ -15,20 +15,20 @@
       name: 'Chessboards',
       garment: 'Turtleneck',
       items: {
-        'weathered-walnut': { id: 'ww', name: 'Weathered Walnut', caption: 'Reserved, aged, and contemplative. A thinker that stands the test of time.' },
-        'ice-castle':       { id: 'ic', name: 'Ice Castle',       caption: 'Piercing fluidity. Sharper than the eye perceives.' },
-        'stone':            { id: 's',  name: 'Stone',            caption: 'An impenetrable force and immovable object. Paradoxically mastered.' }
+        'weathered-walnut': { id: 'ww', image: 'chessboards/chessboards_ww.pawn.l/resource/ww.pawn.l_1.png', name: 'Weathered Walnut', caption: 'Reserved, aged, and contemplative. A thinker that stands the test of time.' },
+        'ice-castle':       { id: 'ic', image: 'chessboards/chessboards_ic.pawn.l/resource/ic.pawn.l_1.png', name: 'Ice Castle',       caption: 'Piercing fluidity. Sharper than the eye perceives.' },
+        'stone':            { id: 's',  image: 'chessboards/chessboards_s.pawn.l/resource/s.pawn.l_1.png', name: 'Stone',            caption: 'An impenetrable force and immovable object. Paradoxically mastered.' }
       }
     },
     pieces: {
       name: 'Pieces',
       garment: 'Crewneck',
       items: {
-        'stoic':    { id: 'stoic',   name: 'Stoic',    caption: 'The truest one.' },
-        'grain':    { id: 'grain',   name: 'Grain',    caption: 'Details between the lines.' },
-        'thin-ice': { id: 'ti',      name: 'Thin Ice', caption: 'Cool, calm, collected, whilst your opponent shivers.' },
-        'pasture':  { id: 'pasture', name: 'Pasture',  caption: 'Open space leads to clearer minds.' },
-        'harmony':  { id: 'harmony', name: 'Harmony',  caption: 'Ebb and flow; effortlessly natural.' }
+        'stoic':    { id: 'stoic',   image: 'pieces/pieces_Stoic.P.FFFFFF/resource/0.png', name: 'Stoic',    caption: 'The truest one.' },
+        'grain':    { id: 'grain',   image: 'pieces/pieces_Grain.P.FFFFFF/resource/0.png', name: 'Grain',    caption: 'Details between the lines.' },
+        'thin-ice': { id: 'ti',      image: 'pieces/pieces_TI.P.FFFFFF/resource/0.png', name: 'Thin Ice', caption: 'Cool, calm, collected, whilst your opponent shivers.' },
+        'pasture':  { id: 'pasture', image: 'pieces/pieces_Pasture.P.FFFFFF/resource/0.png', name: 'Pasture',  caption: 'Open space leads to clearer minds.' },
+        'harmony':  { id: 'harmony', image: 'pieces/pieces_Harmony.P.F0D9B5/resource/0.png', name: 'Harmony',  caption: 'Ebb and flow; effortlessly natural.' }
       }
     }
   };
@@ -130,7 +130,7 @@
           path: BASE + key + '/' + slug + '/', page: 'item', priority: '0.8',
           title: item.name + ' ' + sub.name + ' ' + sub.garment + ' | 7th Rank',
           description: item.caption + ' The ' + item.name + ' ' + sub.garment.toLowerCase() + ' with embroidered chess pieces, $' + price + '.',
-          product: { name: item.name + ' ' + sub.name + ' ' + sub.garment, description: item.caption, price: price }
+          product: { name: item.name + ' ' + sub.name + ' ' + sub.garment, description: item.caption, price: price, image: item.image }
         });
       });
     });

@@ -45,6 +45,7 @@ function renderPage(page) {
       description: page.product.description,
       brand: { '@type': 'Brand', name: '7th Rank' },
       url,
+      image: SITE + '/images/products/first_move/' + page.product.image,
       offers: {
         '@type': 'Offer',
         price: page.product.price.toFixed(2),

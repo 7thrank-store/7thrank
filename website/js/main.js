@@ -114,14 +114,14 @@
   /* Rank-6 modification color schemes — per variant/line */
   var CB_MOD_COLORS = {
     ww: {
-      selBg: '#F0D9B5', selText: null, selBorder: '#0D1B2A',
+      selBg: '#F0D9B5', selText: null, selBorder: '#2B2B2B',
       hoverBg: 'rgba(240,217,181,0.22)',
-      cartBg: '#F0D9B5', cartText: '#0D1B2A', cartBorder: '#0D1B2A',
+      cartBg: '#F0D9B5', cartText: '#2B2B2B', cartBorder: '#2B2B2B',
       cartHoverBg: '#B58863', cartHoverText: '#F0D9B5',
       confirmBg: '#B58863', confirmText: '#F0D9B5',
       wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
     },
-    ic: { confirmBg: '#BFEFFF', confirmText: '#0D1B2A' },
+    ic: { selBg: '#BFEFFF', selText: '#2B2B2B', selBorder: '#2B2B2B', hoverBg: 'rgba(191,239,255,0.35)', confirmBg: '#BFEFFF', confirmText: '#2B2B2B' },
     s: {
       unselText: '#FFFFFF', unselBorder: '#FFFFFF',
       selBg: '#FFFFFF', selText: '#535353', selBorder: '#535353',
@@ -142,14 +142,14 @@
       wishlistHoverBg: '#000000', wishlistHoverText: '#FFFFFF', wishlistHoverBorder: '#FFFFFF'
     },
     grain: {
-      selBg: '#F0D9B5', selText: null, selBorder: '#0D1B2A',
+      selBg: '#F0D9B5', selText: null, selBorder: '#2B2B2B',
       hoverBg: 'rgba(240,217,181,0.22)',
-      cartBg: '#F0D9B5', cartText: '#0D1B2A', cartBorder: '#0D1B2A',
+      cartBg: '#F0D9B5', cartText: '#2B2B2B', cartBorder: '#2B2B2B',
       cartHoverBg: '#B58863', cartHoverText: '#F0D9B5',
       confirmBg: '#B58863', confirmText: '#F0D9B5',
       wishlistHoverBg: '#F0D9B5', wishlistHoverText: '#B58863', wishlistHoverBorder: '#B58863'
     },
-    ti: { confirmBg: '#BFEFFF', confirmText: '#0D1B2A' },
+    ti: { selBg: '#BFEFFF', selText: '#2B2B2B', selBorder: '#2B2B2B', hoverBg: 'rgba(191,239,255,0.35)', confirmBg: '#BFEFFF', confirmText: '#2B2B2B' },
     pasture: {
       selBg: '#255525', selText: '#FFFFFF', selBorder: '#FFFFFF',
       hoverBg: 'rgba(37,85,37,0.22)',
@@ -785,11 +785,11 @@
   function safeUiColor(bgHex, paletteHex) {
     var r  = parseInt(bgHex.slice(1,3),16)/255, g  = parseInt(bgHex.slice(3,5),16)/255, b  = parseInt(bgHex.slice(5,7),16)/255;
     var bgLum = 0.2126*r + 0.7152*g + 0.0722*b;
-    if (bgLum > 0.5) return '#0D1B2A';
+    if (bgLum > 0.5) return '#2B2B2B';
     var pr = parseInt(paletteHex.slice(1,3),16)/255, pg = parseInt(paletteHex.slice(3,5),16)/255, pb = parseInt(paletteHex.slice(5,7),16)/255;
     var pLum  = 0.2126*pr + 0.7152*pg + 0.0722*pb;
     var ratio = (Math.max(bgLum,pLum)+0.05) / (Math.min(bgLum,pLum)+0.05);
-    return ratio >= 3 ? paletteHex : '#B8CDD8';
+    return ratio >= 3 ? paletteHex : '#F4F1EA';
   }
 
   // Pick the most "characteristic" palette color for use as a UI accent (buttons, selections).

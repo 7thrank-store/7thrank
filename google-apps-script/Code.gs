@@ -46,8 +46,8 @@ function doGet(e) {
     var email = decodeURIComponent(params.email).toLowerCase().trim();
     markUnsubscribed(email);
     return HtmlService.createHtmlOutput(
-      '<html><body style="font-family:sans-serif;text-align:center;padding:3rem;background:#060D14;color:#B8CDD8;">' +
-      '<h2 style="color:#C9A84C;">Unsubscribed</h2>' +
+      '<html><body style="font-family:sans-serif;text-align:center;padding:3rem;background:#2B2B2B;color:#F4F1EA;">' +
+      '<h2 style="color:#F4F1EA;">Unsubscribed</h2>' +
       '<p>You have been removed from 7th Rank marketing emails.</p>' +
       '</body></html>'
     );
@@ -62,10 +62,10 @@ function doGet(e) {
       return renderWishlistPage(email, data);
     }
     return HtmlService.createHtmlOutput(
-      '<html><body style="font-family:sans-serif;text-align:center;padding:3rem;background:#060D14;color:#B8CDD8;">' +
-      '<h2 style="color:#C9A84C;">Link Expired</h2>' +
+      '<html><body style="font-family:sans-serif;text-align:center;padding:3rem;background:#2B2B2B;color:#F4F1EA;">' +
+      '<h2 style="color:#F4F1EA;">Link Expired</h2>' +
       '<p>This link has already been used or has expired. Please request a new one from the website.</p>' +
-      '<p style="margin-top:2rem;"><a href="' + SITE_URL + '" style="color:#C9A84C;">Return to 7th Rank &rarr;</a></p>' +
+      '<p style="margin-top:2rem;"><a href="' + SITE_URL + '" style="color:#F4F1EA;">Return to 7th Rank &rarr;</a></p>' +
       '</body></html>'
     );
   }
@@ -250,23 +250,23 @@ function sendMagicLinkEmail(email, token, scriptUrl) {
     '&token=' + token;
 
   var htmlBody =
-    '<div style="margin:0;padding:0;background:#060D14;">' +
-    '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#060D14;">' +
+    '<div style="margin:0;padding:0;background:#2B2B2B;">' +
+    '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#2B2B2B;">' +
     '<tr><td align="center" style="padding:40px 16px;">' +
-    '<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#0D1B2A;border:1px solid #1C2B38;">' +
+    '<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#2B2B2B;border:1px solid #535353;">' +
       '<tr><td style="padding:40px 40px 32px;">' +
-        '<p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.25em;color:#C9A84C;text-transform:uppercase;">7th Rank</p>' +
-        '<h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;letter-spacing:0.08em;color:#F0D9B5;font-weight:normal;">View Your Wishlist</h1>' +
-        '<p style="margin:0 0 32px;font-family:Arial,sans-serif;font-size:15px;line-height:1.7;color:#B8CDD8;">' +
+        '<p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.25em;color:#F4F1EA;text-transform:uppercase;">7th Rank</p>' +
+        '<h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;letter-spacing:0.08em;color:#F4F1EA;font-weight:normal;">View Your Wishlist</h1>' +
+        '<p style="margin:0 0 32px;font-family:Arial,sans-serif;font-size:15px;line-height:1.7;color:#F4F1EA;">' +
           'Click the button below to view your saved items and exclusive First Mover discount code. ' +
           'This link expires in 24 hours and can only be used once.' +
         '</p>' +
         '<table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:36px;">' +
-          '<tr><td style="background:#C9A84C;">' +
-            '<a href="' + loginUrl + '" style="display:inline-block;padding:15px 36px;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:0.14em;text-transform:uppercase;color:#060D14;text-decoration:none;">VIEW MY WISHLIST &rarr;</a>' +
+          '<tr><td style="background:#F4F1EA;">' +
+            '<a href="' + loginUrl + '" style="display:inline-block;padding:15px 36px;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:0.14em;text-transform:uppercase;color:#2B2B2B;text-decoration:none;">VIEW MY WISHLIST &rarr;</a>' +
           '</td></tr>' +
         '</table>' +
-        '<p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#3d5060;border-top:1px solid #1C2B38;padding-top:20px;">' +
+        '<p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#A9A7A1;border-top:1px solid #535353;padding-top:20px;">' +
           'If you didn\'t request this, you can safely ignore this email.' +
         '</p>' +
       '</td></tr>' +
@@ -301,20 +301,20 @@ function renderWishlistPage(email, data) {
     '<title>My Wishlist — 7th Rank</title>' +
     '<style>' +
       '*{box-sizing:border-box;margin:0;padding:0;}' +
-      'body{background:#060D14;font-family:sans-serif;color:#B8CDD8;min-height:100vh;}' +
+      'body{background:#2B2B2B;font-family:sans-serif;color:#F4F1EA;min-height:100vh;}' +
       '.wrap{max-width:680px;margin:0 auto;padding:56px 24px;}' +
-      '.brand{font-size:11px;letter-spacing:0.25em;color:#C9A84C;text-transform:uppercase;margin-bottom:6px;}' +
-      'h1{font-size:26px;letter-spacing:0.12em;color:#F0D9B5;margin-bottom:40px;}' +
-      '.code-box{background:#0D1D2A;border:1px solid #C9A84C;border-radius:4px;padding:32px;text-align:center;margin-bottom:40px;}' +
-      '.code-label{font-size:10px;letter-spacing:0.22em;color:#C9A84C;text-transform:uppercase;margin-bottom:14px;}' +
-      '.code-val{font-size:34px;font-weight:900;color:#F0D9B5;letter-spacing:0.15em;font-family:monospace;}' +
-      '.code-note{font-size:12px;color:#5a6a74;margin-top:10px;}' +
-      'h2{font-size:11px;letter-spacing:0.18em;color:#C9A84C;text-transform:uppercase;margin-bottom:14px;}' +
+      '.brand{font-size:11px;letter-spacing:0.25em;color:#F4F1EA;text-transform:uppercase;margin-bottom:6px;}' +
+      'h1{font-size:26px;letter-spacing:0.12em;color:#F4F1EA;margin-bottom:40px;}' +
+      '.code-box{background:#383838;border:1px solid #F4F1EA;border-radius:4px;padding:32px;text-align:center;margin-bottom:40px;}' +
+      '.code-label{font-size:10px;letter-spacing:0.22em;color:#F4F1EA;text-transform:uppercase;margin-bottom:14px;}' +
+      '.code-val{font-size:34px;font-weight:900;color:#F4F1EA;letter-spacing:0.15em;font-family:monospace;}' +
+      '.code-note{font-size:12px;color:#A9A7A1;margin-top:10px;}' +
+      'h2{font-size:11px;letter-spacing:0.18em;color:#F4F1EA;text-transform:uppercase;margin-bottom:14px;}' +
       'table{width:100%;border-collapse:collapse;}' +
-      'th{text-align:left;font-size:10px;letter-spacing:0.14em;color:#C9A84C;text-transform:uppercase;' +
-         'padding:10px 14px;border-bottom:1px solid #1C2B38;}' +
-      'td{padding:13px 14px;color:#B8CDD8;font-size:14px;border-bottom:1px solid #0D1D2A;}' +
-      'td.empty{color:#3a4a54;text-align:center;padding:28px;}' +
+      'th{text-align:left;font-size:10px;letter-spacing:0.14em;color:#F4F1EA;text-transform:uppercase;' +
+         'padding:10px 14px;border-bottom:1px solid #535353;}' +
+      'td{padding:13px 14px;color:#F4F1EA;font-size:14px;border-bottom:1px solid #383838;}' +
+      'td.empty{color:#A9A7A1;text-align:center;padding:28px;}' +
     '</style></head><body>' +
     '<div class="wrap">' +
       '<div class="brand">7th Rank</div>' +

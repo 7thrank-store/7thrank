@@ -42,3 +42,6 @@ website/collections/
 website/contact/
 website/privacy/
 website/terms/
+
+# Alternate renders set aside locally
+website/images/products/first_move/pieces/_duplicates/

@@ -2,7 +2,7 @@
 
 > **Maintained by:** Ethan Nouhan & DeAngelo Descorbeth, Founders
 > **Last updated:** March 2026
-> **Status:** Pre-launch
+> **Status:** Live — `www.7th-rank.com` (March 2026)
 
 ---
 
@@ -24,9 +24,9 @@
 ## 1. Pre-Launch Checklist
 
 ### Domain & DNS
-- [ ] Purchase domain — **enter your domain here: `___________`** (recommended: Cloudflare Registrar or Namecheap)
-- [ ] Set up DNS: A record → host IP, CNAME `www` → root
-- [ ] Enable HTTPS/SSL (free via Cloudflare or Let's Encrypt)
+- [x] Purchase domain — `7th-rank.com` (Cloudflare Registrar)
+- [x] Set up DNS — 4× A records (GitHub Pages IPs), CNAME `www` → `7thrank-store.github.io`, all Proxied through Cloudflare
+- [x] Enable HTTPS/SSL — Cloudflare SSL/TLS set to Full
 - [x] Set up `7thrankhelp@gmail.com` as a forwarding alias if using a custom domain email
 
 ### Assets
@@ -38,18 +38,18 @@
 - [x] Compress all images — `scripts/compress-images.js` (sharp/mozjpeg q82) reduced 108 JPEGs, saving 9.6 MB. CLO PNG previews compressed losslessly (compressionLevel 9, no quality param), saving 2.96 MB. Re-run after adding new product images.
 
 ### Code & Configuration
-- [ ] Update `canonical` URL in `index.html` line 13 from `https://www.7thrank.com/` to your actual domain
-- [ ] Update all `og:url` and social meta URLs in `index.html` to match live domain
-- [ ] Replace placeholder `https://www.7thrank.com/images/og-image.jpg` with actual hosted image URL
+- [x] Update `canonical` URL in `index.html` — set to `https://www.7th-rank.com/`
+- [x] Update all `og:url` and social meta URLs in `index.html` — all references updated to `www.7th-rank.com`
+- [ ] Replace placeholder `https://www.7th-rank.com/images/og-image.jpg` with actual OG image once asset is created
 - [x] Add `<meta name="theme-color" content="#1A3049">` to `<head>` (mobile browser chrome color)
 - [x] Add `<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">` to `<head>`
 - [x] Verify Google Apps Script email sender is authorized and sending correctly
 - [x] Test wishlist email delivery end-to-end
 
 ### Analytics & SEO
-- [ ] Create [Google Search Console](https://search.google.com/search-console) account, verify domain
-- [ ] Create [Google Analytics 4](https://analytics.google.com/) property, add tracking snippet to `index.html`
-- [ ] Submit `sitemap.xml` — create a minimal one (single-page site)
+- [x] Create [Google Search Console](https://search.google.com/search-console) account, verify domain — domain verified March 2026
+- [x] Create [Google Analytics 4](https://analytics.google.com/) property, add tracking snippet to `index.html` — tag `G-34MHGVS08R` added
+- [x] Submit `sitemap.xml` — `website/sitemap.xml` created and submitted at `https://www.7th-rank.com/sitemap.xml`
 - [x] Verify JSON-LD structured data at [schema.org validator](https://validator.schema.org/)
 
 ### Legal
@@ -160,7 +160,7 @@ Currently the site uses **single opt-in** (submit email → added to list → co
 
 Poor deliverability = emails go to spam = your First Mover list never sees your launch announcement.
 
-- [ ] **SPF record**: add a DNS TXT record: `v=spf1 include:_spf.google.com ~all` — tells email providers Google is authorized to send on your behalf
+- [x] **SPF record** — DNS TXT record `v=spf1 include:_spf.google.com ~all` added in Cloudflare
 - [n/a] **DKIM**: enable in Google Workspace or Gmail settings (if using a custom domain email)
 - [x] **Send a test email** to a Gmail, Outlook, and Yahoo address before your first real send. Check spam folders.
 - [x] **Warm up your sending domain**: don't send 500 emails on day one. Start with 50, then 150, then 500 over several weeks.
@@ -248,13 +248,13 @@ Test on the following browser/OS combinations:
 #### Garment Lines (Rank 5 — Chessboards)
 | # | Test | Expected Result | Pass/Fail |
 |---|------|----------------|-----------|
-| G1 | 4 variant cards shown | Weathered Walnut, Ice Castle, Stone, Princess Pink | |
+| G1 | 3 variant cards shown | Weathered Walnut, Ice Castle, Stone | |
 | G2 | Each card has palette swatches | Two color circles visible below card image | |
 | G3 | Hover on card (desktop) | Board bg updates to variant colors | |
 | G4 | Click Weathered Walnut | Scroll to rank-6 chessboard customization | |
 | G5 | Click Ice Castle | Rank-6 loads, boards visible in ice palette | |
 | G6 | Click Stone | Rank-6 loads in gray palette | |
-| G7 | Click Princess Pink | Rank-6 loads; button color follows palette (not blue) | |
+| G7 | Click Stone | Rank-6 loads; button color follows palette (not blue) | |
 | G8 | Card names alternate color | Odd cards = dark navy text, even cards = light blue text | |
 
 #### Garment Lines (Rank 5 — Pieces)
@@ -288,7 +288,7 @@ Test on the following browser/OS combinations:
 | PC3 | Switch colorway swatch | Preview updates | |
 | PC4 | Grain line: no F0D9B5 swatch | Ivory/cream swatch absent from Grain | |
 | PC5 | Harmony line: no FFFFFF swatch | White swatch absent from Harmony | |
-| PC6 | Add to cart flow | Item added, price shows $69 | |
+| PC6 | Add to cart flow | Item added, price shows $99 | |
 | PC7 | Add to wishlist | Modal opens, item saved | |
 
 #### Contact (Rank 7)
@@ -312,7 +312,7 @@ Test on the following browser/OS combinations:
 | K2 | "Make My Move" button (rank-6) | Opens wishlist modal with primary CTA styling | |
 | K3 | "Make My Move" flash | Button shows "Saved ♛" briefly then reverts | |
 | K4 | *[Phase 2]* Cart drawer opens/closes | Smooth animation | |
-| K5 | *[Phase 2]* Cart shows correct price | $99 for chessboard, $69 for pieces | |
+| K5 | *[Phase 2]* Cart shows correct price | $189 for chessboard, $99 for pieces | |
 | K6 | *[Phase 2]* Checkout routes to Shopify | Shopify checkout loads | |
 
 #### Wishlist & Email
@@ -487,16 +487,16 @@ async function checkoutWithShopify(cartItems) {
 
 Create these products in your Shopify admin:
 
-**Chessboards (Turtlenecks) — $99**
+**Chessboards (Turtlenecks) — $189**
 - Product title: `[Variant] Chessboard Turtleneck` (e.g., "Ice Castle Chessboard Turtleneck")
 - Variants: `[Piece] + [Location] + [Size]`
   - Pieces: Pawn, Bishop, Knight, Rook, Queen, King
   - Locations: Left Chest, Right Chest, Hip Left, Hip Right, Sleeve Left, Sleeve Right
   - Sizes: XS, S, M, L, XL, XXL
-- 4 products total (one per variant: Weathered Walnut, Ice Castle, Stone, Princess Pink)
+- 3 products total (one per variant: Weathered Walnut, Ice Castle, Stone)
 - Inventory: Set to unlimited until physical inventory is confirmed
 
-**Pieces (Crewnecks) — $69**
+**Pieces (Crewnecks) — $99**
 - Product title: `[Line] Piece Crewneck` (e.g., "Stoic Piece Crewneck")
 - Variants: `[Piece] + [Colorway] + [Size]`
 - 5 products total (one per line: Stoic, Grain, Thin Ice, Pasture, Harmony)
@@ -711,7 +711,7 @@ jobs:
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            https://www.7thrank.com
+            https://www.7th-rank.com
           uploadArtifacts: true
           temporaryPublicStorage: true
 ```
@@ -823,17 +823,16 @@ The following information is required before automated workflows and Shopify int
 - [x] **Preferred deploy branch** — `main` (recommended)
 
 ### Domain & Hosting
-- [ ] **Domain name** — `___________` *(enter your domain — e.g., `7thrank.com`)*
-- [ ] **Domain registrar** — where is the domain registered? (Namecheap, GoDaddy, Cloudflare, etc.)
-- [ ] **Domain already purchased?** — Y/N. If not, purchase before configuring DNS.
-- [ ] **Cloudflare account** — create one at cloudflare.com before DNS config
+- [x] **Domain name** — `7th-rank.com`
+- [x] **Domain registrar** — Cloudflare Registrar
+- [x] **Domain purchased and configured** — DNS live, SSL Full, GitHub Pages custom domain set
+- [x] **Cloudflare account** — active, all DNS records proxied
 
 ### Email / Google Apps Script *(Required for launch — email acquisition phase)*
-- [ ] **Deployed Google Apps Script URL** — the `exec` URL for the wishlist submission handler
-  - Verify this is not committed to the public GitHub repo (keep it private or use a GitHub Secret)
-- [ ] **Confirmed test send** — has a test email been sent and received successfully?
-- [ ] **Mailing address** — your physical/P.O. Box address for `[MAILING ADDRESS PLACEHOLDER]` in `email_template.html`
-- [ ] **Subscriber list Google Sheet** — confirm access is restricted to founders only (not "anyone with link")
+- [x] **Deployed Google Apps Script URL** — deployed with shared secret token; URL protected via `SECRET_TOKEN = '7R_FM_2026'`
+- [x] **Confirmed test send** — wishlist email delivery confirmed end-to-end
+- [x] **Mailing address** — set to `7th Rank Designs · 1114 Main Ave, Clifton, NJ 07011` in `email_template.html`; template updated with new domain and redeployed March 2026
+- [x] **Subscriber list Google Sheet** — access restricted to founders only
 
 ### Shopify *(Phase 2 — Commerce Launch)*
 - [ ] **Shopify store URL** — `your-store.myshopify.com`
@@ -843,8 +842,8 @@ The following information is required before automated workflows and Shopify int
 - [ ] **Discount code format** — what format are First Mover codes? (e.g., `FM-XXXX-XXXX`)
 
 ### Analytics
-- [ ] **Google Analytics 4 Measurement ID** — `G-XXXXXXXXXX`
-- [ ] **Google Search Console verified** — Y/N
+- [x] **Google Analytics 4 Measurement ID** — `G-34MHGVS08R` (tag live in `index.html`)
+- [x] **Google Search Console verified** — domain verified March 2026; sitemap submitted
 
 ### Assets
 - [ ] **OG image created** — `/images/og-image.jpg` at 1200×630px

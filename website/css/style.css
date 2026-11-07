@@ -3764,3 +3764,467 @@ ul, ol {
     }
   }
 }
+
+/* ════════════════════════════════════════════════════════
+   PRODUCT HERO SYSTEM
+   Collections through the garment page. Giant product name, garment cutout
+   overlapping it, color field above a cream panel. Colors per product come
+   from PRODUCT_HERO in main.js. Kept as one block so it can be reverted alone.
+   ════════════════════════════════════════════════════════ */
+.hero-card,
+.subline-card,
+.cb-image-col {
+  container-type: inline-size;
+  --name-size: min(calc(94cqw / (var(--name-len, 8) * 0.42)), 34cqw);
+}
+
+/* ── Shared giant name ── */
+.pdp-name,
+.hero-card .product-card-name,
+.subline-card .subline-card-label {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--name-size);
+  line-height: 0.92;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: none;
+}
+
+/* ── Garment page ── */
+#rank-6 .cb-customization {
+  grid-template-columns: 1.35fr 1fr;
+  background: var(--sq-light);
+}
+
+#rank-6 .cb-image-col {
+  background: linear-gradient(to bottom, var(--pdp-field) 0 76%, var(--sq-light) 76% 100%);
+  transition: none;
+}
+
+.pdp-eyebrow {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pdp-on);
+  opacity: 0.8;
+}
+
+.pdp-name {
+  position: absolute;
+  top: 2.6rem;
+  left: 0;
+  color: var(--pdp-on);
+}
+
+#rank-6 .cb-preview-zoom-wrap {
+  position: absolute;
+  inset: calc(2.6rem + var(--name-size) * 0.8) 0 0.75rem 0;
+  z-index: 2;
+  width: auto;
+  height: auto;
+}
+
+#rank-6 .cb-preview-img {
+  object-position: center center;
+  transition: opacity 0.2s ease;
+}
+#rank-6 .cb-preview-img.is-loading { opacity: 0.35; }
+#rank-6 .cb-preview-img:not([src]) { visibility: hidden; }
+
+#rank-6 .cb-zoom-btn {
+  background: rgba(43,43,43,0.72);
+  color: var(--sq-dark-text);
+  border-color: rgba(244,241,234,0.4);
+}
+
+/* ── Controls panel ── */
+#rank-6 .cb-controls-col {
+  height: 100%;
+  overflow-y: auto;
+  background: var(--sq-light);
+  color: var(--sq-light-text);
+  border-left: none;
+  border-top: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+#rank-6 .cb-control-groups-wrap {
+  flex: none;
+  height: auto;
+  overflow: visible;
+  gap: 1.1rem;
+  padding: 0.5rem 1.25rem 1rem;
+}
+
+#rank-6 .cb-control-label {
+  font-size: 0.85rem;
+  opacity: 1;
+  color: var(--sq-light-text);
+}
+
+.pdp-summary {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem 0.75rem;
+}
+
+.pdp-price-label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+#rank-6 .product-card-price {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--sq-light-text);
+}
+
+.pdp-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.pdp-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 2.75rem;
+  padding: 0.2rem 0.1rem;
+  color: var(--sq-light-text);
+}
+
+.pdp-swatch-dot {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 1px solid rgba(43,43,43,0.45);
+}
+
+.pdp-swatch.selected .pdp-swatch-dot {
+  box-shadow: 0 0 0 2px var(--sq-light), 0 0 0 4px var(--sq-light-text);
+}
+
+.pdp-swatch-label {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#rank-6 .cb-piece-grid { grid-template-columns: repeat(6, 1fr); gap: 0.35rem; }
+
+#rank-6 .cb-piece-btn {
+  padding: 0.5rem 0.1rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--sq-light-text);
+  background: transparent;
+  border: 1px solid rgba(43,43,43,0.35);
+}
+#rank-6 .cb-piece-btn-icon { font-size: 1.5rem; }
+
+#rank-6 .cb-location-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+#rank-6 .cb-location-btn {
+  padding: 0.6rem 0.4rem;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  color: var(--sq-light-text);
+  background: transparent;
+  border: 1px solid rgba(43,43,43,0.35);
+}
+
+#rank-6 .size-options {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.35rem;
+}
+
+#rank-6 .size-btn {
+  width: auto;
+  min-height: 2.5rem;
+  color: var(--sq-light-text);
+  background: transparent;
+  border: 1px solid rgba(43,43,43,0.35);
+}
+
+#rank-6 .cb-piece-btn:hover,
+#rank-6 .cb-location-btn:hover,
+#rank-6 .size-btn:hover {
+  background: rgba(43,43,43,0.08);
+  border-color: var(--sq-light-text);
+  color: var(--sq-light-text);
+}
+
+#rank-6 .cb-piece-btn.selected,
+#rank-6 .cb-location-btn.selected,
+#rank-6 .size-btn.selected {
+  background: var(--pdp-sel);
+  border-color: var(--sq-light-text);
+  border-width: 1px;
+  color: var(--pdp-on-sel);
+}
+
+#rank-6 .cb-line-caption {
+  order: 0;
+  padding: 0 1.25rem 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.55;
+  opacity: 1;
+  color: var(--sq-light-text);
+}
+
+.pdp-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: auto;
+  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  background: var(--sq-light);
+  border-top: 1px solid rgba(43,43,43,0.15);
+}
+
+#rank-6 #add-to-wishlist-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0 1.25rem;
+  background: var(--sq-light-text);
+  border: 1px solid var(--sq-light-text);
+  color: var(--sq-light);
+  box-shadow: none;
+}
+#rank-6 #add-to-wishlist-btn::after {
+  content: attr(data-price);
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+#rank-6 #add-to-wishlist-btn:hover { background: var(--sq-dark); border-color: var(--sq-dark); }
+
+/* ── Line / variant cards ── */
+.rank-5 .product-card.hero-card {
+  justify-content: flex-start;
+  padding: 2rem 0 1.5rem;
+  background: linear-gradient(to bottom, var(--pdp-field) 0 78%, var(--sq-light) 78% 100%) !important;
+  transform: none;
+}
+.rank-5 .product-card.hero-card .product-card-name { color: var(--pdp-on) !important; }
+.rank-5 .product-card.hero-card::after { display: none; }
+
+.rank-5 .product-card.hero-card .product-card-cycling-bg {
+  position: absolute;
+  inset: calc(2rem + var(--name-size) * 0.8) 6% 4.5rem 6%;
+  width: auto;
+  height: auto;
+  z-index: 2;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.rank-5 .product-card.hero-card .product-card-palette {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  margin: 0;
+}
+
+/* ── Chessboards / Pieces chooser ── */
+.subline-card {
+  justify-content: flex-start;
+  padding: 1.25rem 0 0;
+  gap: 0.35rem;
+}
+.subline-card::after,
+.sq-light.subline-card::after { display: none; }
+.subline-card.sq-dark { background: var(--sq-dark); }
+.subline-card.sq-light { background: var(--sq-light); }
+
+.subline-card .subline-card-sub {
+  position: relative;
+  z-index: 1;
+  order: -1;
+  opacity: 0.85;
+  text-shadow: none;
+}
+.subline-card.sq-dark .subline-card-label,
+.subline-card.sq-dark .subline-card-sub { color: var(--sq-dark-text); }
+.subline-card.sq-light .subline-card-label,
+.subline-card.sq-light .subline-card-sub { color: var(--sq-light-text); }
+
+.subline-card .subline-card-bg {
+  inset: calc(3rem + var(--name-size) * 0.8) 6% 1rem 6%;
+  z-index: 2;
+  background-size: contain;
+  background-position: center center;
+}
+
+/* ── First Move card ── */
+.collection-card-cycling-bg {
+  inset: 6% 8% 26% 8%;
+  width: auto;
+  height: auto;
+  background-size: contain;
+  background-position: center center;
+}
+
+/* ── Tablet and phone: stacked garment page ── */
+@media (max-width: 1023px) {
+  #rank-6 {
+    grid-template-columns: 1fr;
+    height: calc(100vh - var(--header-h));
+    overflow: hidden;
+  }
+  #rank-6 .sq-file-label { display: none; }
+
+  #rank-6 .cb-customization {
+    display: block;
+    height: calc(100vh - var(--header-h));
+    padding-bottom: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #rank-6 .cb-image-col { height: 58vh; }
+
+  #rank-6 .cb-controls-col {
+    display: flex;
+    height: auto;
+    min-height: calc(42vh - var(--header-h));
+    overflow: visible;
+  }
+}
+
+/* ── Phone ── */
+@media (max-width: 767px) {
+  #rank-6 .pdp-eyebrow { font-size: 0.6rem; }
+
+  #rank-6 .cb-location-grid {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0 -1.25rem;
+    padding: 0 1.25rem 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #rank-6 .cb-location-grid::-webkit-scrollbar { display: none; }
+  #rank-6 .cb-location-btn { flex: 0 0 auto; padding: 0.65rem 0.85rem; }
+
+  #rank-6 .cb-piece-btn { font-size: 0.6rem; letter-spacing: 0.02em; padding: 0.5rem 0; min-width: 0; }
+  #rank-6 .cb-piece-btn-icon { font-size: 1.45rem; }
+
+  .pdp-swatch { min-width: 2.5rem; }
+
+  /* Chooser stacks so each line gets a full-width name */
+  .subline-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+
+  /* Line cards fill the screen, with a sliver of the next one as a swipe hint */
+  .rank-5 .rank-dynamic-content .product-card.hero-card {
+    flex: 0 0 90vw;
+    padding: 1.25rem 0 1rem;
+  }
+  .rank-5 .product-card.hero-card .product-card-cycling-bg {
+    top: calc(1.25rem + var(--name-size) * 0.8);
+    left: 4%;
+    right: 4%;
+    bottom: 3.5rem;
+    height: auto;
+    background-size: contain;
+    background-position: center center;
+  }
+  .rank-5 .product-card[data-variant-id].hero-card,
+  .rank-5 .product-card[data-line-id].hero-card { padding-bottom: 1rem; }
+
+  /* First Move: name above the garment */
+  .collections-track .collection-card {
+    justify-content: flex-start;
+    padding: 1.25rem 1rem;
+    --name-len: 10;
+    container-type: inline-size;
+  }
+  .collections-track .collection-card::after { display: none; }
+  .collections-track .collection-card .collection-card-name {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    font-size: min(calc(94cqw / 4.2), 34cqw);
+    line-height: 0.92;
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: none;
+  }
+  .collections-track .collection-card-desc,
+  .collections-track .collection-card-badge { position: relative; z-index: 3; }
+  .collections-track .collection-card-desc { margin-top: auto; }
+  .collections-track .collection-card-cycling-bg { inset: 14% 4% 20% 4%; z-index: 2; }
+}
+
+/* Tablet: line cards fill the rank height */
+@media (min-width: 768px) and (max-width: 1023px) {
+  #rank-5 { height: calc(100vh - var(--header-h)); }
+  .rank-5 .rank-dynamic-content .product-card.hero-card {
+    flex: 0 0 62vw;
+    height: 100%;
+    min-height: calc(100vh - var(--header-h));
+  }
+  .subline-grid { height: calc(100vh - var(--header-h)); }
+}
+
+/* Mobile browser toolbars: keep the fixed CTA above them */
+@supports (height: 100dvh) {
+  @media (max-width: 1023px) {
+    .chess-board { height: 100dvh; }
+    #rank-6,
+    #rank-6 .cb-customization { height: calc(100dvh - var(--header-h)); }
+    #rank-6 .cb-image-col { height: 58dvh; }
+  }
+  @media (max-width: 767px) {
+    .landing-view { height: 100dvh; }
+    .rank-4 .rank-dynamic-content,
+    .subline-grid { height: calc(100dvh - var(--header-h)); }
+    .rank-dynamic-content .product-card { min-height: calc(100dvh - var(--header-h)); }
+  }
+}

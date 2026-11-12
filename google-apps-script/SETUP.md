@@ -24,7 +24,7 @@
   - Qf7+ chess puzzle section
   - FM-XXXX-XXXX discount code block
   - Social links (Instagram/TikTok @7th.rank)
-  - CAN-SPAM footer (address: 1114 Main Ave, Clifton, NJ 07011; unsubscribe link)
+  - CAN-SPAM footer (mailing address + unsubscribe link). The address is **not** in this repo (it's public): set it in the Apps Script editor under Project Settings > Script Properties, key `MAILING_ADDRESS` (e.g. `Street, City, NJ ZIP`). `Code.gs` refuses to send the welcome email, and saves nothing, if the property is missing.
 
 ---
 

@@ -58,7 +58,7 @@
 - [x] Add cookie consent banner (GDPR) — `#cookie-banner` shown on first visit; preference stored in `localStorage('7r_cookie_consent')`
 - [x] Wishlist email signup has explicit opt-in language (CAN-SPAM) — fine-print updated with consent statement + Privacy Policy link
 - [x] Email template CAN-SPAM compliance — unsubscribe link (`doGet` handler in `Code.gs`), physical address placeholder in footer; `Unsubscribed` column added to sheet
-- [x] Replace mailing address in `email_template.html` — set to `7th Rank Designs · 1114 Main Ave, Clifton, NJ 07011`
+- [x] Mailing address in marketing email: moved to the `MAILING_ADDRESS` script property (Nov 2026; see `google-apps-script/SETUP.md`). Kept out of this public repo.
 - [x] Review Privacy Policy modal — 10-section modal updated: data storage disclosure, Google Apps Script processor, localStorage consent, permanent deletion on unsubscribe
 - [x] GDPR consent checkbox added to wishlist form — explicit opt-in with age confirmation (16+), Privacy Policy link, client-side validation prevents submission without consent
 
@@ -831,7 +831,7 @@ The following information is required before automated workflows and Shopify int
 ### Email / Google Apps Script *(Required for launch — email acquisition phase)*
 - [x] **Deployed Google Apps Script URL** — deployed with shared secret token; URL protected via `SECRET_TOKEN = '7R_FM_2026'`
 - [x] **Confirmed test send** — wishlist email delivery confirmed end-to-end
-- [x] **Mailing address** — set to `7th Rank Designs · 1114 Main Ave, Clifton, NJ 07011` in `email_template.html`; template updated with new domain and redeployed March 2026
+- [x] **Mailing address**: stored in the Apps Script `MAILING_ADDRESS` script property, not in the repo (updated Nov 2026)
 - [x] **Subscriber list Google Sheet** — access restricted to founders only
 
 ### Shopify *(Phase 2 — Commerce Launch)*

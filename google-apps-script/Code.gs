@@ -132,12 +132,15 @@ function doPost(e) {
       // Brand-new subscriber: always write at least one row (blank if no
       // item was selected yet, e.g. a landing-page signup) and send the
       // welcome email with their discount code.
+      // Check the mailing address before writing anything, so a missing
+      // setting can't leave a subscriber saved without their welcome email.
+      var mailingAddress = getMailingAddress();
       var rows = items.length > 0 ? items : [{}];
       rows.forEach(function(item) {
         appendWishlistRow(sheet, now, email, code, item, source);
       });
       itemAdded = true;
-      sendConfirmationEmail(email, code, items);
+      sendConfirmationEmail(email, code, items, mailingAddress);
       message = 'Check your email for your discount code!';
     } else if (items.length > 0) {
       // Returning subscriber adding (potentially) new items — reuse their
@@ -493,11 +496,23 @@ function testLoginNotFound() {
 
 // ── EMAIL ─────────────────────────────────────────────────────────────────────
 
-function sendConfirmationEmail(email, code, items) {
+// CAN-SPAM requires a postal address in marketing email. It lives in Script
+// Properties (Project Settings > Script Properties > MAILING_ADDRESS), not in
+// this file, because the repo is public. Throws if it isn't set.
+function getMailingAddress() {
+  var address = PropertiesService.getScriptProperties().getProperty('MAILING_ADDRESS');
+  if (!address) {
+    throw new Error('MAILING_ADDRESS script property is not set; marketing email not sent.');
+  }
+  return address;
+}
+
+function sendConfirmationEmail(email, code, items, mailingAddress) {
   var scriptUrl    = ScriptApp.getService().getUrl();
   var unsubUrl     = scriptUrl + '?action=unsubscribe&email=' + encodeURIComponent(email);
 
   var template = HtmlService.createTemplateFromFile('email_template');
+  template.mailingAddress = mailingAddress;
   template.code           = code;
   template.discountPct    = DISCOUNT_PCT;
   template.items          = items;

@@ -46,3 +46,6 @@ website/terms/
 # Alternate renders set aside locally
 website/images/products/first_move/pieces/_duplicates/
 website/llms.txt
+
+# Care label generator holds the business mailing address (repo is public)
+scripts/generate-care-labels.js

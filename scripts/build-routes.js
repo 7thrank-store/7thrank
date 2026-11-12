@@ -141,7 +141,7 @@ function bodyFor(page) {
     }
     case 'contact':
       return `<h2>Contact 7th Rank</h2>
-      <p>${esc(page.description)} Email <a href="mailto:7thrankhelp@gmail.com">7thrankhelp@gmail.com</a>, or find us on <a href="https://www.instagram.com/7th.rank">Instagram</a> and <a href="https://www.tiktok.com/@7th.rank">TikTok</a> at @7th.rank.</p>`;
+      <p>${esc(page.description)} Email <a href="mailto:7thrankhelp@gmail.com">7thrankhelp@gmail.com</a>, or find us on <a href="https://www.instagram.com/7th.rank">Instagram</a> and <a href="https://www.tiktok.com/@7th.rank">TikTok</a> at @7th.rank, and on <a href="https://www.facebook.com/profile.php?id=61596089024803">Facebook</a>.</p>`;
     case 'privacy':
     case 'terms':
       return legalContent(page.page);
@@ -287,6 +287,7 @@ fs.writeFileSync(path.join(ROOT, 'llms.txt'), [
   `- [Contact page](${SITE}/contact/)`,
   '- [Instagram](https://www.instagram.com/7th.rank)',
   '- [TikTok](https://www.tiktok.com/@7th.rank)',
+  '- [Facebook](https://www.facebook.com/profile.php?id=61596089024803)',
   ''
 ].join('\n'));
 

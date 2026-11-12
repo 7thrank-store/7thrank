@@ -1181,6 +1181,11 @@ ul, ol {
   word-break: break-all;
 }
 .contact-channel-value:hover { color: var(--gold-muted); }
+.contact-policy-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.1rem;
+}
 
 .contact-divider-line {
   height: 1px;
@@ -1983,6 +1988,24 @@ ul, ol {
 }
 
 .mobile-nav-link:hover { opacity: 1; color: var(--gold); }
+
+.mobile-nav-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  margin-top: 0.5rem;
+}
+.mobile-nav-legal a {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sq-dark-text);
+  opacity: 0.6;
+  transition: opacity var(--t-fast), color var(--t-fast);
+}
+.mobile-nav-legal a:hover { opacity: 1; color: var(--gold); }
 
 /* ════════════════════════════════════════════════════════
    RANK NAVIGATOR (side dots)

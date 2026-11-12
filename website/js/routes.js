@@ -17,8 +17,8 @@
       material: 'Baby Alpaca',
       fabricNote: '100% Baby Alpaca. Made in Peru. 7th Rank logo and all pieces are embroidered.',
       care: [
-        { icon: 'hand-wash', label: 'Hand wash' },
-        { icon: 'dry-clean-p', label: 'Any solvent except tetrachloroethylene' },
+        { icon: 'hand-wash', label: 'Hand wash cold' },
+        { icon: 'dry-clean-p', label: 'Professional dry clean' },
         { icon: 'iron-low', label: 'Iron low' },
         { icon: 'no-bleach', label: 'Do not bleach' },
         { icon: 'dry-flat-shade', label: 'Dry flat' }

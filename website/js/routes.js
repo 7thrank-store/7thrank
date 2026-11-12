@@ -21,7 +21,8 @@
         { icon: 'dry-clean-p', label: 'Professional dry clean' },
         { icon: 'iron-low', label: 'Iron low' },
         { icon: 'no-bleach', label: 'Do not bleach' },
-        { icon: 'dry-flat-shade', label: 'Dry flat' }
+        { icon: 'dry-flat-shade', label: 'Dry flat' },
+        { icon: 'no-tumble', label: 'Do not tumble dry' }
       ],
       items: {
         'weathered-walnut': { id: 'ww', image: 'chessboards/chessboards_ww.pawn.l/resource/ww.pawn.l_1.png', name: 'Weathered Walnut', caption: 'Reserved, aged, and contemplative. A thinker that stands the test of time.' },
@@ -38,7 +39,7 @@
         { icon: 'machine-gentle', label: 'Machine wash gentle or delicate' },
         { icon: 'no-bleach', label: 'Do not bleach' },
         { icon: 'dry-flat', label: 'Dry flat' },
-        { icon: 'tumble-low', label: 'Do tumble dry' },
+        { icon: 'tumble-low', label: 'Tumble dry low' },
         { icon: 'iron-medium', label: 'Iron medium' }
       ],
       items: {

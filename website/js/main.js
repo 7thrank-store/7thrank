@@ -1823,6 +1823,7 @@
     'dry-flat': '<rect x="4" y="4" width="24" height="24" rx="2.500"/><path d="M9 16h14"/>',
     'dry-flat-shade': '<rect x="4" y="4" width="24" height="24"/><path d="M4 12l8-8M9 18h14"/>',
     'tumble-low': '<rect x="4" y="4" width="24" height="24"/><circle cx="16" cy="16" r="9"/><circle cx="16" cy="16" r="1.700" class="care-fill"/>',
+    'no-tumble': '<rect x="4" y="4" width="24" height="24"/><circle cx="16" cy="16" r="9"/><path d="M2 2l28 28M30 2 2 30"/>',
     'iron-medium': '<path d="M9 9h12c3 0 4.700 5 6.500 15h-25c.6-5 3.600-8 8-8h15.500"/><circle cx="12.500" cy="20" r="1.400" class="care-fill"/><circle cx="19" cy="20" r="1.400" class="care-fill"/>',
     'iron-low': '<path d="M9 9h12c3 0 4.700 5 6.500 15h-25c.6-5 3.600-8 8-8h15.500"/><circle cx="16" cy="20" r="1.400" class="care-fill"/>',
     'dry-clean-p': '<circle cx="16" cy="16" r="12.500"/><path d="M13 23V9.500h4.300a3.900 3.900 0 0 1 0 7.800H13"/>'
